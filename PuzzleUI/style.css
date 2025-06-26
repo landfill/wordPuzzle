@@ -1,0 +1,165 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    color: #333;
+    font-weight: bold; /* Apply bold to all body text */
+    text-transform: uppercase; /* Ensure all text is uppercase by default */
+}
+
+.game-container {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+}
+
+h1 {
+    color: #ff6f00; /* Toy Story orange */
+    margin-bottom: 20px;
+}
+
+.lives-display {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Increased space between hearts for better visual separation */
+}
+
+.heart-icon {
+    color: #e53935; /* Red heart */
+    font-size: 2.5em; /* Slightly larger for a cuter, more prominent look */
+    line-height: 1; /* Ensure vertical alignment */
+}
+
+.heart-icon.lost {
+    color: #ccc; /* Grey for lost lives */
+}
+
+.problem-area {
+    background-color: #e0f2f7; /* Light blue background */
+    border: 1px solid #b3e5fc;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    line-height: 1.8; /* Sufficient line height for hints */
+    font-size: 1.1em;
+    text-align: left;
+}
+
+.char-slot {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1px; /* Reduced margin for tighter packing of characters */
+    vertical-align: bottom; /* Align with text baseline */
+    position: relative; /* For absolute positioning of hint */
+    padding-top: 25px; /* Increased space for the hint number above */
+    box-sizing: border-box; /* Include padding in width/height */
+}
+
+.char-slot.space-slot {
+    width: 20px; /* Fixed width for spaces, slightly wider for readability */
+    padding-top: 0; /* No hint for spaces */
+    margin: 0 8px; /* More margin for visual separation of words */
+}
+
+.fixed-char-text {
+    display: inline-block;
+    width: 25px; /* Same width as blank for alignment */
+    height: 30px; /* Same height as blank for alignment */
+    text-align: center;
+    line-height: 30px;
+    /* text-transform: uppercase; is now on body */
+}
+
+.hint-number {
+    font-size: 0.7em;
+    color: #666;
+    position: absolute; /* Position relative to parent container */
+    top: 0px; /* Position at the very top of the padding-top space */
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap; /* Prevent wrapping */
+    height: 15px; /* Consistent height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.word-blank {
+    display: inline-block;
+    width: 25px;
+    height: 30px;
+    border-bottom: 2px solid #333;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, border-color 0.2s;
+    /* text-transform: uppercase; is now on body */
+}
+
+.word-blank.active {
+    background-color: #fff9c4; /* Light yellow for active blank */
+    border-color: #ffeb3b;
+}
+
+.word-blank.correct {
+    color: #4caf50; /* Green for correct */
+}
+
+.word-blank.incorrect {
+    color: #f44336; /* Red for incorrect */
+}
+
+.keyboard-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center rows */
+    gap: 8px; /* Space between rows */
+    padding: 10px;
+    background-color: #eceff1; /* Light grey for keyboard background */
+    border-radius: 8px;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center; /* Center keys within each row */
+    gap: 8px;
+}
+
+.key {
+    background-color: #607d8b; /* Dark grey for keys */
+    color: #fff;
+    padding: 15px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    user-select: none; /* Prevent text selection */
+    transition: background-color 0.1s;
+    width: 40px; /* Fixed width for keys */
+    text-align: center;
+    /* text-transform: uppercase; is now on body */
+}
+
+.key:active {
+    background-color: #455a64; /* Darker grey on press */
+}
+
+.key.disabled {
+    background-color: #b0bec5; /* Lighter grey for disabled keys */
+    color: #78909c;
+    cursor: not-allowed;
+}
