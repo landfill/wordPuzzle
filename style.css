@@ -45,7 +45,7 @@ h1 {
 
 .heart-icon::before {
     content: '●'; /* 동그라미 모양으로 변경 */
-    font-size: 1.2rem; /* rem 단위로 변경하여 안정성 확보 */
+    font-size: 2.2rem; /* rem 단위로 변경하여 안정성 확보 */
     color: #e53e3e; /* 빨간색 유지 */
     line-height: 1;
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
