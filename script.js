@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let voiceToggle = false; // false: 남자 음성, true: 여자 음성
     let availableVoices = [];
 
-    // 토이 스토리 대사 문제들
+    // 토이 스토리 대사 문제들 - 힌트 번호 완전히 재정의
     const problems = [
         {
             sentence: "To infinity and beyond!",
