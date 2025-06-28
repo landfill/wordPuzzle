@@ -1,165 +1,352 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     margin: 0;
     color: #333;
-    font-weight: bold; /* Apply bold to all body text */
-    text-transform: uppercase; /* Ensure all text is uppercase by default */
+    font-weight: 600;
 }
 
 .game-container {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 90%;
-    max-width: 600px;
+    max-width: 800px;
+    backdrop-filter: blur(10px);
 }
 
 h1 {
-    color: #ff6f00; /* Toy Story orange */
-    margin-bottom: 20px;
+    color: #4a5568;
+    margin-bottom: 25px;
+    font-size: 2.2em;
+    font-weight: 700;
 }
 
 .lives-display {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+    font-size: 1.3em;
+    margin-bottom: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Increased space between hearts for better visual separation */
+    gap: 12px;
+    color: #4a5568;
 }
 
 .heart-icon {
-    color: #e53935; /* Red heart */
-    font-size: 2.5em; /* Slightly larger for a cuter, more prominent look */
-    line-height: 1; /* Ensure vertical alignment */
+    color: #e53e3e;
+    font-size: 2.2em;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .heart-icon.lost {
-    color: #ccc; /* Grey for lost lives */
+    color: #cbd5e0;
 }
 
 .problem-area {
-    background-color: #e0f2f7; /* Light blue background */
-    border: 1px solid #b3e5fc;
-    padding: 20px;
+    background-color: rgba(247, 250, 252, 0.8);
+    border: 2px solid #e2e8f0;
+    padding: 30px 20px;
     margin-bottom: 30px;
-    border-radius: 8px;
-    line-height: 1.8; /* Sufficient line height for hints */
-    font-size: 1.1em;
-    text-align: left;
-}
-
-.char-slot {
-    display: inline-flex;
-    flex-direction: column;
+    border-radius: 15px;
+    min-height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    margin: 0 1px; /* Reduced margin for tighter packing of characters */
-    vertical-align: bottom; /* Align with text baseline */
-    position: relative; /* For absolute positioning of hint */
-    padding-top: 25px; /* Increased space for the hint number above */
-    box-sizing: border-box; /* Include padding in width/height */
+    gap: 15px;
+    position: relative;
 }
 
-.char-slot.space-slot {
-    width: 20px; /* Fixed width for spaces, slightly wider for readability */
-    padding-top: 0; /* No hint for spaces */
-    margin: 0 8px; /* More margin for visual separation of words */
+.navigation-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 10px;
+    pointer-events: none;
 }
 
-.fixed-char-text {
-    display: inline-block;
-    width: 25px; /* Same width as blank for alignment */
-    height: 30px; /* Same height as blank for alignment */
-    text-align: center;
-    line-height: 30px;
-    /* text-transform: uppercase; is now on body */
-}
-
-.hint-number {
-    font-size: 0.7em;
-    color: #666;
-    position: absolute; /* Position relative to parent container */
-    top: 0px; /* Position at the very top of the padding-top space */
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap; /* Prevent wrapping */
-    height: 15px; /* Consistent height */
+.nav-button {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    transition: all 0.2s ease;
+    pointer-events: auto;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.nav-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4);
+}
+
+.nav-button:active {
+    transform: scale(0.95);
+}
+
+.nav-button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.word-group {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.word-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.word-group.has-active-blank {
+    border-color: #4299e1;
+    box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
+}
+
+.char-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin: 0 2px;
+}
+
+.char-slot.space-slot {
+    width: 15px;
+    margin: 0 5px;
+}
+
+.fixed-char-text {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #2d3748;
+    text-transform: uppercase;
+    line-height: 1;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+}
+
 .word-blank {
-    display: inline-block;
-    width: 25px;
-    height: 30px;
-    border-bottom: 2px solid #333;
+    width: 35px;
+    height: 35px;
+    border: 3px solid #cbd5e0;
+    border-radius: 8px;
     text-align: center;
-    line-height: 30px;
+    line-height: 29px;
     cursor: pointer;
-    background-color: #fff;
-    border-radius: 3px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s, border-color 0.2s;
-    /* text-transform: uppercase; is now on body */
+    background: white;
+    font-size: 1.4em;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.word-blank:hover {
+    border-color: #4299e1;
+    transform: scale(1.05);
 }
 
 .word-blank.active {
-    background-color: #fff9c4; /* Light yellow for active blank */
-    border-color: #ffeb3b;
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    border-color: #38a169;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .word-blank.correct {
-    color: #4caf50; /* Green for correct */
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    border-color: #38a169;
+    color: white;
+    animation: none;
 }
 
 .word-blank.incorrect {
-    color: #f44336; /* Red for incorrect */
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    border-color: #e53e3e;
+    color: white;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.hint-number {
+    font-size: 0.8em;
+    color: #718096;
+    font-weight: 600;
+    margin-top: 5px;
+    background: #edf2f7;
+    border-radius: 10px;
+    padding: 2px 6px;
+    min-width: 16px;
+    text-align: center;
 }
 
 .keyboard-area {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center rows */
-    gap: 8px; /* Space between rows */
-    padding: 10px;
-    background-color: #eceff1; /* Light grey for keyboard background */
-    border-radius: 8px;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(247, 250, 252, 0.6);
+    border-radius: 15px;
+    position: relative;
 }
 
 .keyboard-row {
     display: flex;
-    justify-content: center; /* Center keys within each row */
+    justify-content: center;
     gap: 8px;
 }
 
+.keyboard-row:last-child {
+    padding: 0 60px;
+}
+
 .key {
-    background-color: #607d8b; /* Dark grey for keys */
-    color: #fff;
+    background: white;
+    color: #4a5568;
     padding: 15px 0;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1.2em;
-    user-select: none; /* Prevent text selection */
-    transition: background-color 0.1s;
-    width: 40px; /* Fixed width for keys */
+    font-size: 1.1em;
+    font-weight: 700;
+    user-select: none;
+    transition: all 0.1s ease;
+    width: 45px;
     text-align: center;
-    /* text-transform: uppercase; is now on body */
+    text-transform: uppercase;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.key:hover {
+    background: #f7fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .key:active {
-    background-color: #455a64; /* Darker grey on press */
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .key.disabled {
-    background-color: #b0bec5; /* Lighter grey for disabled keys */
-    color: #78909c;
+    background: #4299e1;
+    color: white;
     cursor: not-allowed;
+    transform: none;
+    border-color: #3182ce;
+}
+
+.key.disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.blank-navigation {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blank-nav-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.blank-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.blank-nav-btn:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .problem-area {
+        padding: 20px 15px;
+        gap: 10px;
+    }
+    
+    .word-group {
+        padding: 10px 15px;
+        margin: 3px;
+    }
+    
+    .nav-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+    }
+    
+    .key {
+        width: 35px;
+        padding: 12px 0;
+        font-size: 1em;
+    }
+    
+    .keyboard-row:last-child {
+        padding: 0 40px;
+    }
 }

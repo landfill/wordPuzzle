@@ -6,31 +6,99 @@ document.addEventListener('DOMContentLoaded', () => {
     let lives = 5;
     let currentProblemIndex = 0;
     let activeBlankIndex = -1;
-    let problemBlanks = []; // To store references to the blank elements
-    let usedCharsInProblem = new Set(); // Chars already visible in the problem (fixed, not blanks, e.g., 'f' in infinity)
-    let requiredBlankChars = new Map(); // Map<char, totalCount> for blanks
-    let correctlyFilledBlankChars = new Map(); // Map<char, currentFilledCount> for blanks
-    let fixedCharHintElementsMap = new Map(); // Map<char, Array<HTMLElement>> to store hint spans for fixed chars that also appear in blanks
+    let problemBlanks = [];
+    let usedCharsInProblem = new Set();
+    let requiredBlankChars = new Map();
+    let correctlyFilledBlankChars = new Map();
+    let fixedCharHintElementsMap = new Map();
 
     const problems = [
         {
-            sentence: "To infinity, and beyond!",
+            sentence: "The quick brown fox jumps over the lazy dog in the sunny afternoon.",
             blanks: [
-                { char: 'o', index: 1, hintNum: 1 },
-                { char: 'i', index: 3, hintNum: 2 },
-                { char: 'i', index: 6, hintNum: 2 },
-                { char: 'i', index: 8, hintNum: 2 },
-                { char: 't', index: 9, hintNum: 4 },
-                { char: 'y', index: 10, hintNum: 5 },
-                { char: 'a', index: 13, hintNum: 6 },
-                { char: 'd', index: 15, hintNum: 7 },
-                { char: 'b', index: 17, hintNum: 8 },
-                { char: 'y', index: 19, hintNum: 5 },
-                { char: 'o', index: 20, hintNum: 1 },
-                { char: 'n', index: 21, hintNum: 3 }
+                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'h', index: 1, hintNum: 2 },
+                { char: 'e', index: 2, hintNum: 3 },
+                { char: 'q', index: 4, hintNum: 4 },
+                { char: 'u', index: 5, hintNum: 5 },
+                { char: 'i', index: 6, hintNum: 6 },
+                { char: 'c', index: 7, hintNum: 7 },
+                { char: 'k', index: 8, hintNum: 8 },
+                { char: 'b', index: 10, hintNum: 9 },
+                { char: 'r', index: 11, hintNum: 10 },
+                { char: 'o', index: 12, hintNum: 11 },
+                { char: 'w', index: 13, hintNum: 12 },
+                { char: 'n', index: 14, hintNum: 13 }
+            ]
+        },
+        {
+            sentence: "Learning English through interactive puzzles makes studying fun and engaging.",
+            blanks: [
+                { char: 'L', index: 0, hintNum: 1 },
+                { char: 'e', index: 1, hintNum: 2 },
+                { char: 'a', index: 2, hintNum: 3 },
+                { char: 'r', index: 3, hintNum: 4 },
+                { char: 'n', index: 4, hintNum: 5 },
+                { char: 'i', index: 5, hintNum: 6 },
+                { char: 'n', index: 6, hintNum: 7 },
+                { char: 'g', index: 7, hintNum: 8 },
+                { char: 'E', index: 9, hintNum: 9 },
+                { char: 'n', index: 10, hintNum: 10 },
+                { char: 'g', index: 11, hintNum: 11 },
+                { char: 'l', index: 12, hintNum: 12 }
+            ]
+        },
+        {
+            sentence: "Adventure awaits those who dare to explore beyond their comfort zone.",
+            blanks: [
+                { char: 'A', index: 0, hintNum: 1 },
+                { char: 'd', index: 1, hintNum: 2 },
+                { char: 'v', index: 2, hintNum: 3 },
+                { char: 'e', index: 3, hintNum: 4 },
+                { char: 'n', index: 4, hintNum: 5 },
+                { char: 't', index: 5, hintNum: 6 },
+                { char: 'u', index: 6, hintNum: 7 },
+                { char: 'r', index: 7, hintNum: 8 },
+                { char: 'e', index: 8, hintNum: 9 },
+                { char: 'a', index: 10, hintNum: 10 },
+                { char: 'w', index: 11, hintNum: 11 },
+                { char: 'a', index: 12, hintNum: 12 }
+            ]
+        },
+        {
+            sentence: "Technology has revolutionized the way we communicate and share information.",
+            blanks: [
+                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'e', index: 1, hintNum: 2 },
+                { char: 'c', index: 2, hintNum: 3 },
+                { char: 'h', index: 3, hintNum: 4 },
+                { char: 'n', index: 4, hintNum: 5 },
+                { char: 'o', index: 5, hintNum: 6 },
+                { char: 'l', index: 6, hintNum: 7 },
+                { char: 'o', index: 7, hintNum: 8 },
+                { char: 'g', index: 8, hintNum: 9 },
+                { char: 'y', index: 9, hintNum: 10 },
+                { char: 'h', index: 11, hintNum: 11 },
+                { char: 'a', index: 12, hintNum: 12 }
+            ]
+        },
+        {
+            sentence: "Creativity flourishes when imagination meets determination and hard work.",
+            blanks: [
+                { char: 'C', index: 0, hintNum: 1 },
+                { char: 'r', index: 1, hintNum: 2 },
+                { char: 'e', index: 2, hintNum: 3 },
+                { char: 'a', index: 3, hintNum: 4 },
+                { char: 't', index: 4, hintNum: 5 },
+                { char: 'i', index: 5, hintNum: 6 },
+                { char: 'v', index: 6, hintNum: 7 },
+                { char: 'i', index: 7, hintNum: 8 },
+                { char: 't', index: 8, hintNum: 9 },
+                { char: 'y', index: 9, hintNum: 10 },
+                { char: 'f', index: 11, hintNum: 11 },
+                { char: 'l', index: 12, hintNum: 12 }
             ]
         }
-        // Add more problems here if needed
     ];
 
     const keyboardLayout = [
@@ -42,22 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
-        currentProblemIndex = 0;
+        currentProblemIndex = Math.floor(Math.random() * problems.length);
         usedCharsInProblem.clear();
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
-        fixedCharHintElementsMap.clear(); // Clear for new game
+        fixedCharHintElementsMap.clear();
         loadProblem(currentProblemIndex);
         createKeyboard();
-        updateFixedCharHints(); // Set initial visibility for fixed char hints
+        updateFixedCharHints();
     }
 
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = '';
+        const livesCount = document.getElementById('lives-count');
+        if (livesCount) {
+            livesCount.textContent = lives;
+        }
+        
+        livesDisplay.innerHTML = 'Life: ';
         for (let i = 0; i < 5; i++) {
             const heart = document.createElement('span');
             heart.classList.add('heart-icon');
-            heart.innerHTML = '&#x2764;'; // HTML entity for a filled heart symbol
+            heart.innerHTML = '♥';
             if (i >= lives) {
                 heart.classList.add('lost');
             }
@@ -74,88 +147,130 @@ document.addEventListener('DOMContentLoaded', () => {
         fixedCharHintElementsMap.clear();
 
         const problem = problems[index];
-        const sentenceParts = problem.sentence.split('');
+        const words = problem.sentence.split(' ');
+        
+        // Create navigation controls
+        const navControls = document.createElement('div');
+        navControls.classList.add('navigation-controls');
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.classList.add('nav-button');
+        prevBtn.innerHTML = '◀';
+        prevBtn.addEventListener('click', () => navigateBlank(-1));
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.classList.add('nav-button');
+        nextBtn.innerHTML = '▶';
+        nextBtn.addEventListener('click', () => navigateBlank(1));
+        
+        navControls.appendChild(prevBtn);
+        navControls.appendChild(nextBtn);
+        problemArea.appendChild(navControls);
 
-        // Populate requiredBlankChars (total count of each char needed for blanks)
+        // Populate requiredBlankChars
         problem.blanks.forEach(blank => {
             const char = blank.char.toLowerCase();
             requiredBlankChars.set(char, (requiredBlankChars.get(char) || 0) + 1);
         });
 
+        let charIndex = 0;
         let blankCounter = 0;
-        sentenceParts.forEach((char, charIndex) => {
-            const charSlot = document.createElement('span');
-            charSlot.classList.add('char-slot');
 
-            const blankInfo = problem.blanks.find(b => b.index === charIndex);
+        words.forEach((word, wordIndex) => {
+            const wordGroup = document.createElement('div');
+            wordGroup.classList.add('word-group');
+            
+            let hasActiveBlank = false;
 
-            if (char === ' ' || char === '-') { // Handle spaces and hyphens explicitly for word separation
-                charSlot.classList.add('space-slot'); // Add a specific class for spaces
-                charSlot.textContent = char; // Just the space or hyphen
-            } else if (blankInfo) {
-                const hintSpan = document.createElement('span');
-                hintSpan.classList.add('hint-number');
-                hintSpan.textContent = blankInfo.hintNum;
-                charSlot.appendChild(hintSpan);
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                const currentCharIndex = charIndex + i;
+                
+                const charSlot = document.createElement('div');
+                charSlot.classList.add('char-slot');
 
-                const blankSpan = document.createElement('span');
-                blankSpan.classList.add('word-blank');
-                blankSpan.dataset.correctChar = blankInfo.char.toLowerCase();
-                blankSpan.dataset.blankIndex = blankCounter;
-                blankSpan.addEventListener('click', () => {
-                    setActiveBlank(parseInt(blankSpan.dataset.blankIndex));
-                });
-                charSlot.appendChild(blankSpan);
-                problemBlanks.push(blankSpan);
-                blankCounter++;
-            } else {
-                // Fixed character (alphabetic or punctuation)
-                const lowerChar = char.toLowerCase();
-                if (lowerChar.match(/[a-z]/)) { // Alphabetic fixed character
-                    // Check if this fixed character also appears as a blank character
-                    const isAlsoBlankChar = problem.blanks.some(b => b.char.toLowerCase() === lowerChar);
+                const blankInfo = problem.blanks.find(b => b.index === currentCharIndex);
 
-                    if (isAlsoBlankChar) {
-                        const hintSpan = document.createElement('span');
-                        hintSpan.classList.add('hint-number');
-                        const hintNumForChar = problem.blanks.find(b => b.char.toLowerCase() === lowerChar)?.hintNum;
-                        if (hintNumForChar) {
-                            hintSpan.textContent = hintNumForChar;
-                        }
-                        charSlot.appendChild(hintSpan);
+                if (blankInfo) {
+                    const blankSpan = document.createElement('div');
+                    blankSpan.classList.add('word-blank');
+                    blankSpan.dataset.correctChar = blankInfo.char.toLowerCase();
+                    blankSpan.dataset.blankIndex = blankCounter;
+                    blankSpan.addEventListener('click', () => {
+                        setActiveBlank(parseInt(blankSpan.dataset.blankIndex));
+                    });
 
-                        const charSpan = document.createElement('span');
-                        charSpan.classList.add('fixed-char-text');
-                        charSpan.textContent = char.toUpperCase(); // Ensure uppercase
-                        charSlot.appendChild(charSpan);
+                    const hintSpan = document.createElement('div');
+                    hintSpan.classList.add('hint-number');
+                    hintSpan.textContent = blankInfo.hintNum;
 
-                        if (!fixedCharHintElementsMap.has(lowerChar)) {
-                            fixedCharHintElementsMap.set(lowerChar, []);
-                        }
-                        fixedCharHintElementsMap.get(lowerChar).push(hintSpan);
-
-                    } else {
-                        // Regular fixed alphabetic character without a hint
-                        const charSpan = document.createElement('span');
-                        charSpan.classList.add('fixed-char-text');
-                        charSpan.textContent = char.toUpperCase(); // Ensure uppercase
-                        charSlot.appendChild(charSpan);
-                        usedCharsInProblem.add(lowerChar); // Add to set for keyboard disabling
-                    }
+                    charSlot.appendChild(blankSpan);
+                    charSlot.appendChild(hintSpan);
+                    problemBlanks.push(blankSpan);
+                    blankCounter++;
+                    hasActiveBlank = true;
                 } else {
-                    // Punctuation or other non-alphabetic, non-space characters
-                    const charSpan = document.createElement('span');
-                    charSpan.classList.add('fixed-char-text');
-                    charSpan.textContent = char; // Keep as is (punctuation)
-                    charSlot.appendChild(charSpan);
+                    const lowerChar = char.toLowerCase();
+                    if (lowerChar.match(/[a-z]/)) {
+                        const isAlsoBlankChar = problem.blanks.some(b => b.char.toLowerCase() === lowerChar);
+
+                        if (isAlsoBlankChar) {
+                            const charSpan = document.createElement('div');
+                            charSpan.classList.add('fixed-char-text');
+                            charSpan.textContent = char.toUpperCase();
+
+                            const hintSpan = document.createElement('div');
+                            hintSpan.classList.add('hint-number');
+                            const hintNumForChar = problem.blanks.find(b => b.char.toLowerCase() === lowerChar)?.hintNum;
+                            if (hintNumForChar) {
+                                hintSpan.textContent = hintNumForChar;
+                            }
+
+                            charSlot.appendChild(charSpan);
+                            charSlot.appendChild(hintSpan);
+
+                            if (!fixedCharHintElementsMap.has(lowerChar)) {
+                                fixedCharHintElementsMap.set(lowerChar, []);
+                            }
+                            fixedCharHintElementsMap.get(lowerChar).push(hintSpan);
+                        } else {
+                            const charSpan = document.createElement('div');
+                            charSpan.classList.add('fixed-char-text');
+                            charSpan.textContent = char.toUpperCase();
+                            charSlot.appendChild(charSpan);
+                            usedCharsInProblem.add(lowerChar);
+                        }
+                    } else {
+                        const charSpan = document.createElement('div');
+                        charSpan.classList.add('fixed-char-text');
+                        charSpan.textContent = char;
+                        charSlot.appendChild(charSpan);
+                    }
                 }
+                wordGroup.appendChild(charSlot);
             }
-            problemArea.appendChild(charSlot);
+
+            if (hasActiveBlank) {
+                wordGroup.classList.add('has-active-blank');
+            }
+
+            problemArea.appendChild(wordGroup);
+            charIndex += word.length + 1; // +1 for space
         });
-        // Set the first blank as active initially
+
         if (problemBlanks.length > 0) {
             setActiveBlank(0);
         }
+    }
+
+    function navigateBlank(direction) {
+        if (problemBlanks.length === 0) return;
+        
+        let newIndex = activeBlankIndex + direction;
+        if (newIndex < 0) newIndex = problemBlanks.length - 1;
+        if (newIndex >= problemBlanks.length) newIndex = 0;
+        
+        setActiveBlank(newIndex);
     }
 
     function setActiveBlank(index) {
@@ -166,13 +281,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (problemBlanks[activeBlankIndex]) {
             problemBlanks[activeBlankIndex].classList.add('active');
         }
+        updateWordGroupHighlight();
+    }
+
+    function updateWordGroupHighlight() {
+        document.querySelectorAll('.word-group').forEach(group => {
+            group.classList.remove('has-active-blank');
+        });
+        
+        if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) {
+            const activeBlank = problemBlanks[activeBlankIndex];
+            const parentGroup = activeBlank.closest('.word-group');
+            if (parentGroup) {
+                parentGroup.classList.add('has-active-blank');
+            }
+        }
     }
 
     function createKeyboard() {
         keyboardArea.innerHTML = '';
-        keyboardLayout.forEach(row => {
+        
+        keyboardLayout.forEach((row, rowIndex) => {
             const rowDiv = document.createElement('div');
             rowDiv.classList.add('keyboard-row');
+            
+            // Add navigation buttons to the last row
+            if (rowIndex === keyboardLayout.length - 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.classList.add('blank-nav-btn');
+                prevBtn.innerHTML = '◀';
+                prevBtn.addEventListener('click', () => navigateBlank(-1));
+                rowDiv.appendChild(prevBtn);
+            }
+            
             row.forEach(keyChar => {
                 const keyDiv = document.createElement('div');
                 keyDiv.classList.add('key');
@@ -181,23 +322,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 keyDiv.addEventListener('click', () => handleKeyPress(keyChar));
                 rowDiv.appendChild(keyDiv);
             });
+            
+            // Add navigation buttons to the last row
+            if (rowIndex === keyboardLayout.length - 1) {
+                const nextBtn = document.createElement('button');
+                nextBtn.classList.add('blank-nav-btn');
+                nextBtn.innerHTML = '▶';
+                nextBtn.addEventListener('click', () => navigateBlank(1));
+                rowDiv.appendChild(nextBtn);
+            }
+            
             keyboardArea.appendChild(rowDiv);
         });
         updateKeyboardState();
     }
 
     function updateKeyboardState() {
-        keyboardLayout.flat().forEach(keyChar => { // Flatten the array to iterate all keys
+        keyboardLayout.flat().forEach(keyChar => {
             const keyDiv = keyboardArea.querySelector(`[data-key="${keyChar}"]`);
             if (keyDiv) {
                 const totalRequired = requiredBlankChars.get(keyChar) || 0;
                 const currentFilled = correctlyFilledBlankChars.get(keyChar) || 0;
-
-                // Condition 1: The character is in the problem sentence (not a blank) AND is NOT a character that needs to be filled in blanks.
-                // This means it's a fixed character in the puzzle and not meant to be filled.
-                const isFixedAndNotABlankChar = usedCharsInProblem.has(keyChar); // usedCharsInProblem only contains fixed chars that are NOT blanks
-
-                // Condition 2: All instances of this character in blanks have been filled.
+                const isFixedAndNotABlankChar = usedCharsInProblem.has(keyChar);
                 const isAllBlanksFilled = totalRequired > 0 && currentFilled === totalRequired;
 
                 if (isFixedAndNotABlankChar || isAllBlanksFilled) {
@@ -217,12 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentFilled = correctlyFilledBlankChars.get(char) || 0;
 
             if (totalRequired > 0 && currentFilled === totalRequired) {
-                // All blanks for this char are filled, hide all its fixed char hints
                 hintSpans.forEach(span => {
                     span.style.visibility = 'hidden';
                 });
             } else {
-                // If for some reason it was hidden and now needs to be shown (e.g., restart game)
                 hintSpans.forEach(span => {
                     span.style.visibility = 'visible';
                 });
@@ -232,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleKeyPress(key) {
         if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) {
-            return; // No blank is active
+            return;
         }
 
         const currentBlank = problemBlanks[activeBlankIndex];
@@ -243,44 +387,56 @@ document.addEventListener('DOMContentLoaded', () => {
             currentBlank.classList.add('correct');
             currentBlank.classList.remove('active');
 
-            // Update filled count for this character
             correctlyFilledBlankChars.set(correctChar, (correctlyFilledBlankChars.get(correctChar) || 0) + 1);
-            updateKeyboardState(); // Update keyboard after filling
-            updateFixedCharHints(); // Update fixed char hints after filling
+            updateKeyboardState();
+            updateFixedCharHints();
 
-            // Move to the next blank
             const nextBlankIndex = activeBlankIndex + 1;
             if (nextBlankIndex < problemBlanks.length) {
                 setActiveBlank(nextBlankIndex);
             } else {
-                // All blanks filled, check if puzzle is complete
                 checkPuzzleCompletion();
             }
         } else {
             currentBlank.textContent = 'X';
             currentBlank.classList.add('incorrect');
             lives--;
-            updateLivesDisplay(); // Update heart icons
+            updateLivesDisplay();
 
             setTimeout(() => {
                 currentBlank.textContent = '';
                 currentBlank.classList.remove('incorrect');
                 if (lives <= 0) {
                     alert('Game Over! Try again.');
-                    initializeGame(); // Restart game
-                }n            }, 1000);
+                    initializeGame();
+                }
+            }, 1000);
         }
     }
 
     function checkPuzzleCompletion() {
-        const allFilled = problemBlanks.every(blank => blank.textContent !== '');
+        const allFilled = problemBlanks.every(blank => blank.textContent !== '' && blank.textContent !== 'X');
         if (allFilled) {
-            alert('Congratulations! You solved the puzzle!');
-            // Optionally load next problem or end game
-            // For now, just restart
-            initializeGame();
+            setTimeout(() => {
+                alert('Congratulations! You solved the puzzle!');
+                initializeGame();
+            }, 500);
         }
     }
+
+    // Keyboard event listener
+    document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (key.match(/[a-z]/)) {
+            handleKeyPress(key);
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            navigateBlank(-1);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            navigateBlank(1);
+        }
+    });
 
     initializeGame();
 });
