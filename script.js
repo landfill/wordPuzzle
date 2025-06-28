@@ -561,6 +561,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if ('speechSynthesis' in window) {
+            // --- 모달 창을 잠시 숨기기 ---
+            const successModal = document.getElementById('success-modal');
+            if (successModal) {
+                successModal.style.display = 'none';
+            }
+
             isReading = true;
             const words = currentSentence.split(' ');
             let currentWordIndex = 0;
@@ -568,14 +574,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // 전체 문장을 자연스럽게 읽기
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
-            utterance.rate = 0.9; // 조금 느리게
+            utterance.rate = 1.0; // 정상 속도
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
             
             currentUtterance = utterance;
 
             // 단어별 하이라이트를 위한 타이밍 계산
-            const avgWordsPerSecond = 2.0; // 조금 느린 읽기 속도 (단어/초)
+            const avgWordsPerSecond = 2.2; // 조금 느린 읽기 속도 (단어/초)
             const wordDuration = 1000 / avgWordsPerSecond; // 단어당 시간 (ms)
 
             let highlightTimer;
@@ -609,6 +615,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (highlightTimer) {
                     clearTimeout(highlightTimer);
                 }
+                // --- TTS가 끝나면 모달을 다시 보여주기 ---
+                if (successModal) {
+                    successModal.style.display = 'flex';
+                }
             };
 
             utterance.onerror = (event) => {
@@ -618,6 +628,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUtterance = null;
                 if (highlightTimer) {
                     clearTimeout(highlightTimer);
+                }
+                // --- 에러가 발생해도 모달을 다시 보여주기 ---
+                if (successModal) {
+                    successModal.style.display = 'flex';
                 }
             };
 
