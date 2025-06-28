@@ -26,20 +26,30 @@
     <!-- Success Modal -->
     <div id="success-modal" class="modal">
         <div class="modal-content">
-            <h2>축하합니다! 🎉</h2>
+            <h2>Congratulations! 🎉</h2>
             <div class="sentence-display">
                 <div class="original-sentence"></div>
                 <div class="source"></div>
                 <div class="korean-translation"></div>
             </div>
             <div class="modal-buttons">
-                <button id="new-quiz-btn" class="modal-btn primary">새 퀴즈</button>
-                <button id="listen-btn" class="modal-btn secondary">듣기</button>
+                <button id="new-quiz-btn" class="modal-btn primary">New Quiz</button>
+                <button id="listen-btn" class="modal-btn secondary">Listen</button>
             </div>
         </div>
     </div>
 
-    <!-- The script tag is now a module to allow imports -->
+    <!-- Game Over Modal (NEW) -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2>Game Over 💔</h2>
+            <p>You've run out of hearts. Don't give up!</p>
+            <div class="modal-buttons">
+                <button id="retry-btn" class="modal-btn primary">Try Again</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
