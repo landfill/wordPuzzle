@@ -8,25 +8,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const livesDisplay = document.querySelector('.lives-display');
     const sourceDisplay = document.querySelector('.source-display');
     const successModal = document.getElementById('success-modal');
+    const gameOverModal = document.getElementById('game-over-modal'); // New
     const newQuizBtn = document.getElementById('new-quiz-btn');
     const listenBtn = document.getElementById('listen-btn');
+    const retryBtn = document.getElementById('retry-btn'); // New
 
     // --- Game State ---
     let lives = 5;
-    let currentProblem; // This will hold the entire generated problem object
+    let currentProblem;
     let activeBlankIndex = -1;
     let problemBlanks = [];
     let usedCharsInProblem = new Set();
     let requiredBlankChars = new Map();
     let correctlyFilledBlankChars = new Map();
     let charToHintNumber = new Map();
-    let currentSentence = ''; // For TTS
+    let currentSentence = '';
     let isReading = false;
-    let availableVoices = [];
 
     // --- Content Generation ---
     const contentGenerator = new ContentGenerator();
-    // Load the entire database into the generator
     Object.keys(CONTENT_DATABASE).forEach(category => {
         Object.keys(CONTENT_DATABASE[category]).forEach(source => {
             contentGenerator.addContent(category, source, CONTENT_DATABASE[category][source]);
@@ -44,12 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
-        
-        // Generate a new, random problem from the database
         currentProblem = contentGenerator.generateRandomProblem();
         currentSentence = currentProblem.sentence;
         
-        // Clear all previous game state
         activeBlankIndex = -1;
         problemBlanks = [];
         usedCharsInProblem.clear();
@@ -58,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         charToHintNumber.clear();
         isReading = false;
 
-        // Load the new problem into the UI
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
         if (keyboardArea.childElementCount === 0) {
@@ -68,6 +64,45 @@ document.addEventListener('DOMContentLoaded', () => {
         updateHintVisibility();
     }
 
+    function handleKeyPress(key) {
+        if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) return;
+
+        const currentBlank = problemBlanks[activeBlankIndex];
+        const correctChar = currentBlank.dataset.correctChar;
+
+        if (key.toLowerCase() === correctChar) {
+            currentBlank.textContent = key.toUpperCase();
+            currentBlank.classList.add('correct');
+            currentBlank.classList.remove('active');
+            correctlyFilledBlankChars.set(correctChar, (correctlyFilledBlankChars.get(correctChar) || 0) + 1);
+            
+            updateKeyboardState();
+            updateHintVisibility();
+
+            const nextBlankIndex = problemBlanks.findIndex(b => !b.classList.contains('correct'));
+            if (nextBlankIndex !== -1) {
+                setActiveBlank(nextBlankIndex);
+            } else {
+                checkPuzzleCompletion();
+            }
+        } else {
+            currentBlank.classList.add('incorrect');
+            lives--;
+            updateLivesDisplay();
+            setTimeout(() => {
+                currentBlank.classList.remove('incorrect');
+                if (lives <= 0) {
+                    // ** OLD: alert('Game Over! Try again.');
+                    // ** NEW: Show modal instead
+                    gameOverModal.style.display = 'flex';
+                }
+            }, 500);
+        }
+    }
+    
+    // --- (The rest of the JS functions like loadProblem, updateSourceDisplay, etc., are unchanged) ---
+    // ... all other functions remain the same as the previous correct version ...
+    
     function loadProblem(problem) {
         problemArea.innerHTML = '';
         const words = problem.sentence.split(' ');
@@ -198,41 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Helper & UI Functions (Most are unchanged) ---
 
-    function handleKeyPress(key) {
-        if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) return;
-
-        const currentBlank = problemBlanks[activeBlankIndex];
-        const correctChar = currentBlank.dataset.correctChar;
-
-        if (key.toLowerCase() === correctChar) {
-            currentBlank.textContent = key.toUpperCase();
-            currentBlank.classList.add('correct');
-            currentBlank.classList.remove('active');
-            correctlyFilledBlankChars.set(correctChar, (correctlyFilledBlankChars.get(correctChar) || 0) + 1);
-            
-            updateKeyboardState();
-            updateHintVisibility();
-
-            const nextBlankIndex = problemBlanks.findIndex(b => !b.classList.contains('correct'));
-            if (nextBlankIndex !== -1) {
-                setActiveBlank(nextBlankIndex);
-            } else {
-                checkPuzzleCompletion();
-            }
-        } else {
-            currentBlank.classList.add('incorrect');
-            lives--;
-            updateLivesDisplay();
-            setTimeout(() => {
-                currentBlank.classList.remove('incorrect');
-                if (lives <= 0) {
-                    alert('Game Over! Try again.');
-                    initializeGame();
-                }
-            }, 500);
-        }
-    }
-
     function updateLivesDisplay() {
         livesDisplay.innerHTML = Array(5).fill(0).map((_, i) => 
             `<span class="heart-icon ${i >= lives ? 'lost' : ''}">♥</span>`
@@ -316,6 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newQuizBtn.addEventListener('click', () => {
         successModal.style.display = 'none';
+        initializeGame();
+    });
+    
+    // NEW: Event listener for the retry button
+    retryBtn.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
         initializeGame();
     });
 
