@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
         isReading = false;
+        clearWordHighlights();
         loadProblem(currentProblemIndex);
         createKeyboard();
         updateKeyboardState();
@@ -541,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const utterance = new SpeechSynthesisUtterance(words[currentWordIndex]);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.6; // 느린 속도로 설정
+                utterance.rate = 0.8; // 적당한 속도로 조정
                 utterance.pitch = 1.0;
                 utterance.volume = 1.0;
 
@@ -549,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentWordIndex++;
                     setTimeout(() => {
                         speakNextWord();
-                    }, 300); // 단어 사이 300ms 간격
+                    }, 200); // 단어 사이 200ms 간격
                 };
 
                 utterance.onerror = () => {
