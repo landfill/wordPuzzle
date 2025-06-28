@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
             if (existingAudio) {
-                existingAudio.pause(); // onpause/onended 핸들러가 나머지를 정리합니다.
+                existingAudio.pause();
             }
             speechSynthesis.cancel();
             return;
@@ -71,19 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' };
 
         try {
-            // 1. Cloudflare 중계 서버에 AI 음성 요청
             const response = await fetch('/google-tts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: currentSentence,
-                    voice: voiceOptions,
-                    pitch: 1.0,
-                    speakingRate: 1.0,
-                }),
+                body: JSON.stringify({ text: currentSentence, voice: voiceOptions, pitch: 1.0, speakingRate: 1.0 }),
             });
 
-            // 2. 응답 확인 (스위치가 꺼져 있는지?)
             if (response.status === 403) {
                 speakWithBrowserTTS();
                 isReading = false;
@@ -101,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error("Invalid data received from TTS server.");
             }
 
-            // 3. AI 목소리(mp3) 재생 및 하이라이트
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
@@ -122,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let wordIndex = 0;
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                while (wordIndex < timepoints.length && currentTime >= timepoints[wordIndex].timeSeconds) {
+                if (wordIndex < timepoints.length && currentTime >= timepoints[wordIndex].timeSeconds) {
                     highlightModalWord(wordIndex);
                     wordIndex++;
                 }
@@ -136,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Could not use Google TTS. Reason:', error.message);
-            alert(`AI 음성 재생에 실패했습니다: ${error.message}\n기본 음성으로 대체합니다.`);
+            alert(`AI 음성 재생에 실패했습니다. 기본 음성으로 대체합니다.`);
             speakWithBrowserTTS();
             isReading = false;
             listenBtn.classList.remove('disabled');
@@ -161,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isReading) {
             const audio = document.getElementById('tts-audio');
             if (audio) {
-                audio.pause(); // onpause/onended 이벤트가 cleanup을 처리합니다.
+                audio.pause();
             }
             speechSynthesis.cancel();
         }
