@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSentence = '';
     let isReading = false;
     let currentUtterance = null;
+    let voiceToggle = false; // false: 남자 음성, true: 여자 음성
+    let availableVoices = [];
 
     const problems = [
         {
@@ -122,6 +124,97 @@ document.addEventListener('DOMContentLoaded', () => {
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
+
+    // 음성 로드 함수
+    function loadVoices() {
+        availableVoices = speechSynthesis.getVoices();
+        console.log('Available voices:', availableVoices.map(v => `${v.name} (${v.lang}) - ${v.gender || 'unknown'}`));
+    }
+
+    // 음성 선택 함수
+    function selectVoice(isFemale = false) {
+        if (availableVoices.length === 0) {
+            loadVoices();
+        }
+
+        // 영어 음성만 필터링
+        const englishVoices = availableVoices.filter(voice => 
+            voice.lang.startsWith('en-') && voice.lang !== 'en-IN'
+        );
+
+        if (isFemale) {
+            // 여성 음성 우선 선택 (틴에이지 스타일)
+            const femaleVoices = englishVoices.filter(voice => {
+                const name = voice.name.toLowerCase();
+                return (
+                    // 명시적으로 여성 음성인 것들
+                    name.includes('female') || 
+                    name.includes('woman') ||
+                    name.includes('girl') ||
+                    name.includes('samantha') ||
+                    name.includes('victoria') ||
+                    name.includes('karen') ||
+                    name.includes('susan') ||
+                    name.includes('allison') ||
+                    name.includes('ava') ||
+                    name.includes('serena') ||
+                    name.includes('zira') ||
+                    name.includes('hazel') ||
+                    // 일반적으로 여성 이름들
+                    (voice.name.includes('Microsoft') && (
+                        name.includes('aria') ||
+                        name.includes('jenny') ||
+                        name.includes('michelle')
+                    )) ||
+                    // Google 여성 음성들
+                    (voice.name.includes('Google') && name.includes('female'))
+                );
+            });
+
+            if (femaleVoices.length > 0) {
+                // 가장 젊은 소리가 나는 음성 우선 선택
+                const preferredFemaleVoices = femaleVoices.filter(voice => {
+                    const name = voice.name.toLowerCase();
+                    return name.includes('samantha') || name.includes('ava') || name.includes('allison');
+                });
+                
+                return preferredFemaleVoices.length > 0 ? preferredFemaleVoices[0] : femaleVoices[0];
+            }
+        } else {
+            // 남성 음성 우선 선택
+            const maleVoices = englishVoices.filter(voice => {
+                const name = voice.name.toLowerCase();
+                return (
+                    // 명시적으로 남성 음성인 것들
+                    name.includes('male') || 
+                    name.includes('man') ||
+                    name.includes('boy') ||
+                    name.includes('alex') ||
+                    name.includes('tom') ||
+                    name.includes('daniel') ||
+                    name.includes('david') ||
+                    name.includes('mark') ||
+                    name.includes('ryan') ||
+                    name.includes('james') ||
+                    // Microsoft 남성 음성들
+                    (voice.name.includes('Microsoft') && (
+                        name.includes('david') ||
+                        name.includes('mark') ||
+                        name.includes('james')
+                    )) ||
+                    // Google 남성 음성들
+                    (voice.name.includes('Google') && name.includes('male'))
+                );
+            });
+
+            if (maleVoices.length > 0) {
+                return maleVoices[0];
+            }
+        }
+
+        // 기본값: 첫 번째 영어 음성
+        return englishVoices.length > 0 ? englishVoices[0] : availableVoices[0];
+    }
 
     function initializeGame() {
         lives = 5;
@@ -565,12 +658,29 @@ document.addEventListener('DOMContentLoaded', () => {
             isReading = true;
             const words = currentSentence.split(' ');
 
+            // 음성 토글 (남자 -> 여자 -> 남자...)
+            voiceToggle = !voiceToggle;
+            const selectedVoice = selectVoice(voiceToggle);
+
             // 전체 문장을 자연스럽게 읽기
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
-            utterance.rate = 0.85; // 조금 더 느린 속도
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
+            utterance.voice = selectedVoice;
+            
+            // 음성에 따른 설정 조정
+            if (voiceToggle) {
+                // 여자 음성 (틴에이지 스타일)
+                utterance.rate = 0.9;   // 조금 더 빠르게
+                utterance.pitch = 1.3;  // 높은 톤
+                utterance.volume = 1.0;
+                console.log('Using female voice (teenage style):', selectedVoice.name);
+            } else {
+                // 남자 음성
+                utterance.rate = 0.8;   // 조금 더 느리게
+                utterance.pitch = 0.9;  // 낮은 톤
+                utterance.volume = 1.0;
+                console.log('Using male voice:', selectedVoice.name);
+            }
             
             currentUtterance = utterance;
 
@@ -627,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             utterance.onstart = () => {
-                console.log('TTS started');
+                console.log('TTS started with voice:', selectedVoice.name);
                 startWordHighlighting();
             };
 
@@ -690,6 +800,16 @@ document.addEventListener('DOMContentLoaded', () => {
             hideSuccessModal();
         }
     });
+
+    // 음성 로드 (페이지 로드 시)
+    if ('speechSynthesis' in window) {
+        // 음성이 로드될 때까지 기다림
+        if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.addEventListener('voiceschanged', loadVoices);
+        } else {
+            loadVoices();
+        }
+    }
 
     initializeGame();
 });
