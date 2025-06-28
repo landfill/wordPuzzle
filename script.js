@@ -755,7 +755,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             utterance.onerror = (event) => {
-                console.error('TTS error:', event);
+                // Differentiate between actual errors and expected interruptions
+                if (event.error === 'interrupted') {
+                    console.info('TTS interrupted (expected behavior)');
+                } else {
+                    console.error('TTS error:', event.error);
+                }
                 clearAllTimeouts();
                 clearWordHighlights();
                 isReading = false;
