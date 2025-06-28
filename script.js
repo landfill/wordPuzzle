@@ -515,6 +515,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const wordGroup = document.querySelector(`[data-word-index="${wordIndex}"]`);
         if (wordGroup) {
             wordGroup.classList.add('reading-highlight');
+            console.log(`Highlighting word ${wordIndex}:`, wordGroup); // 디버깅용
+        } else {
+            console.log(`Word group not found for index ${wordIndex}`); // 디버깅용
         }
     }
 
@@ -538,11 +541,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
+                console.log(`Speaking word ${currentWordIndex}: ${words[currentWordIndex]}`); // 디버깅용
                 highlightWord(currentWordIndex);
                 
                 const utterance = new SpeechSynthesisUtterance(words[currentWordIndex]);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.8; // 적당한 속도로 조정
+                utterance.rate = 1.0; // 정상 속도
                 utterance.pitch = 1.0;
                 utterance.volume = 1.0;
 
@@ -550,10 +554,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentWordIndex++;
                     setTimeout(() => {
                         speakNextWord();
-                    }, 200); // 단어 사이 200ms 간격
+                    }, 150); // 단어 사이 150ms 간격
                 };
 
                 utterance.onerror = () => {
+                    console.error('TTS error occurred');
                     clearWordHighlights();
                     isReading = false;
                 };
