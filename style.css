@@ -13,7 +13,7 @@ body {
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 15px; /* 모바일과 PC 모두 여백 통일 */
+    padding: 15px;
     padding-top: 50px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -29,18 +29,24 @@ h1 {
     display: none; 
 }
 
+/* --- 하트 아이콘 모양 및 위치 수정 --- */
 .lives-display {
     position: absolute;
-    top: 18px; /* 위치 미세 조정 */
+    top: 18px;
     left: 15px;
     margin: 0;
     gap: 5px; 
+    display: flex; /* 내부 아이템 정렬을 위해 추가 */
+}
+
+.heart-icon {
+    font-size: 0; /* (핵심) 기존 텍스트(♥) 숨기기 */
 }
 
 .heart-icon::before {
-    content: '●';
-    font-size: 1.2em;
-    color: #e53e3e;
+    content: '●'; /* 동그라미 모양으로 변경 */
+    font-size: 1.2rem; /* rem 단위로 변경하여 안정성 확보 */
+    color: #e53e3e; /* 빨간색 유지 */
     line-height: 1;
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
     transition: all 0.3s ease;
@@ -50,6 +56,7 @@ h1 {
     color: #cbd5e0;
     transform: scale(0.8);
 }
+/* ------------------------------------ */
 
 .source-display {
     display: block;
@@ -62,13 +69,13 @@ h1 {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 10px 15px;
-    margin: 0 auto 15px auto; /* 하단 여백 축소 */
+    margin: 0 auto 15px auto;
 }
 
 .problem-area {
     background-color: rgba(247, 250, 252, 0.8);
     border: 2px solid #e2e8f0;
-    padding: 15px; /* 여백 축소 */
+    padding: 15px;
     margin-bottom: 15px;
     border-radius: 15px;
     min-height: 120px;
@@ -76,7 +83,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 8px; /* 단어 그룹 사이 간격 */
+    gap: 8px;
 }
 
 .word-group {
@@ -84,7 +91,7 @@ h1 {
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 8px 12px; /* 여백 축소 */
+    padding: 8px 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     gap: 4px;
     border: 2px solid transparent;
@@ -162,14 +169,12 @@ h1 {
     transition: all 0.3s ease;
 }
 
-
-/* --- 키보드 영역 핵심 수정 부분 --- */
 .keyboard-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px; /* 행 간격 축소 */
-    padding: 10px 5px; /* 내부 여백 최적화 */
+    gap: 6px;
+    padding: 10px 5px;
     background: linear-gradient(135deg, rgba(230, 230, 250, 0.2), rgba(210, 220, 240, 0.3));
     border-radius: 15px;
     position: relative;
@@ -180,39 +185,33 @@ h1 {
 .keyboard-row {
     display: flex;
     justify-content: center;
-    gap: 4px; /* 키 사이 간격 축소 */
+    gap: 4px;
     width: 100%;
 }
 
 .key {
     background: white;
     color: #4a5568;
-    border-radius: 6px; /* 모서리를 좀 더 둥글게 */
+    border-radius: 6px;
     cursor: pointer;
     font-size: 1em;
     font-weight: 600;
     user-select: none;
     transition: all 0.1s ease;
-    
-    /* (핵심) flex를 이용한 자동 크기 조절 */
     flex: 1;
-    min-width: 0; /* flex 아이템이 줄어들 수 있도록 허용 */
-    max-width: 40px; /* PC에서 너무 커지지 않도록 제한 */
-    aspect-ratio: 1 / 1.2; /* 너비 대비 높이 비율 유지 */
-    
+    min-width: 0;
+    max-width: 40px;
+    aspect-ratio: 1 / 1.2;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    border: 1px solid #e2e8f0; /* 테두리 얇게 */
+    border: 1px solid #e2e8f0;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 .keyboard-row:last-child .key {
-    flex-grow: 1.2; /* 마지막 줄 키를 약간 더 넓게 */
+    flex-grow: 1.2;
 }
-/* -------------------------------- */
-
 
 .key:hover { background: #f7fafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
 .key:active { transform: translateY(0); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05); }
@@ -220,7 +219,7 @@ h1 {
 .key.disabled:hover { background: #a0aec0; transform: none; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05); }
 
 .blank-nav-btn {
-    background: linear-gradient(135deg, #8998e8, #764ba2); /* 색상 미세 조정 */
+    background: linear-gradient(135deg, #8998e8, #764ba2);
     color: white;
     border: none;
     border-radius: 20px;
@@ -228,8 +227,6 @@ h1 {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    
-    /* (핵심) 키보드 행의 일부로 크기 조절 */
     flex: 1;
     min-width: 0;
     max-width: 50px;
@@ -237,7 +234,6 @@ h1 {
 }
 .blank-nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
 
-/* --- 모달 CSS는 이전과 동일 --- */
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; box-sizing: border-box; }
 .modal-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
 @keyframes modalSlideIn { from { opacity: 0; transform: translateY(-50px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
