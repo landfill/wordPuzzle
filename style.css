@@ -13,7 +13,7 @@ body {
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 20px;
+    padding: 15px; /* 모바일과 PC 모두 여백 통일 */
     padding-top: 50px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -31,62 +31,65 @@ h1 {
 
 .lives-display {
     position: absolute;
-    top: 22px;
-    left: 20px;
+    top: 18px; /* 위치 미세 조정 */
+    left: 15px;
     margin: 0;
     gap: 5px; 
 }
 
-.heart-icon {
-    font-size: 1.5em;
+.heart-icon::before {
+    content: '●';
+    font-size: 1.2em;
+    color: #e53e3e;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+    transition: all 0.3s ease;
 }
 
-.heart-icon.lost {
+.heart-icon.lost::before {
     color: #cbd5e0;
     transform: scale(0.8);
 }
 
 .source-display {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: #333;
-    background: transparent;
-    border: none;
-    margin-bottom: 25px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #4a5568;
+    background: #edf2f7;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin: 0 auto 15px auto; /* 하단 여백 축소 */
 }
 
-/* --- 핵심 수정 부분 --- */
 .problem-area {
     background-color: rgba(247, 250, 252, 0.8);
     border: 2px solid #e2e8f0;
-    padding: 20px; /* 충분한 내부 여백 확보 */
+    padding: 15px; /* 여백 축소 */
     margin-bottom: 15px;
     border-radius: 15px;
     min-height: 120px;
-    
-    /* 가로 정렬 및 자동 줄바꿈 로직 복원 */
     display: flex;
-    flex-wrap: wrap; /* 아이템이 넘치면 다음 줄로 */
-    justify-content: center; /* 가로 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    gap: 10px; /* 단어 그룹(블록) 사이의 간격 */
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* 단어 그룹 사이 간격 */
 }
 
 .word-group {
-    /* (핵심) word-group이 세로로 길어지는 것을 방지하고, 내부 아이템을 가로로 정렬 */
     display: inline-flex; 
     align-items: center;
-    
     background: white;
     border-radius: 12px;
-    padding: 10px 14px;
+    padding: 8px 12px; /* 여백 축소 */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     gap: 4px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
 }
-/* --- (여기까지 핵심 수정) --- */
-
 
 .word-group:hover {
     transform: translateY(-2px);
@@ -135,42 +138,12 @@ h1 {
     position: relative;
 }
 
-.word-blank:hover {
-    border-color: #4299e1;
-    transform: scale(1.05);
-}
-
-.word-blank.active {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    border-color: #38a169;
-    color: white;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.word-blank.correct {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    border-color: #38a169;
-    color: white;
-    animation: none;
-}
-
-.word-blank.incorrect {
-    background: linear-gradient(135deg, #f56565, #e53e3e);
-    border-color: #e53e3e;
-    color: white;
-    animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
+.word-blank:hover { border-color: #4299e1; transform: scale(1.05); }
+.word-blank.active { background: linear-gradient(135deg, #48bb78, #38a169); border-color: #38a169; color: white; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.word-blank.correct { background: linear-gradient(135deg, #48bb78, #38a169); border-color: #38a169; color: white; animation: none; }
+.word-blank.incorrect { background: linear-gradient(135deg, #f56565, #e53e3e); border-color: #e53e3e; color: white; animation: shake 0.5s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
 .hint-number {
     font-size: 0.7em;
@@ -189,115 +162,85 @@ h1 {
     transition: all 0.3s ease;
 }
 
+
+/* --- 키보드 영역 핵심 수정 부분 --- */
 .keyboard-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 15px;
+    gap: 6px; /* 행 간격 축소 */
+    padding: 10px 5px; /* 내부 여백 최적화 */
     background: linear-gradient(135deg, rgba(230, 230, 250, 0.2), rgba(210, 220, 240, 0.3));
     border-radius: 15px;
     position: relative;
     box-sizing: border-box;
     border: 2px solid rgba(135, 206, 250, 0.3);
 }
+
 .keyboard-row {
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 4px; /* 키 사이 간격 축소 */
     width: 100%;
-    max-width: 100%;
-    overflow: hidden;
 }
-.keyboard-row:last-child {
-    padding: 0 50px;
-}
+
 .key {
     background: white;
     color: #4a5568;
-    padding: 12px 0;
-    border-radius: 8px;
+    border-radius: 6px; /* 모서리를 좀 더 둥글게 */
     cursor: pointer;
     font-size: 1em;
-    font-weight: 700;
+    font-weight: 600;
     user-select: none;
     transition: all 0.1s ease;
-    width: 35px;
-    text-align: center;
-    text-transform: uppercase;
-    border: 2px solid #e2e8f0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
+    
+    /* (핵심) flex를 이용한 자동 크기 조절 */
+    flex: 1;
+    min-width: 0; /* flex 아이템이 줄어들 수 있도록 허용 */
+    max-width: 40px; /* PC에서 너무 커지지 않도록 제한 */
+    aspect-ratio: 1 / 1.2; /* 너비 대비 높이 비율 유지 */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #e2e8f0; /* 테두리 얇게 */
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
-.key:hover {
-    background: #f7fafc;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+.keyboard-row:last-child .key {
+    flex-grow: 1.2; /* 마지막 줄 키를 약간 더 넓게 */
 }
-.key:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.key.disabled {
-    background: #a0aec0;
-    color: #718096;
-    cursor: not-allowed;
-    transform: none;
-    border-color: #a0aec0;
-}
-.key.disabled:hover {
-    transform: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background: #a0aec0;
-}
+/* -------------------------------- */
+
+
+.key:hover { background: #f7fafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.key:active { transform: translateY(0); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05); }
+.key.disabled { background: #a0aec0; color: #718096; cursor: not-allowed; transform: none; border-color: #a0aec0; }
+.key.disabled:hover { background: #a0aec0; transform: none; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05); }
+
 .blank-nav-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #8998e8, #764ba2); /* 색상 미세 조정 */
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 6px 12px;
     font-size: 1.1em;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    flex-shrink: 0;
+    
+    /* (핵심) 키보드 행의 일부로 크기 조절 */
+    flex: 1;
+    min-width: 0;
+    max-width: 50px;
+    padding: 8px 0;
 }
-.blank-nav-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-    padding: 20px;
-    box-sizing: border-box;
-}
-.modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 600px;
-    width: 100%;
-    animation: modalSlideIn 0.3s ease-out;
-    box-sizing: border-box;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-@keyframes modalSlideIn {
-    from { opacity: 0; transform: translateY(-50px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
+.blank-nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+
+/* --- 모달 CSS는 이전과 동일 --- */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; box-sizing: border-box; }
+.modal-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+@keyframes modalSlideIn { from { opacity: 0; transform: translateY(-50px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .modal-content h2 { color: #4a5568; margin-bottom: 25px; font-size: 1.8em; font-weight: 700; }
 .sentence-display { margin-bottom: 25px; text-align: left; }
 .original-sentence { font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 15px; padding: 18px; background: #f7fafc; border-radius: 10px; border-left: 4px solid #4299e1; line-height: 1.6; }
@@ -314,21 +257,8 @@ h1 {
 .modal-btn.secondary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4); }
 .modal-btn:active { transform: translateY(0); }
 @media (max-width: 768px) {
-    body { padding: 5px; }
-    .game-container { padding: 15px; padding-top: 50px; }
-    .lives-display { top: 18px; left: 15px; }
-    .source-display { font-size: 1.2em; margin-bottom: 20px; }
-    .problem-area { padding: 12px 8px; }
-    .word-group { padding: 8px 12px; }
-    .fixed-char-text { font-size: 1em; min-height: 25px; min-width: 16px; }
     .word-blank { width: 25px; height: 25px; font-size: 1em; line-height: 19px; }
     .hint-number { font-size: 0.6em; padding: 1px 4px; margin-top: 3px; min-width: 12px; min-height: 14px; }
-    .keyboard-row:last-child { padding: 0 30px; }
-    .key { width: 28px; padding: 10px 0; font-size: 0.9em; }
-    .blank-nav-btn { padding: 5px 10px; font-size: 1em; }
-    .modal-content h2 { font-size: 1.5em; margin-bottom: 20px; }
-    .original-sentence { font-size: 1.1em; padding: 15px; }
-    .korean-translation { font-size: 0.95em; padding: 10px; }
     .modal-buttons { flex-direction: column; align-items: center; gap: 10px; }
     .modal-btn { width: 100%; max-width: 200px; padding: 12px 20px; }
 }
