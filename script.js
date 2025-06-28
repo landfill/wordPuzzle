@@ -21,23 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let voiceToggle = false; // false: 남자 음성, true: 여자 음성
     let availableVoices = [];
 
-    // 토이 스토리 대사 문제들 - 힌트 번호 완전히 수정
+    // 토이 스토리 대사 문제들 - 빈칸을 골고루 분산
     const problems = [
         {
             sentence: "To infinity and beyond!",
             source: "Toy Story",
             translation: "무한대 그 너머로!",
             blanks: [
-                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'T', index: 0, hintNum: 1 },   // To
                 { char: 'o', index: 1, hintNum: 2 },
-                { char: 'i', index: 3, hintNum: 3 },
-                { char: 'n', index: 4, hintNum: 4 },
-                { char: 'f', index: 5, hintNum: 5 },
+                { char: 'i', index: 3, hintNum: 3 },   // infinity
+                { char: 'f', index: 5, hintNum: 4 },
                 { char: 'i', index: 6, hintNum: 3 },
-                { char: 'n', index: 7, hintNum: 4 },
-                { char: 'i', index: 8, hintNum: 3 },
+                { char: 'n', index: 7, hintNum: 5 },
                 { char: 't', index: 9, hintNum: 6 },
-                { char: 'y', index: 10, hintNum: 7 }
+                { char: 'y', index: 10, hintNum: 7 },
+                { char: 'a', index: 12, hintNum: 8 },  // and
+                { char: 'd', index: 14, hintNum: 9 },
+                { char: 'b', index: 16, hintNum: 10 }, // beyond
+                { char: 'y', index: 17, hintNum: 7 },
+                { char: 'o', index: 18, hintNum: 2 },
+                { char: 'd', index: 20, hintNum: 9 }
             ]
         },
         {
@@ -45,25 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "당신에게는 나라는 친구가 있어요.",
             blanks: [
-                { char: 'Y', index: 0, hintNum: 1 },
-                { char: 'o', index: 1, hintNum: 2 },
-                { char: 'u', index: 2, hintNum: 3 },
-                { char: 'v', index: 4, hintNum: 4 },
-                { char: 'e', index: 5, hintNum: 5 },
-                { char: 'g', index: 7, hintNum: 6 },
-                { char: 'o', index: 8, hintNum: 2 },
-                { char: 't', index: 9, hintNum: 7 },
-                { char: 'a', index: 11, hintNum: 8 },
-                { char: 'f', index: 13, hintNum: 9 },
-                { char: 'r', index: 14, hintNum: 10 },
-                { char: 'i', index: 15, hintNum: 11 },
-                { char: 'e', index: 16, hintNum: 5 },
-                { char: 'n', index: 17, hintNum: 12 },
-                { char: 'd', index: 18, hintNum: 13 },
-                { char: 'i', index: 20, hintNum: 11 },
-                { char: 'n', index: 21, hintNum: 12 },
-                { char: 'm', index: 23, hintNum: 14 },
-                { char: 'e', index: 24, hintNum: 5 }
+                { char: 'Y', index: 0, hintNum: 1 },   // You've
+                { char: 'u', index: 2, hintNum: 2 },
+                { char: 'v', index: 4, hintNum: 3 },
+                { char: 'g', index: 7, hintNum: 4 },   // got
+                { char: 't', index: 9, hintNum: 5 },
+                { char: 'a', index: 11, hintNum: 6 },  // a
+                { char: 'f', index: 13, hintNum: 7 },  // friend
+                { char: 'i', index: 15, hintNum: 8 },
+                { char: 'e', index: 16, hintNum: 9 },
+                { char: 'd', index: 18, hintNum: 10 },
+                { char: 'i', index: 20, hintNum: 8 },  // in
+                { char: 'n', index: 21, hintNum: 11 },
+                { char: 'm', index: 23, hintNum: 12 }, // me
+                { char: 'e', index: 24, hintNum: 9 }
             ]
         },
         {
@@ -71,18 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "내 부츠 안에 뱀이 있어!",
             blanks: [
-                { char: 'T', index: 0, hintNum: 1 },
-                { char: 'h', index: 1, hintNum: 2 },
-                { char: 'e', index: 2, hintNum: 3 },
-                { char: 'r', index: 3, hintNum: 4 },
-                { char: 'e', index: 4, hintNum: 3 },
-                { char: 's', index: 6, hintNum: 5 },
-                { char: 'a', index: 8, hintNum: 6 },
-                { char: 's', index: 10, hintNum: 5 },
-                { char: 'n', index: 11, hintNum: 7 },
-                { char: 'a', index: 12, hintNum: 6 },
-                { char: 'k', index: 13, hintNum: 8 },
-                { char: 'e', index: 14, hintNum: 3 }
+                { char: 'T', index: 0, hintNum: 1 },   // There's
+                { char: 'e', index: 2, hintNum: 2 },
+                { char: 'r', index: 3, hintNum: 3 },
+                { char: 's', index: 6, hintNum: 4 },
+                { char: 'a', index: 8, hintNum: 5 },   // a
+                { char: 's', index: 10, hintNum: 4 },  // snake
+                { char: 'a', index: 12, hintNum: 5 },
+                { char: 'k', index: 13, hintNum: 6 },
+                { char: 'e', index: 14, hintNum: 2 },
+                { char: 'i', index: 16, hintNum: 7 },  // in
+                { char: 'n', index: 17, hintNum: 8 },
+                { char: 'm', index: 19, hintNum: 9 },  // my
+                { char: 'b', index: 22, hintNum: 10 }, // boot
+                { char: 'o', index: 23, hintNum: 11 },
+                { char: 't', index: 25, hintNum: 12 }
             ]
         },
         {
@@ -90,18 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "나는 네스빗 부인이야!",
             blanks: [
-                { char: 'I', index: 0, hintNum: 1 },
-                { char: 'a', index: 2, hintNum: 2 },
+                { char: 'I', index: 0, hintNum: 1 },   // I
+                { char: 'a', index: 2, hintNum: 2 },   // am
                 { char: 'm', index: 3, hintNum: 3 },
-                { char: 'M', index: 5, hintNum: 4 },
-                { char: 'r', index: 6, hintNum: 5 },
-                { char: 's', index: 7, hintNum: 6 },
-                { char: 'N', index: 10, hintNum: 7 },
-                { char: 'e', index: 11, hintNum: 8 },
-                { char: 's', index: 12, hintNum: 6 },
-                { char: 'b', index: 13, hintNum: 9 },
+                { char: 'M', index: 5, hintNum: 4 },   // Mrs.
+                { char: 's', index: 7, hintNum: 5 },
+                { char: 'N', index: 10, hintNum: 6 },  // Nesbitt
+                { char: 'e', index: 11, hintNum: 7 },
+                { char: 'b', index: 13, hintNum: 8 },
                 { char: 'i', index: 14, hintNum: 1 },
-                { char: 't', index: 15, hintNum: 10 }
+                { char: 't', index: 15, hintNum: 9 },
+                { char: 't', index: 16, hintNum: 9 }
             ]
         },
         {
@@ -109,18 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "집게가 누가 갈지 누가 남을지 선택한다.",
             blanks: [
-                { char: 'T', index: 0, hintNum: 1 },
-                { char: 'h', index: 1, hintNum: 2 },
-                { char: 'e', index: 2, hintNum: 3 },
-                { char: 'c', index: 4, hintNum: 4 },
-                { char: 'l', index: 5, hintNum: 5 },
-                { char: 'a', index: 6, hintNum: 6 },
-                { char: 'w', index: 7, hintNum: 7 },
-                { char: 'c', index: 9, hintNum: 4 },
-                { char: 'h', index: 10, hintNum: 2 },
-                { char: 'o', index: 11, hintNum: 8 },
-                { char: 'o', index: 12, hintNum: 8 },
-                { char: 's', index: 13, hintNum: 9 }
+                { char: 'T', index: 0, hintNum: 1 },   // The
+                { char: 'e', index: 2, hintNum: 2 },
+                { char: 'c', index: 4, hintNum: 3 },   // claw
+                { char: 'a', index: 6, hintNum: 4 },
+                { char: 'w', index: 7, hintNum: 5 },
+                { char: 'c', index: 9, hintNum: 3 },   // chooses
+                { char: 'o', index: 11, hintNum: 6 },
+                { char: 's', index: 13, hintNum: 7 },
+                { char: 'w', index: 16, hintNum: 5 },  // who
+                { char: 'o', index: 18, hintNum: 6 },
+                { char: 'w', index: 20, hintNum: 5 },  // will
+                { char: 'l', index: 22, hintNum: 8 },
+                { char: 'g', index: 25, hintNum: 9 },  // go
+                { char: 'a', index: 28, hintNum: 4 },  // and
+                { char: 'd', index: 30, hintNum: 10 },
+                { char: 'w', index: 32, hintNum: 5 },  // who
+                { char: 'o', index: 34, hintNum: 6 },
+                { char: 'w', index: 36, hintNum: 5 },  // will
+                { char: 'l', index: 38, hintNum: 8 },
+                { char: 's', index: 40, hintNum: 7 },  // stay
+                { char: 'a', index: 42, hintNum: 4 }
             ]
         },
         {
@@ -128,18 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "하늘에 손을 뻗어라!",
             blanks: [
-                { char: 'R', index: 0, hintNum: 1 },
-                { char: 'e', index: 1, hintNum: 2 },
-                { char: 'a', index: 2, hintNum: 3 },
-                { char: 'c', index: 3, hintNum: 4 },
-                { char: 'h', index: 4, hintNum: 5 },
-                { char: 'f', index: 6, hintNum: 6 },
-                { char: 'o', index: 7, hintNum: 7 },
-                { char: 'r', index: 8, hintNum: 8 },
-                { char: 't', index: 10, hintNum: 9 },
-                { char: 'h', index: 11, hintNum: 5 },
-                { char: 'e', index: 12, hintNum: 2 },
-                { char: 's', index: 14, hintNum: 10 }
+                { char: 'R', index: 0, hintNum: 1 },   // Reach
+                { char: 'a', index: 2, hintNum: 2 },
+                { char: 'c', index: 3, hintNum: 3 },
+                { char: 'h', index: 4, hintNum: 4 },
+                { char: 'f', index: 6, hintNum: 5 },   // for
+                { char: 'r', index: 8, hintNum: 6 },
+                { char: 't', index: 10, hintNum: 7 },  // the
+                { char: 'e', index: 12, hintNum: 8 },
+                { char: 's', index: 14, hintNum: 9 },  // sky
+                { char: 'k', index: 15, hintNum: 10 },
+                { char: 'y', index: 16, hintNum: 11 }
             ]
         }
     ];
