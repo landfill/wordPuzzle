@@ -28,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "무한대 그 너머로!",
             blanks: [
-                { char: 'T', index: 0 },
-                { char: 'o', index: 1 },
-                { char: 'i', index: 3 },
-                { char: 'n', index: 4 },
-                { char: 'f', index: 5 },
-                { char: 'i', index: 6 },
-                { char: 'n', index: 7 },
-                { char: 'i', index: 8 },
-                { char: 't', index: 9 },
-                { char: 'y', index: 10 }
+                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'o', index: 1, hintNum: 2 },
+                { char: 'i', index: 3, hintNum: 3 },
+                { char: 'n', index: 4, hintNum: 4 },
+                { char: 'f', index: 5, hintNum: 5 },
+                { char: 'i', index: 6, hintNum: 3 },
+                { char: 'n', index: 7, hintNum: 4 },
+                { char: 'i', index: 8, hintNum: 3 },
+                { char: 't', index: 9, hintNum: 6 },
+                { char: 'y', index: 10, hintNum: 7 }
             ]
         },
         {
@@ -45,25 +45,25 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "당신에게는 나라는 친구가 있어요.",
             blanks: [
-                { char: 'Y', index: 0 },
-                { char: 'o', index: 1 },
-                { char: 'u', index: 2 },
-                { char: 'v', index: 5 },
-                { char: 'e', index: 6 },
-                { char: 'g', index: 8 },
-                { char: 'o', index: 9 },
-                { char: 't', index: 10 },
-                { char: 'a', index: 12 },
-                { char: 'f', index: 14 },
-                { char: 'r', index: 15 },
-                { char: 'i', index: 16 },
-                { char: 'e', index: 17 },
-                { char: 'n', index: 18 },
-                { char: 'd', index: 19 },
-                { char: 'i', index: 21 },
-                { char: 'n', index: 22 },
-                { char: 'm', index: 24 },
-                { char: 'e', index: 25 }
+                { char: 'Y', index: 0, hintNum: 1 },
+                { char: 'o', index: 1, hintNum: 2 },
+                { char: 'u', index: 2, hintNum: 3 },
+                { char: 'v', index: 5, hintNum: 4 },
+                { char: 'e', index: 6, hintNum: 5 },
+                { char: 'g', index: 8, hintNum: 6 },
+                { char: 'o', index: 9, hintNum: 2 },
+                { char: 't', index: 10, hintNum: 7 },
+                { char: 'a', index: 12, hintNum: 8 },
+                { char: 'f', index: 14, hintNum: 9 },
+                { char: 'r', index: 15, hintNum: 10 },
+                { char: 'i', index: 16, hintNum: 11 },
+                { char: 'e', index: 17, hintNum: 5 },
+                { char: 'n', index: 18, hintNum: 12 },
+                { char: 'd', index: 19, hintNum: 13 },
+                { char: 'i', index: 21, hintNum: 11 },
+                { char: 'n', index: 22, hintNum: 12 },
+                { char: 'm', index: 24, hintNum: 14 },
+                { char: 'e', index: 25, hintNum: 5 }
             ]
         },
         {
@@ -71,18 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "내 부츠 안에 뱀이 있어!",
             blanks: [
-                { char: 'T', index: 0 },
-                { char: 'h', index: 1 },
-                { char: 'e', index: 2 },
-                { char: 'r', index: 3 },
-                { char: 'e', index: 4 },
-                { char: 's', index: 6 },
-                { char: 'a', index: 8 },
-                { char: 's', index: 10 },
-                { char: 'n', index: 11 },
-                { char: 'a', index: 12 },
-                { char: 'k', index: 13 },
-                { char: 'e', index: 14 }
+                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'h', index: 1, hintNum: 2 },
+                { char: 'e', index: 2, hintNum: 3 },
+                { char: 'r', index: 3, hintNum: 4 },
+                { char: 'e', index: 4, hintNum: 3 },
+                { char: 's', index: 6, hintNum: 5 },
+                { char: 'a', index: 8, hintNum: 6 },
+                { char: 's', index: 10, hintNum: 5 },
+                { char: 'n', index: 11, hintNum: 7 },
+                { char: 'a', index: 12, hintNum: 6 },
+                { char: 'k', index: 13, hintNum: 8 },
+                { char: 'e', index: 14, hintNum: 3 }
             ]
         },
         {
@@ -90,18 +90,18 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "나는 네스빗 부인이야!",
             blanks: [
-                { char: 'I', index: 0 },
-                { char: 'a', index: 2 },
-                { char: 'm', index: 3 },
-                { char: 'M', index: 5 },
-                { char: 'r', index: 6 },
-                { char: 's', index: 7 },
-                { char: 'N', index: 10 },
-                { char: 'e', index: 11 },
-                { char: 's', index: 12 },
-                { char: 'b', index: 13 },
-                { char: 'i', index: 14 },
-                { char: 't', index: 15 }
+                { char: 'I', index: 0, hintNum: 1 },
+                { char: 'a', index: 2, hintNum: 2 },
+                { char: 'm', index: 3, hintNum: 3 },
+                { char: 'M', index: 5, hintNum: 3 },
+                { char: 'r', index: 6, hintNum: 4 },
+                { char: 's', index: 7, hintNum: 5 },
+                { char: 'N', index: 10, hintNum: 6 },
+                { char: 'e', index: 11, hintNum: 7 },
+                { char: 's', index: 12, hintNum: 5 },
+                { char: 'b', index: 13, hintNum: 8 },
+                { char: 'i', index: 14, hintNum: 1 },
+                { char: 't', index: 15, hintNum: 9 }
             ]
         },
         {
@@ -109,18 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "집게가 누가 갈지 누가 남을지 선택한다.",
             blanks: [
-                { char: 'T', index: 0 },
-                { char: 'h', index: 1 },
-                { char: 'e', index: 2 },
-                { char: 'c', index: 4 },
-                { char: 'l', index: 5 },
-                { char: 'a', index: 6 },
-                { char: 'w', index: 7 },
-                { char: 'c', index: 9 },
-                { char: 'h', index: 10 },
-                { char: 'o', index: 11 },
-                { char: 'o', index: 12 },
-                { char: 's', index: 13 }
+                { char: 'T', index: 0, hintNum: 1 },
+                { char: 'h', index: 1, hintNum: 2 },
+                { char: 'e', index: 2, hintNum: 3 },
+                { char: 'c', index: 4, hintNum: 4 },
+                { char: 'l', index: 5, hintNum: 5 },
+                { char: 'a', index: 6, hintNum: 6 },
+                { char: 'w', index: 7, hintNum: 7 },
+                { char: 'c', index: 9, hintNum: 4 },
+                { char: 'h', index: 10, hintNum: 2 },
+                { char: 'o', index: 11, hintNum: 8 },
+                { char: 'o', index: 12, hintNum: 8 },
+                { char: 's', index: 13, hintNum: 9 }
             ]
         },
         {
@@ -128,18 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
             source: "Toy Story",
             translation: "하늘에 손을 뻗어라!",
             blanks: [
-                { char: 'R', index: 0 },
-                { char: 'e', index: 1 },
-                { char: 'a', index: 2 },
-                { char: 'c', index: 3 },
-                { char: 'h', index: 4 },
-                { char: 'f', index: 6 },
-                { char: 'o', index: 7 },
-                { char: 'r', index: 8 },
-                { char: 't', index: 10 },
-                { char: 'h', index: 11 },
-                { char: 'e', index: 12 },
-                { char: 's', index: 14 }
+                { char: 'R', index: 0, hintNum: 1 },
+                { char: 'e', index: 1, hintNum: 2 },
+                { char: 'a', index: 2, hintNum: 3 },
+                { char: 'c', index: 3, hintNum: 4 },
+                { char: 'h', index: 4, hintNum: 5 },
+                { char: 'f', index: 6, hintNum: 6 },
+                { char: 'o', index: 7, hintNum: 7 },
+                { char: 'r', index: 8, hintNum: 1 },
+                { char: 't', index: 10, hintNum: 8 },
+                { char: 'h', index: 11, hintNum: 5 },
+                { char: 'e', index: 12, hintNum: 2 },
+                { char: 's', index: 14, hintNum: 9 }
             ]
         }
     ];
@@ -273,12 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
         navControls.appendChild(nextBtn);
         problemArea.appendChild(navControls);
 
-        // 같은 글자에 대해 같은 힌트 번호 할당 (수정된 로직)
-        let hintCounter = 1;
-        const uniqueChars = [...new Set(problem.blanks.map(b => b.char.toLowerCase()))];
-        uniqueChars.sort(); // 알파벳 순으로 정렬하여 일관성 있는 번호 부여
-        uniqueChars.forEach(char => {
-            charToHintNumber.set(char, hintCounter++);
+        // 미리 정의된 힌트 번호를 사용하여 charToHintNumber 맵 생성
+        problem.blanks.forEach(blank => {
+            const char = blank.char.toLowerCase();
+            if (!charToHintNumber.has(char)) {
+                charToHintNumber.set(char, blank.hintNum);
+            }
         });
 
         // Populate requiredBlankChars
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const hintSpan = document.createElement('div');
                     hintSpan.classList.add('hint-number');
-                    hintSpan.textContent = charToHintNumber.get(blankInfo.char.toLowerCase());
+                    hintSpan.textContent = blankInfo.hintNum;
 
                     charSlot.appendChild(blankSpan);
                     charSlot.appendChild(hintSpan);
