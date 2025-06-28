@@ -93,15 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 { char: 'I', index: 0, hintNum: 1 },
                 { char: 'a', index: 2, hintNum: 2 },
                 { char: 'm', index: 3, hintNum: 3 },
-                { char: 'M', index: 5, hintNum: 3 },
-                { char: 'r', index: 6, hintNum: 4 },
-                { char: 's', index: 7, hintNum: 5 },
-                { char: 'N', index: 10, hintNum: 6 },
-                { char: 'e', index: 11, hintNum: 7 },
-                { char: 's', index: 12, hintNum: 5 },
-                { char: 'b', index: 13, hintNum: 8 },
+                { char: 'M', index: 5, hintNum: 4 },
+                { char: 'r', index: 6, hintNum: 5 },
+                { char: 's', index: 7, hintNum: 6 },
+                { char: 'N', index: 10, hintNum: 7 },
+                { char: 'e', index: 11, hintNum: 8 },
+                { char: 's', index: 12, hintNum: 6 },
+                { char: 'b', index: 13, hintNum: 9 },
                 { char: 'i', index: 14, hintNum: 1 },
-                { char: 't', index: 15, hintNum: 9 }
+                { char: 't', index: 15, hintNum: 10 }
             ]
         },
         {
@@ -135,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 { char: 'h', index: 4, hintNum: 5 },
                 { char: 'f', index: 6, hintNum: 6 },
                 { char: 'o', index: 7, hintNum: 7 },
-                { char: 'r', index: 8, hintNum: 1 },
-                { char: 't', index: 10, hintNum: 8 },
+                { char: 'r', index: 8, hintNum: 8 },
+                { char: 't', index: 10, hintNum: 9 },
                 { char: 'h', index: 11, hintNum: 5 },
                 { char: 'e', index: 12, hintNum: 2 },
-                { char: 's', index: 14, hintNum: 9 }
+                { char: 's', index: 14, hintNum: 10 }
             ]
         }
     ];
@@ -273,11 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
         navControls.appendChild(nextBtn);
         problemArea.appendChild(navControls);
 
-        // 미리 정의된 힌트 번호를 사용하여 charToHintNumber 맵 생성
+        // 빈칸 글자들의 힌트 번호 맵 생성 (빈칸에만 해당)
+        const blankCharToHintMap = new Map();
         problem.blanks.forEach(blank => {
             const char = blank.char.toLowerCase();
-            if (!charToHintNumber.has(char)) {
-                charToHintNumber.set(char, blank.hintNum);
+            if (!blankCharToHintMap.has(char)) {
+                blankCharToHintMap.set(char, blank.hintNum);
             }
         });
 
@@ -286,6 +287,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const char = blank.char.toLowerCase();
             requiredBlankChars.set(char, (requiredBlankChars.get(char) || 0) + 1);
         });
+
+        // 고정 글자들 중에서 빈칸에도 나타나는 글자들 찾기
+        const sentence = problem.sentence.toLowerCase();
+        for (let i = 0; i < sentence.length; i++) {
+            const char = sentence[i];
+            if (char.match(/[a-z]/)) {
+                const isBlank = problem.blanks.some(blank => blank.index === i);
+                if (!isBlank && blankCharToHintMap.has(char)) {
+                    // 고정 글자이지만 빈칸에도 나타나는 글자
+                    charToHintNumber.set(char, blankCharToHintMap.get(char));
+                } else if (!isBlank) {
+                    // 완전히 고정된 글자 (빈칸에 나타나지 않음)
+                    usedCharsInProblem.add(char);
+                }
+            }
+        }
 
         let charIndex = 0;
         let blankCounter = 0;
@@ -335,15 +352,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         const hintSpan = document.createElement('div');
                         hintSpan.classList.add('hint-number');
                         
-                        // 빈칸 글자와 같은 글자인 경우 힌트 번호 표시
+                        // 빈칸 글자와 같은 글자인 경우에만 힌트 번호 표시
                         if (charToHintNumber.has(lowerChar)) {
                             hintSpan.textContent = charToHintNumber.get(lowerChar);
                             hintSpan.dataset.char = lowerChar;
                         } else {
-                            // 빈칸이 아닌 글자도 같은 높이 유지를 위해 투명한 힌트 추가
+                            // 빈칸이 아닌 글자는 투명한 힌트 추가 (높이 유지용)
                             hintSpan.style.visibility = 'hidden';
                             hintSpan.textContent = '0';
-                            usedCharsInProblem.add(lowerChar);
                         }
 
                         charSlot.appendChild(charSpan);
