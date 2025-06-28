@@ -208,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const wordGroup = document.createElement('div');
             wordGroup.classList.add('word-group');
             wordGroup.dataset.wordIndex = wordIndex;
+            wordGroup.dataset.wordText = word.toLowerCase().replace(/[^a-z]/g, '');
             
             let hasActiveBlank = false;
 
@@ -514,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearWordHighlights() {
         document.querySelectorAll('.word-group').forEach(group => {
-            group.classList.remove('reading-highlight');
+            group.classList.remove('reading-underline');
         });
     }
 
@@ -524,29 +525,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // 모든 단어 그룹을 확인하여 일치하는 단어 찾기
         const wordGroups = document.querySelectorAll('.word-group');
         
-        wordGroups.forEach((group, index) => {
-            // 단어 그룹에서 실제 텍스트 추출
-            const chars = [];
-            group.querySelectorAll('.char-slot').forEach(slot => {
-                const fixedChar = slot.querySelector('.fixed-char-text');
-                const blankChar = slot.querySelector('.word-blank');
-                
-                if (fixedChar) {
-                    chars.push(fixedChar.textContent.toLowerCase());
-                } else if (blankChar && blankChar.classList.contains('correct')) {
-                    chars.push(blankChar.textContent.toLowerCase());
-                } else if (blankChar) {
-                    // 빈칸이 채워지지 않은 경우 정답 문자 사용
-                    chars.push(blankChar.dataset.correctChar);
-                }
-            });
-            
-            const groupWord = chars.join('').replace(/[^a-z]/g, '');
+        // 먼저 인덱스로 시도
+        if (wordIndex < wordGroups.length) {
+            const group = wordGroups[wordIndex];
+            const groupWordText = group.dataset.wordText;
             const cleanTargetWord = targetWord.toLowerCase().replace(/[^a-z]/g, '');
             
-            if (groupWord === cleanTargetWord) {
-                group.classList.add('reading-highlight');
-                console.log(`Highlighting word: "${targetWord}" (group ${index})`);
+            if (groupWordText === cleanTargetWord) {
+                group.classList.add('reading-underline');
+                console.log(`Highlighting word by index: "${targetWord}" (group ${wordIndex})`);
+                return;
+            }
+        }
+        
+        // 인덱스로 안되면 텍스트 매칭으로 시도
+        wordGroups.forEach((group, index) => {
+            const groupWordText = group.dataset.wordText;
+            const cleanTargetWord = targetWord.toLowerCase().replace(/[^a-z]/g, '');
+            
+            if (groupWordText === cleanTargetWord) {
+                group.classList.add('reading-underline');
+                console.log(`Highlighting word by text: "${targetWord}" (group ${index})`);
                 return;
             }
         });
@@ -569,14 +568,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // 전체 문장을 자연스럽게 읽기
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
-            utterance.rate = 1.0; // 정상 속도
+            utterance.rate = 0.85; // 조금 느리게
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
             
             currentUtterance = utterance;
 
             // 단어별 하이라이트를 위한 타이밍 계산
-            const avgWordsPerSecond = 2.5; // 평균 읽기 속도 (단어/초)
+            const avgWordsPerSecond = 2.1; // 조금 느린 읽기 속도 (단어/초)
             const wordDuration = 1000 / avgWordsPerSecond; // 단어당 시간 (ms)
 
             let highlightTimer;

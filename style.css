@@ -119,6 +119,7 @@ h1 {
     margin: 5px;
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    position: relative;
 }
 
 .word-group:hover {
@@ -131,24 +132,41 @@ h1 {
     box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
 }
 
-.word-group.reading-highlight {
-    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
-    border: 3px solid #ff6b35 !important;
-    box-shadow: 0 12px 30px rgba(255, 107, 53, 0.7) !important;
-    transform: translateY(-6px) scale(1.08) !important;
-    animation: readingGlow 1.5s ease-in-out infinite;
-    z-index: 10;
+.word-group.reading-underline {
     position: relative;
+    animation: readingPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes readingGlow {
+.word-group.reading-underline::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    right: 10px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b35, #f7931e, #ffd700);
+    border-radius: 2px;
+    animation: underlineGlow 1.5s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6);
+}
+
+@keyframes readingPulse {
     0%, 100% { 
-        box-shadow: 0 12px 30px rgba(255, 107, 53, 0.7);
-        filter: brightness(1);
+        transform: translateY(-2px) scale(1);
     }
     50% { 
-        box-shadow: 0 16px 40px rgba(255, 107, 53, 0.9);
-        filter: brightness(1.1);
+        transform: translateY(-4px) scale(1.02);
+    }
+}
+
+@keyframes underlineGlow {
+    0%, 100% { 
+        opacity: 0.8;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6);
+    }
+    50% { 
+        opacity: 1;
+        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.9);
     }
 }
 
@@ -177,13 +195,6 @@ h1 {
     justify-content: center;
     min-width: 25px;
     transition: all 0.3s ease;
-}
-
-.word-group.reading-highlight .fixed-char-text {
-    color: white !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8) !important;
-    font-weight: 900 !important;
-    font-size: 1.5em !important;
 }
 
 .word-blank {
@@ -226,16 +237,6 @@ h1 {
     animation: none;
 }
 
-.word-group.reading-highlight .word-blank.correct {
-    background: linear-gradient(135deg, #68d391, #48bb78) !important;
-    border-color: #38a169 !important;
-    box-shadow: 0 0 25px rgba(72, 187, 120, 1) !important;
-    color: white !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7) !important;
-    font-size: 1.5em !important;
-    font-weight: 900 !important;
-}
-
 .word-blank.incorrect {
     background: linear-gradient(135deg, #f56565, #e53e3e);
     border-color: #e53e3e;
@@ -264,15 +265,6 @@ h1 {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-}
-
-.word-group.reading-highlight .hint-number {
-    background: rgba(255, 255, 255, 0.95) !important;
-    color: #1a202c !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
-    font-weight: 900 !important;
-    border: 2px solid rgba(255, 255, 255, 0.9) !important;
-    font-size: 0.9em !important;
 }
 
 .keyboard-area {
