@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let charToHintNumber = new Map();
     let currentSentence = '';
     let isReading = false;
-    let browserVoices = [];
+    let browserVoices = []; // For fallback
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 3. TTS & Highlight Functions ---
 
+    /**
+     * 기본 브라우저 TTS를 사용하는 백업(Fallback) 함수
+     */
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
@@ -50,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환
+     */
     async function speakSentence() {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
@@ -84,12 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
-            
+
             if (!audioContent || !timepoints || timepoints.length === 0) {
                 throw new Error("Invalid data (no audio or timepoints) received from TTS server.");
             }
-            
-            // Filter and sort timepoints just in case they are out of order
+
             const wordTimepoints = timepoints
                 .filter(t => !isNaN(parseInt(t.markName, 10)))
                 .sort((a, b) => parseInt(a.markName, 10) - parseInt(b.markName, 10));
