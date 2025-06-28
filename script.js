@@ -489,7 +489,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const sourceEl = document.querySelector('.source');
         const translationEl = document.querySelector('.korean-translation');
         
-        if (originalSentenceEl) originalSentenceEl.textContent = problem.sentence;
+        // 모달 내 문장을 단어별로 분할하여 표시
+        if (originalSentenceEl) {
+            createHighlightableSentence(originalSentenceEl, problem.sentence);
+        }
         if (sourceEl) sourceEl.textContent = `출처: ${problem.source}`;
         if (translationEl) translationEl.textContent = problem.translation;
         
@@ -499,6 +502,25 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.error('Success modal not found!'); // 디버깅용
         }
+    }
+
+    function createHighlightableSentence(container, sentence) {
+        container.innerHTML = '';
+        const words = sentence.split(' ');
+        
+        words.forEach((word, index) => {
+            const wordSpan = document.createElement('span');
+            wordSpan.classList.add('modal-word');
+            wordSpan.dataset.wordIndex = index;
+            wordSpan.textContent = word;
+            
+            container.appendChild(wordSpan);
+            
+            // 마지막 단어가 아니면 공백 추가
+            if (index < words.length - 1) {
+                container.appendChild(document.createTextNode(' '));
+            }
+        });
     }
 
     function hideSuccessModal() {
@@ -514,41 +536,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearWordHighlights() {
-        document.querySelectorAll('.word-group').forEach(group => {
-            group.classList.remove('reading-underline');
+        // 모달 내 하이라이트 제거
+        document.querySelectorAll('.modal-word').forEach(word => {
+            word.classList.remove('reading-highlight');
         });
     }
 
-    function highlightWordByText(targetWord, wordIndex) {
+    function highlightModalWord(wordIndex) {
         clearWordHighlights();
         
-        // 모든 단어 그룹을 확인하여 일치하는 단어 찾기
-        const wordGroups = document.querySelectorAll('.word-group');
-        
-        // 먼저 인덱스로 시도
-        if (wordIndex < wordGroups.length) {
-            const group = wordGroups[wordIndex];
-            const groupWordText = group.dataset.wordText;
-            const cleanTargetWord = targetWord.toLowerCase().replace(/[^a-z]/g, '');
-            
-            if (groupWordText === cleanTargetWord) {
-                group.classList.add('reading-underline');
-                console.log(`Highlighting word by index: "${targetWord}" (group ${wordIndex})`);
-                return;
-            }
+        const modalWords = document.querySelectorAll('.modal-word');
+        if (wordIndex < modalWords.length) {
+            modalWords[wordIndex].classList.add('reading-highlight');
+            console.log(`Highlighting modal word ${wordIndex}: "${modalWords[wordIndex].textContent}"`);
         }
-        
-        // 인덱스로 안되면 텍스트 매칭으로 시도
-        wordGroups.forEach((group, index) => {
-            const groupWordText = group.dataset.wordText;
-            const cleanTargetWord = targetWord.toLowerCase().replace(/[^a-z]/g, '');
-            
-            if (groupWordText === cleanTargetWord) {
-                group.classList.add('reading-underline');
-                console.log(`Highlighting word by text: "${targetWord}" (group ${index})`);
-                return;
-            }
-        });
     }
 
     function speakSentence() {
@@ -561,12 +562,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if ('speechSynthesis' in window) {
-            // --- 모달 창을 잠시 숨기기 ---
-            const successModal = document.getElementById('success-modal');
-            if (successModal) {
-                successModal.style.display = 'none';
-            }
-
             isReading = true;
             const words = currentSentence.split(' ');
             let currentWordIndex = 0;
@@ -574,14 +569,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // 전체 문장을 자연스럽게 읽기
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
-            utterance.rate = 1.0; // 정상 속도
+            utterance.rate = 0.9; // 약간 느린 속도
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
             
             currentUtterance = utterance;
 
             // 단어별 하이라이트를 위한 타이밍 계산
-            const avgWordsPerSecond = 2.2; // 조금 느린 읽기 속도 (단어/초)
+            const avgWordsPerSecond = 2.0; // 읽기 속도 (단어/초)
             const wordDuration = 1000 / avgWordsPerSecond; // 단어당 시간 (ms)
 
             let highlightTimer;
@@ -589,9 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
             function startWordHighlighting() {
                 function highlightNextWord() {
                     if (currentWordIndex < words.length && isReading) {
-                        const word = words[currentWordIndex];
-                        console.log(`Highlighting word ${currentWordIndex}: "${word}"`);
-                        highlightWordByText(word, currentWordIndex);
+                        highlightModalWord(currentWordIndex);
                         currentWordIndex++;
                         
                         highlightTimer = setTimeout(highlightNextWord, wordDuration);
@@ -615,10 +608,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (highlightTimer) {
                     clearTimeout(highlightTimer);
                 }
-                // --- TTS가 끝나면 모달을 다시 보여주기 ---
-                if (successModal) {
-                    successModal.style.display = 'flex';
-                }
             };
 
             utterance.onerror = (event) => {
@@ -628,10 +617,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUtterance = null;
                 if (highlightTimer) {
                     clearTimeout(highlightTimer);
-                }
-                // --- 에러가 발생해도 모달을 다시 보여주기 ---
-                if (successModal) {
-                    successModal.style.display = 'flex';
                 }
             };
 
