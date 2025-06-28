@@ -11,31 +11,27 @@ body {
     box-sizing: border-box;
 
     /* --- NEW BACKGROUND --- */
-    /* Fallback color for when the image is loading or fails */
-    background-color: #6a85b6; 
-    /* High-quality, clean background image */
-    background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000');
+    background-color: #f0f2f5; /* Fallback color */
+    /* A soft, clean, and bright gradient background image */
+    background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=2000');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* This creates a nice effect where the background stays fixed on scroll */
     background-attachment: fixed; 
 }
 
 .game-container {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly adjusted for the new background */
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
     max-width: 800px;
-    /* This "frosted glass" effect is key for readability over the background image */
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px); /* Frosted glass effect */
     box-sizing: border-box;
 }
 
-/* --- (The rest of the CSS is unchanged) --- */
 h1 {
     color: #4a5568;
     margin-bottom: 20px;
@@ -94,49 +90,13 @@ h1 {
     box-sizing: border-box;
 }
 
-.navigation-controls {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 10px;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.nav-button {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    font-size: 1.3em;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-    transition: all 0.2s ease;
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4);
-}
-
-.nav-button:active {
-    transform: scale(0.95);
-}
+/* REMOVED .navigation-controls and .nav-button styles */
 
 .word-group {
     background: white;
     border-radius: 12px;
     padding: 12px 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -149,7 +109,7 @@ h1 {
 
 .word-group:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .word-group.has-active-blank {
@@ -255,7 +215,7 @@ h1 {
     align-items: center;
     gap: 8px;
     padding: 15px;
-    background: linear-gradient(135deg, rgba(135, 206, 250, 0.2), rgba(173, 216, 230, 0.3));
+    background: linear-gradient(135deg, rgba(230, 230, 250, 0.2), rgba(210, 220, 240, 0.3));
     border-radius: 15px;
     position: relative;
     box-sizing: border-box;
@@ -490,180 +450,41 @@ h1 {
     transform: translateY(0);
 }
 
-/* 모바일 반응형 디자인 */
+/* Responsive Styles */
 @media (max-width: 768px) {
-    body {
-        padding: 5px;
-    }
-    
-    .game-container {
-        padding: 15px;
-        width: 100%;
-        max-width: none;
-        margin: 0;
-    }
-    
-    h1 {
-        font-size: 1.6em;
-        margin-bottom: 15px;
-    }
-    
-    .lives-display {
-        font-size: 1.1em;
-        margin-bottom: 12px;
-        gap: 6px;
-    }
-    
-    .heart-icon {
-        font-size: 1.8em;
-    }
-    
-    .source-display {
-        font-size: 0.7em;
-        padding: 5px 10px;
-        margin-bottom: 12px;
-    }
-    
-    .problem-area {
-        padding: 15px 10px;
-        gap: 8px;
-        min-height: 120px;
-    }
-    
-    .word-group {
-        padding: 8px 12px;
-        margin: 2px;
-        gap: 4px;
-    }
-    
-    .nav-button {
-        width: 35px;
-        height: 35px;
-        font-size: 1.1em;
-    }
-    
-    .fixed-char-text {
-        font-size: 1em;
-        min-height: 25px;
-        min-width: 18px;
-    }
-    
-    .word-blank {
-        width: 25px;
-        height: 25px;
-        font-size: 1em;
-        line-height: 19px;
-    }
-    
-    .hint-number {
-        font-size: 0.6em;
-        padding: 1px 4px;
-        margin-top: 3px;
-        min-width: 12px;
-        min-height: 14px;
-    }
-    
-    .keyboard-area {
-        padding: 12px 8px;
-        gap: 6px;
-    }
-    
-    .keyboard-row {
-        gap: 4px;
-    }
-    
-    .keyboard-row:last-child {
-        padding: 0 30px;
-    }
-    
-    .key {
-        width: 28px;
-        padding: 10px 0;
-        font-size: 0.9em;
-    }
-    
-    .blank-nav-btn {
-        padding: 5px 10px;
-        font-size: 1em;
-    }
-    
-    .modal {
-        padding: 10px;
-    }
-    
-    .modal-content {
-        padding: 20px 15px;
-        width: 100%;
-        max-width: none;
-    }
-    
-    .modal-content h2 {
-        font-size: 1.5em;
-        margin-bottom: 20px;
-    }
-    
-    .original-sentence {
-        font-size: 1.1em;
-        padding: 15px;
-    }
-    
-    .korean-translation {
-        font-size: 0.95em;
-        padding: 10px;
-    }
-    
-    .modal-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .modal-btn {
-        width: 100%;
-        max-width: 200px;
-        padding: 12px 20px;
-    }
+    body { padding: 5px; }
+    .game-container { padding: 15px; width: 100%; max-width: none; margin: 0; }
+    h1 { font-size: 1.6em; margin-bottom: 15px; }
+    .lives-display { font-size: 1.1em; margin-bottom: 12px; gap: 6px; }
+    .heart-icon { font-size: 1.8em; }
+    .source-display { font-size: 0.7em; padding: 5px 10px; margin-bottom: 12px; }
+    .problem-area { padding: 15px 10px; gap: 8px; min-height: 120px; }
+    .word-group { padding: 8px 12px; margin: 2px; gap: 4px; }
+    .fixed-char-text { font-size: 1em; min-height: 25px; min-width: 18px; }
+    .word-blank { width: 25px; height: 25px; font-size: 1em; line-height: 19px; }
+    .hint-number { font-size: 0.6em; padding: 1px 4px; margin-top: 3px; min-width: 12px; min-height: 14px; }
+    .keyboard-area { padding: 12px 8px; gap: 6px; }
+    .keyboard-row { gap: 4px; }
+    .keyboard-row:last-child { padding: 0 30px; }
+    .key { width: 28px; padding: 10px 0; font-size: 0.9em; }
+    .blank-nav-btn { padding: 5px 10px; font-size: 1em; }
+    .modal { padding: 10px; }
+    .modal-content { padding: 20px 15px; width: 100%; max-width: none; }
+    .modal-content h2 { font-size: 1.5em; margin-bottom: 20px; }
+    .original-sentence { font-size: 1.1em; padding: 15px; }
+    .korean-translation { font-size: 0.95em; padding: 10px; }
+    .modal-buttons { flex-direction: column; align-items: center; gap: 10px; }
+    .modal-btn { width: 100%; max-width: 200px; padding: 12px 20px; }
 }
-
-/* 매우 작은 화면 (320px 이하) */
 @media (max-width: 320px) {
-    .game-container {
-        padding: 10px;
-    }
-    
-    .keyboard-row:last-child {
-        padding: 0 20px;
-    }
-    
-    .key {
-        width: 24px;
-        font-size: 0.8em;
-    }
-    
-    .blank-nav-btn {
-        padding: 4px 8px;
-        font-size: 0.9em;
-    }
+    .game-container { padding: 10px; }
+    .keyboard-row:last-child { padding: 0 20px; }
+    .key { width: 24px; font-size: 0.8em; }
+    .blank-nav-btn { padding: 4px 8px; font-size: 0.9em; }
 }
-
-/* 가로 모드 최적화 */
 @media (max-height: 600px) and (orientation: landscape) {
-    .game-container {
-        padding: 10px;
-    }
-    
-    .problem-area {
-        min-height: 80px;
-        padding: 10px;
-    }
-    
-    .modal-content {
-        max-height: 85vh;
-        padding: 15px;
-    }
-    
-    .modal-content h2 {
-        font-size: 1.4em;
-        margin-bottom: 15px;
-    }
+    .game-container { padding: 10px; }
+    .problem-area { min-height: 80px; padding: 10px; }
+    .modal-content { max-height: 85vh; padding: 15px; }
+    .modal-content h2 { font-size: 1.4em; margin-bottom: 15px; }
 }
