@@ -50,8 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
             speechSynthesis.speak(utterance);
-        } else {
-            alert("Your browser does not support the fallback Text-to-Speech feature.");
         }
     }
 
@@ -61,17 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
     async function speakSentence() {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
-            if (existingAudio) existingAudio.pause(); // onpause/onended 핸들러가 나머지를 정리
-            speechSynthesis.cancel(); // 브라우저 TTS도 중지
-            isReading = false;
-            listenBtn.classList.remove('disabled');
-            clearWordHighlights();
+            if (existingAudio) {
+                existingAudio.pause(); // onpause/onended 핸들러가 나머지를 정리합니다.
+            }
+            speechSynthesis.cancel();
             return;
         }
 
         isReading = true;
         listenBtn.classList.add('disabled');
-        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' }; // 고품질 남성 목소리
+        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' };
 
         try {
             // 1. Cloudflare 중계 서버에 AI 음성 요청
@@ -110,11 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const audio = new Audio(audioUrl);
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
-            audio.play();
 
-            let highlightInterval;
             const cleanup = () => {
-                clearInterval(highlightInterval);
+                audio.removeEventListener('timeupdate', timeUpdateHandler);
                 isReading = false;
                 clearWordHighlights();
                 listenBtn.classList.remove('disabled');
@@ -125,20 +120,19 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             let wordIndex = 0;
-            highlightInterval = setInterval(() => {
-                if (audio.paused || audio.ended) {
-                    cleanup();
-                    return;
-                }
+            const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                if (wordIndex < timepoints.length && currentTime >= timepoints[wordIndex].timeSeconds) {
+                while (wordIndex < timepoints.length && currentTime >= timepoints[wordIndex].timeSeconds) {
                     highlightModalWord(wordIndex);
                     wordIndex++;
                 }
-            }, 50);
+            };
 
-            audio.onended = cleanup;
-            audio.onpause = cleanup;
+            audio.addEventListener('timeupdate', timeUpdateHandler);
+            audio.addEventListener('ended', cleanup);
+            audio.addEventListener('pause', cleanup);
+
+            audio.play();
 
         } catch (error) {
             console.error('Could not use Google TTS. Reason:', error.message);
@@ -157,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentProblem = contentGenerator.generateRandomProblem();
         currentSentence = currentProblem.sentence;
         
-        // Reset state for the new game
         activeBlankIndex = -1;
         problemBlanks = [];
         usedCharsInProblem.clear();
@@ -165,16 +158,19 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
         
-        // Stop any ongoing TTS from the previous game
         if (isReading) {
             const audio = document.getElementById('tts-audio');
-            if (audio) audio.pause();
+            if (audio) {
+                audio.pause(); // onpause/onended 이벤트가 cleanup을 처리합니다.
+            }
             speechSynthesis.cancel();
         }
 
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
-        if (keyboardArea.childElementCount === 0) createKeyboard();
+        if (keyboardArea.childElementCount === 0) {
+            createKeyboard();
+        }
         updateKeyboardState();
         updateHintVisibility();
     }
@@ -204,7 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateLivesDisplay();
             setTimeout(() => {
                 blank.classList.remove('incorrect');
-                if (lives <= 0) gameOverModal.style.display = 'flex';
+                if (lives <= 0) {
+                    gameOverModal.style.display = 'flex';
+                }
             }, 500);
         }
     }
@@ -242,11 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function highlightModalWord(idx) {
         clearWordHighlights();
         const wordEl = document.querySelectorAll('.modal-word')[idx];
-        if (wordEl) wordEl.classList.add('reading-highlight');
+        if (wordEl) {
+            wordEl.classList.add('reading-highlight');
+        }
     }
 
     function clearWordHighlights() {
-        document.querySelectorAll('.modal-word.reading-highlight').forEach(w => w.classList.remove('reading-highlight'));
+        document.querySelectorAll('.modal-word.reading-highlight').forEach(w => {
+            w.classList.remove('reading-highlight');
+        });
     }
 
     function loadProblem(problem) {
@@ -256,7 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const blankCharToHintMap = new Map();
         problem.blanks.forEach(b => {
             const c = b.char.toLowerCase();
-            if (!blankCharToHintMap.has(c)) blankCharToHintMap.set(c, b.hintNum);
+            if (!blankCharToHintMap.has(c)) {
+                blankCharToHintMap.set(c, b.hintNum);
+            }
             requiredBlankChars.set(c, (requiredBlankChars.get(c) || 0) + 1);
         });
 
@@ -271,12 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        let charIndex = 0, blankCounter = 0;
+        let charIndex = 0;
+        let blankCounter = 0;
         words.forEach(word => {
             const group = document.createElement('div');
             group.className = 'word-group';
             for (let i = 0; i < word.length; i++) {
-                const char = word[i], curIdx = charIndex + i;
+                const char = word[i];
+                const curIdx = charIndex + i;
                 const slot = document.createElement('div');
                 slot.className = 'char-slot';
                 const bInfo = problem.blanks.find(b => b.index === curIdx);
@@ -292,7 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     slot.append(bSpan, hSpan);
                     problemBlanks.push(bSpan);
                 } else {
-                    const cSpan = document.createElement('div'), hSpan = document.createElement('div');
+                    const cSpan = document.createElement('div');
+                    const hSpan = document.createElement('div');
                     hSpan.className = 'hint-number';
                     cSpan.className = 'fixed-char-text';
                     if (char.match(/[a-zA-Z]/)) {
@@ -316,12 +323,18 @@ document.addEventListener('DOMContentLoaded', () => {
             charIndex += word.length + 1;
         });
 
-        if (problemBlanks.length > 0) setActiveBlank(0);
+        if (problemBlanks.length > 0) {
+            setActiveBlank(0);
+        }
     }
     
-    function updateSourceDisplay(p) { sourceDisplay.textContent = `${p.source} (${p.category})`; }
+    function updateSourceDisplay(p) {
+        sourceDisplay.textContent = `${p.source} (${p.category})`;
+    }
     
-    function updateLivesDisplay() { livesDisplay.innerHTML = Array(5).fill(0).map((_, i) => `<span class="heart-icon ${i >= lives ? 'lost' : ''}">♥</span>`).join(''); }
+    function updateLivesDisplay() {
+        livesDisplay.innerHTML = Array(5).fill(0).map((_, i) => `<span class="heart-icon ${i >= lives ? 'lost' : ''}">♥</span>`).join('');
+    }
     
     function navigateBlank(dir) {
         if (problemBlanks.length === 0) return;
@@ -376,7 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
         keyboardLayout.flat().forEach(k => {
             const el = keyboardArea.querySelector(`[data-key="${k}"]`);
             if (!el) return;
-            const req = requiredBlankChars.get(k) || 0, fill = correctlyFilledBlankChars.get(k) || 0;
+            const req = requiredBlankChars.get(k) || 0;
+            const fill = correctlyFilledBlankChars.get(k) || 0;
             const dis = usedCharsInProblem.has(k) || (req > 0 && fill >= req);
             el.classList.toggle('disabled', dis);
             el.style.pointerEvents = dis ? 'none' : 'auto';
@@ -385,7 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function updateHintVisibility() {
         document.querySelectorAll('.hint-number[data-char]').forEach(s => {
-            const c = s.dataset.char, req = requiredBlankChars.get(c) || 0, fill = correctlyFilledBlankChars.get(c) || 0;
+            const c = s.dataset.char;
+            const req = requiredBlankChars.get(c) || 0;
+            const fill = correctlyFilledBlankChars.get(c) || 0;
             s.style.visibility = fill >= req ? 'hidden' : 'visible';
         });
     }
