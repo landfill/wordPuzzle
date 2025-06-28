@@ -2,7 +2,7 @@ import ContentGenerator from './content-generator.js';
 import CONTENT_DATABASE from './content-database.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
+    // --- 1. DOM Elements ---
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
@@ -13,60 +13,98 @@ document.addEventListener('DOMContentLoaded', () => {
     const listenBtn = document.getElementById('listen-btn');
     const retryBtn = document.getElementById('retry-btn');
 
-    // --- Game & TTS State ---
-    let lives = 5, currentProblem, activeBlankIndex = -1, problemBlanks = [], usedCharsInProblem = new Set(), requiredBlankChars = new Map(), correctlyFilledBlankChars = new Map(), charToHintNumber = new Map(), currentSentence = '', isReading = false;
-    let browserVoices = [];
+    // --- 2. Game State & Configuration ---
+    let lives = 5;
+    let currentProblem;
+    let activeBlankIndex = -1;
+    let problemBlanks = [];
+    let usedCharsInProblem = new Set();
+    let requiredBlankChars = new Map();
+    let correctlyFilledBlankChars = new Map();
+    let charToHintNumber = new Map();
+    let currentSentence = '';
+    let isReading = false;
+    let browserVoices = []; // For fallback
 
-    // --- Content & Keyboard Layout ---
     const contentGenerator = new ContentGenerator();
-    Object.keys(CONTENT_DATABASE).forEach(cat => { Object.keys(CONTENT_DATABASE[cat]).forEach(src => contentGenerator.addContent(cat, src, CONTENT_DATABASE[cat][src])); });
-    const keyboardLayout = [ ['q','w','e','r','t','y','u','i','o','p'], ['a','s','d','f','g','h','j','k','l'], ['z','x','c','v','b','n','m'] ];
+    Object.keys(CONTENT_DATABASE).forEach(cat => {
+        Object.keys(CONTENT_DATABASE[cat]).forEach(src => {
+            contentGenerator.addContent(cat, src, CONTENT_DATABASE[cat][src]);
+        });
+    });
 
-    // --- TTS & Highlight Functions (REVISED AND FIXED) ---
+    const keyboardLayout = [
+        ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+        ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+    ];
 
+    // --- 3. TTS & Highlight Functions ---
+
+    /**
+     * 기본 브라우저 TTS를 사용하는 백업(Fallback) 함수
+     */
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
             speechSynthesis.speak(utterance);
+        } else {
+            alert("Your browser does not support the fallback Text-to-Speech feature.");
         }
     }
 
+    /**
+     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환
+     */
     async function speakSentence() {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
-            if (existingAudio) existingAudio.pause();
-            speechSynthesis.cancel();
-            return; // onpause, onended 이벤트 핸들러가 나머지를 처리합니다.
+            if (existingAudio) existingAudio.pause(); // onpause/onended 핸들러가 나머지를 정리
+            speechSynthesis.cancel(); // 브라우저 TTS도 중지
+            isReading = false;
+            listenBtn.classList.remove('disabled');
+            clearWordHighlights();
+            return;
         }
 
         isReading = true;
         listenBtn.classList.add('disabled');
-        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' };
+        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' }; // 고품질 남성 목소리
 
         try {
+            // 1. Cloudflare 중계 서버에 AI 음성 요청
             const response = await fetch('/google-tts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: currentSentence, voice: voiceOptions, pitch: 1.0, speakingRate: 1.0 }),
+                body: JSON.stringify({
+                    text: currentSentence,
+                    voice: voiceOptions,
+                    pitch: 1.0,
+                    speakingRate: 1.0,
+                }),
             });
 
+            // 2. 응답 확인 (스위치가 꺼져 있는지?)
             if (response.status === 403) {
                 speakWithBrowserTTS();
                 isReading = false;
                 listenBtn.classList.remove('disabled');
                 return;
             }
-            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Server responded with ${response.status}`);
+            }
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
-
             if (!audioContent || !timepoints) {
-                throw new Error("Received invalid data from TTS server.");
+                throw new Error("Invalid data received from TTS server.");
             }
 
+            // 3. AI 목소리(mp3) 재생 및 하이라이트
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
@@ -88,8 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let wordIndex = 0;
             highlightInterval = setInterval(() => {
-                if (!isReading || audio.paused) {
-                    clearInterval(highlightInterval);
+                if (audio.paused || audio.ended) {
+                    cleanup();
                     return;
                 }
                 const currentTime = audio.currentTime;
@@ -103,31 +141,37 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.onpause = cleanup;
 
         } catch (error) {
-            console.error('Could not use Google TTS, falling back to browser default.', error);
+            console.error('Could not use Google TTS. Reason:', error.message);
+            alert(`AI 음성 재생에 실패했습니다: ${error.message}\n기본 음성으로 대체합니다.`);
             speakWithBrowserTTS();
             isReading = false;
             listenBtn.classList.remove('disabled');
         }
     }
     
-    // --- Core Game Logic ---
+    // --- 4. Core Game Logic ---
     
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
         currentProblem = contentGenerator.generateRandomProblem();
         currentSentence = currentProblem.sentence;
+        
+        // Reset state for the new game
         activeBlankIndex = -1;
         problemBlanks = [];
         usedCharsInProblem.clear();
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
+        
+        // Stop any ongoing TTS from the previous game
         if (isReading) {
             const audio = document.getElementById('tts-audio');
-            if (audio) audio.pause(); // onpause 이벤트가 cleanup을 처리합니다.
+            if (audio) audio.pause();
             speechSynthesis.cancel();
         }
+
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
         if (keyboardArea.childElementCount === 0) createKeyboard();
@@ -171,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- UI Update & Helper Functions ---
+    // --- 5. UI Update & Helper Functions ---
 
     function showSuccessModal() {
         const { sentence, source, translation, category } = currentProblem;
@@ -346,10 +390,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Event Listeners & Initialization ---
+    // --- 6. Event Listeners & Initialization ---
 
-    newQuizBtn.addEventListener('click', () => { successModal.style.display = 'none'; initializeGame(); });
-    retryBtn.addEventListener('click', () => { gameOverModal.style.display = 'none'; initializeGame(); });
+    newQuizBtn.addEventListener('click', () => {
+        successModal.style.display = 'none';
+        initializeGame();
+    });
+
+    retryBtn.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
+        initializeGame();
+    });
+
     listenBtn.addEventListener('click', speakSentence);
 
     document.addEventListener('keydown', (e) => {
@@ -363,8 +415,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Load browser voices for fallback
     if ('speechSynthesis' in window) {
-        const loadBrowserVoices = () => { browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-')); };
+        const loadBrowserVoices = () => {
+            browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
+        };
         if (speechSynthesis.getVoices().length === 0) {
             speechSynthesis.onvoiceschanged = loadBrowserVoices;
         } else {

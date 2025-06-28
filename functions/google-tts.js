@@ -1,46 +1,59 @@
-// functions/google-tts.js (스위치 기능이 추가된 최종 버전)
+// functions/google-tts.js (에러 처리 강화 최종 버전)
 
 export async function onRequest(context) {
   const { request, env } = context;
 
-  // 1. 스위치 확인: Cloudflare에 설정된 환경 변수 값을 확인합니다.
-  const useGoogleTTS = env.ENABLE_GOOGLE_TTS === 'true';
-
-  if (!useGoogleTTS) {
-    // 스위치가 꺼져 있으면, "기본 TTS를 사용하라"는 특별한 응답을 보냅니다.
-    return new Response(JSON.stringify({ 
-      fallback: true, 
-      message: 'Google TTS is disabled. Use browser default TTS.' 
-    }), {
-      status: 403, // 403 Forbidden: 접근 금지 상태 코드를 사용
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  // --- 아래는 기존과 동일한 AI 음성 생성 로직 ---
-  
+  // 1. POST 요청이 아니면 거부
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
+  // 2. AI 음성 사용 스위치가 꺼져 있으면, 클라이언트에 알려주고 중단
+  if (env.ENABLE_GOOGLE_TTS !== 'true') {
+    return new Response(JSON.stringify({ 
+      fallback: true, 
+      message: 'Google TTS is disabled via environment variable.' 
+    }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+  }
+
   try {
-    const { text, voice, pitch, speakingRate } = await request.json();
+    // 3. API 키가 Cloudflare에 설정되어 있는지 확인
     const apiKey = env.GOOGLE_TTS_API_KEY;
-
-    if (!apiKey) throw new Error("API key is not configured.");
+    if (!apiKey) {
+      // API 키가 없으면 에러를 발생시켜 클라이언트에 알림
+      throw new Error("CRITICAL: GOOGLE_TTS_API_KEY environment variable is not set in Cloudflare.");
+    }
     
+    const { text, voice, pitch, speakingRate } = await request.json();
     const ttsUrl = `https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=${apiKey}`;
-    const requestBody = { /* ... 기존과 동일 ... */ };
 
-    const ttsResponse = await fetch(ttsUrl, { /* ... 기존과 동일 ... */ });
+    const requestBody = {
+      input: { text: text },
+      voice: { languageCode: voice.languageCode, name: voice.name },
+      audioConfig: { audioEncoding: 'MP3', pitch: pitch, speakingRate: speakingRate },
+      enableTimePointing: ['SSML_MARK'],
+    };
 
-    if (!ttsResponse.ok) throw new Error(await ttsResponse.text());
+    // 4. Google TTS API에 요청
+    const ttsResponse = await fetch(ttsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!ttsResponse.ok) {
+      const errorData = await ttsResponse.json();
+      console.error('Google TTS API returned an error:', errorData);
+      throw new Error('Google TTS API request failed.');
+    }
 
     const data = await ttsResponse.json();
+    
+    // 5. 성공 시 오디오 데이터와 시간 정보 반환
     return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
 
   } catch (error) {
-    console.error('Cloudflare Function error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error.' }), { status: 500 });
+    console.error('Cloudflare Function Error:', error.message);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
