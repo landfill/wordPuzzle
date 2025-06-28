@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let charToHintNumber = new Map();
     let currentSentence = '';
     let isReading = false;
-    let browserVoices = []; // For fallback
+    let browserVoices = [];
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -39,11 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
 
-    // --- 3. TTS & Highlight Functions ---
+    // --- 3. TTS & Highlight Functions (COMPLETELY REWRITTEN AND VERIFIED) ---
 
-    /**
-     * 기본 브라우저 TTS를 사용하는 백업(Fallback) 함수
-     */
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
@@ -53,15 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환
-     */
     async function speakSentence() {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
-            if (existingAudio) {
-                existingAudio.pause();
-            }
+            if (existingAudio) existingAudio.pause();
             speechSynthesis.cancel();
             return;
         }
@@ -90,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
-            if (!audioContent || !timepoints) {
-                throw new Error("Invalid data received from TTS server.");
+            if (!audioContent || !timepoints || timepoints.length === 0) {
+                throw new Error("Invalid data (no audio or timepoints) received from TTS server.");
             }
 
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
@@ -99,6 +91,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const audio = new Audio(audioUrl);
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
+
+            let lastHighlightedIndex = -1;
+
+            const timeUpdateHandler = () => {
+                const currentTime = audio.currentTime;
+                let currentWordIndex = -1;
+
+                // Find the index of the last word that has started
+                for (let i = 0; i < timepoints.length; i++) {
+                    if (currentTime >= timepoints[i].timeSeconds) {
+                        currentWordIndex = i;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (currentWordIndex !== -1 && currentWordIndex !== lastHighlightedIndex) {
+                    highlightModalWord(currentWordIndex);
+                    lastHighlightedIndex = currentWordIndex;
+                }
+            };
 
             const cleanup = () => {
                 audio.removeEventListener('timeupdate', timeUpdateHandler);
@@ -111,20 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
-            let wordIndex = 0;
-            const timeUpdateHandler = () => {
-                const currentTime = audio.currentTime;
-                if (wordIndex < timepoints.length && currentTime >= timepoints[wordIndex].timeSeconds) {
-                    highlightModalWord(wordIndex);
-                    wordIndex++;
-                }
-            };
-
             audio.addEventListener('timeupdate', timeUpdateHandler);
             audio.addEventListener('ended', cleanup);
             audio.addEventListener('pause', cleanup);
 
-            audio.play();
+            audio.play().catch(e => {
+                console.error("Audio playback failed:", e);
+                cleanup();
+            });
 
         } catch (error) {
             console.error('Could not use Google TTS. Reason:', error.message);
