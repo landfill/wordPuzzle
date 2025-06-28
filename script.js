@@ -14,13 +14,117 @@ document.addEventListener('DOMContentLoaded', () => {
     const retryBtn = document.getElementById('retry-btn');
 
     // --- Game & TTS State ---
-    let lives = 5, currentProblem, activeBlankIndex = -1, problemBlanks = [], usedCharsInProblem = new Set(), requiredBlankChars = new Map(), correctlyFilledBlankChars = new Map(), charToHintNumber = new Map(), currentSentence = '', isReading = false, availableVoices = [], voiceToggle = false;
+    let lives = 5, currentProblem, activeBlankIndex = -1, problemBlanks = [], usedCharsInProblem = new Set(), requiredBlankChars = new Map(), correctlyFilledBlankChars = new Map(), charToHintNumber = new Map(), currentSentence = '', isReading = false, voiceToggle = false;
+    let browserVoices = []; // 브라우저 기본 음성 목록
 
-    // --- Content Generation ---
+    // --- Content & Keyboard Layout ---
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => { Object.keys(CONTENT_DATABASE[cat]).forEach(src => contentGenerator.addContent(cat, src, CONTENT_DATABASE[cat][src])); });
     const keyboardLayout = [ ['q','w','e','r','t','y','u','i','o','p'], ['a','s','d','f','g','h','j','k','l'], ['z','x','c','v','b','n','m'] ];
+
+    // --- TTS & Highlight Functions (Google Cloud + Fallback) ---
+
+    /**
+     * 기본 브라우저 TTS를 사용하는 백업 함수
+     */
+    function speakWithBrowserTTS() {
+        console.warn("Fallback: Using browser's default TTS.");
+        if ('speechSynthesis' in window && browserVoices.length > 0) {
+            const utterance = new SpeechSynthesisUtterance(currentSentence);
+            utterance.lang = 'en-US';
+            // 여기서도 간단한 목소리 선택 로직을 유지할 수 있습니다.
+            utterance.voice = voiceToggle ? browserVoices[1] || browserVoices[0] : browserVoices[0];
+            speechSynthesis.speak(utterance);
+        } else {
+            alert("Your browser does not support the fallback Text-to-Speech feature.");
+        }
+    }
+
+    /**
+     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환합니다.
+     */
+    async function speakSentence() {
+        const existingAudio = document.getElementById('tts-audio');
+        if (isReading && existingAudio) {
+            existingAudio.pause();
+            return; // onended 이벤트가 isReading을 false로 설정합니다.
+        } else if (isReading) {
+            speechSynthesis.cancel();
+            isReading = false;
+            return;
+        }
+
+        isReading = true;
+        listenBtn.classList.add('disabled');
+        
+        // 고품질 Google WaveNet 목소리 옵션
+        const voiceOptions = voiceToggle
+            ? { languageCode: 'en-US', name: 'en-US-Wavenet-F' } // 여성
+            : { languageCode: 'en-US', name: 'en-US-Wavenet-D' }; // 남성
+
+        try {
+            // 1. Cloudflare 중계 서버에 AI 음성 요청
+            const response = await fetch('/google-tts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: currentSentence,
+                    voice: voiceOptions,
+                    pitch: 1.0,
+                    speakingRate: 1.0,
+                }),
+            });
+
+            // 2. 응답 확인 (스위치가 꺼져 있는지?)
+            if (response.status === 403) {
+                // 403 코드는 '스위치 꺼짐'을 의미. 기본 TTS로 대체 실행.
+                speakWithBrowserTTS();
+                isReading = false;
+                listenBtn.classList.remove('disabled');
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const { audioContent, timepoints } = data;
+
+            // 3. AI 목소리(mp3) 재생 및 하이라이트
+            const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            audio.id = 'tts-audio';
+            document.body.appendChild(audio);
+            audio.play();
+
+            let highlightTimeouts = [];
+            timepoints.forEach((point, i) => {
+                const timeoutId = setTimeout(() => {
+                    if (isReading) highlightModalWord(i);
+                }, point.timeSeconds * 1000);
+                highlightTimeouts.push(timeoutId);
+            });
+
+            audio.onpause = audio.onended = () => {
+                isReading = false;
+                highlightTimeouts.forEach(clearTimeout);
+                clearWordHighlights();
+                listenBtn.classList.remove('disabled');
+                if (audio) audio.remove();
+            };
+
+        } catch (error) {
+            console.error('Could not use Google TTS, falling back to browser default.', error);
+            speakWithBrowserTTS(); // 어떤 에러든 발생하면 백업용 기본 TTS 실행
+            isReading = false;
+            listenBtn.classList.remove('disabled');
+        }
+    }
     
+    // --- (이하 나머지 코드는 이전과 동일합니다) ---
+
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
@@ -32,7 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
-        if (isReading) { isReading = false; speechSynthesis.cancel(); }
+        if (isReading) {
+            isReading = false;
+            const audio = document.getElementById('tts-audio');
+            if (audio) {
+                audio.pause();
+                audio.remove();
+            }
+            speechSynthesis.cancel();
+        }
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
         if (keyboardArea.childElementCount === 0) createKeyboard();
@@ -42,7 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleKeyPress(key) {
         if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) return;
-        const blank = problemBlanks[activeBlankIndex], char = blank.dataset.correctChar;
+        const blank = problemBlanks[activeBlankIndex];
+        const char = blank.dataset.correctChar;
         if (key.toLowerCase() === char) {
             blank.textContent = key.toUpperCase();
             blank.classList.add('correct');
@@ -56,12 +169,19 @@ document.addEventListener('DOMContentLoaded', () => {
             blank.classList.add('incorrect');
             lives--;
             updateLivesDisplay();
-            setTimeout(() => { blank.classList.remove('incorrect'); if (lives <= 0) gameOverModal.style.display = 'flex'; }, 500);
+            setTimeout(() => {
+                blank.classList.remove('incorrect');
+                if (lives <= 0) gameOverModal.style.display = 'flex';
+            }, 500);
         }
     }
 
-    function checkPuzzleCompletion() { if (problemBlanks.every(b => b.classList.contains('correct'))) setTimeout(showSuccessModal, 500); }
-    
+    function checkPuzzleCompletion() {
+        if (problemBlanks.every(b => b.classList.contains('correct'))) {
+            setTimeout(showSuccessModal, 500);
+        }
+    }
+
     function showSuccessModal() {
         const { sentence, source, translation, category } = currentProblem;
         createHighlightableSentence(document.querySelector('.original-sentence'), sentence);
@@ -69,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.korean-translation').textContent = translation;
         successModal.style.display = 'flex';
     }
-    
+
     function createHighlightableSentence(container, sentence) {
         container.innerHTML = '';
         sentence.split(/(\s+)/).forEach(word => {
@@ -83,100 +203,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // --- NEW: Intelligent Voice Selection & TTS ---
-
-    function loadVoices() {
-        availableVoices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith('en-'));
-        console.log("Available English voices:", availableVoices.map(v => v.name));
+    
+    function highlightModalWord(idx) {
+        clearWordHighlights();
+        const wordEl = document.querySelectorAll('.modal-word')[idx];
+        if (wordEl) wordEl.classList.add('reading-highlight');
     }
 
-    /**
-     * Finds the best available voice based on gender preference.
-     * @param {boolean} isFemale - True to prefer a female voice, false for male.
-     * @returns {SpeechSynthesisVoice|null} The best voice found or null.
-     */
-    function selectBestVoice(isFemale) {
-        if (!availableVoices || availableVoices.length === 0) return null;
-
-        const target = isFemale ? 'female' : 'male';
-        const opposite = isFemale ? 'male' : 'female';
-        const preferredNames = isFemale 
-            ? ['samantha', 'zira', 'susan', 'karen', 'victoria', 'ava', 'jenny', 'aria'] 
-            : ['david', 'alex', 'daniel', 'tom', 'aaron'];
-
-        // 1. Find by gender keyword
-        let voice = availableVoices.find(v => v.name.toLowerCase().includes(target));
-        if (voice) return voice;
-
-        // 2. Find by preferred name
-        voice = availableVoices.find(v => preferredNames.some(name => v.name.toLowerCase().includes(name)));
-        if (voice) return voice;
-        
-        // 3. Find by avoiding the opposite gender
-        voice = availableVoices.find(v => !v.name.toLowerCase().includes(opposite));
-        if (voice) return voice;
-
-        // 4. Fallback to the first available voice
-        return availableVoices[0];
+    function clearWordHighlights() {
+        document.querySelectorAll('.modal-word.reading-highlight').forEach(w => w.classList.remove('reading-highlight'));
     }
 
-    function speakSentence() {
-        if (isReading) {
-            speechSynthesis.cancel();
-            isReading = false;
-            clearWordHighlights();
-            return;
+    newQuizBtn.addEventListener('click', () => {
+        successModal.style.display = 'none';
+        initializeGame();
+    });
+
+    retryBtn.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
+        initializeGame();
+    });
+
+    listenBtn.addEventListener('click', speakSentence);
+
+    document.addEventListener('keydown', (e) => {
+        if (successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') return;
+        if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+            handleKeyPress(e.key);
+        } else if (e.key === 'ArrowLeft') {
+            navigateBlank(-1);
+        } else if (e.key === 'ArrowRight') {
+            navigateBlank(1);
         }
-        
-        if ('speechSynthesis' in window && availableVoices.length > 0) {
-            isReading = true;
-            const utterance = new SpeechSynthesisUtterance(currentSentence);
-            utterance.lang = 'en-US';
-            voiceToggle = !voiceToggle; // Alternate between male/female preference
-            
-            const bestVoice = selectBestVoice(voiceToggle);
-            if (bestVoice) {
-                utterance.voice = bestVoice;
-                console.log(`Using voice: ${bestVoice.name}`);
-            }
+    });
 
-            utterance.onboundary = (event) => {
-                if (event.name === 'word') {
-                    const words = Array.from(document.querySelectorAll('.modal-word'));
-                    let charCount = 0;
-                    for (let i = 0; i < words.length; i++) {
-                        charCount += words[i].textContent.length;
-                        if (event.charIndex < charCount) {
-                            highlightModalWord(i);
-                            break;
-                        }
-                        charCount++; // Account for space
-                    }
-                }
-            };
-            
-            utterance.onend = utterance.onerror = () => {
-                clearWordHighlights();
-                isReading = false;
-            };
-
-            speechSynthesis.speak(utterance);
+    // 브라우저 기본 음성 목록 로드 (백업용)
+    if ('speechSynthesis' in window) {
+        const loadBrowserVoices = () => { browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-')); };
+        if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.onvoiceschanged = loadBrowserVoices;
+        } else {
+            loadBrowserVoices();
         }
     }
     
-    function highlightModalWord(idx) { clearWordHighlights(); document.querySelectorAll('.modal-word')[idx]?.classList.add('reading-highlight'); }
-    function clearWordHighlights() { document.querySelectorAll('.modal-word.reading-highlight').forEach(w => w.classList.remove('reading-highlight')); }
-
-    // --- Event Listeners & Initialization ---
-    newQuizBtn.addEventListener('click', () => { successModal.style.display = 'none'; initializeGame(); });
-    retryBtn.addEventListener('click', () => { gameOverModal.style.display = 'none'; initializeGame(); });
-    listenBtn.addEventListener('click', speakSentence);
-    document.addEventListener('keydown', (e) => { if (successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') return; if (e.key.length === 1 && e.key.match(/[a-z]/i)) handleKeyPress(e.key); else if (e.key === 'ArrowLeft') navigateBlank(-1); else if (e.key === 'ArrowRight') navigateBlank(1); });
-    if ('speechSynthesis' in window) { (speechSynthesis.onvoiceschanged = loadVoices)(); }
     initializeGame();
 
-    // --- Other Helper Functions ---
     function loadProblem(problem) {
         problemArea.innerHTML = ''; const words = problem.sentence.split(' ');
         const blankCharToHintMap = new Map();
