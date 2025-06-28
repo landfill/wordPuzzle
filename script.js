@@ -20,101 +20,118 @@ document.addEventListener('DOMContentLoaded', () => {
     let voiceToggle = false; // false: 남자 음성, true: 여자 음성
     let availableVoices = [];
 
+    // 토이 스토리 대사 문제들
     const problems = [
         {
-            sentence: "The quick brown fox jumps over the lazy dog in the sunny afternoon.",
-            source: "Classic pangram",
-            translation: "빠른 갈색 여우가 게으른 개를 뛰어넘어 햇살 가득한 오후에 달려간다.",
+            sentence: "To infinity and beyond!",
+            source: "Toy Story - Buzz Lightyear",
+            translation: "무한대 그 너머로!",
+            blanks: [
+                { char: 'T', index: 0 },
+                { char: 'o', index: 1 },
+                { char: 'i', index: 3 },
+                { char: 'n', index: 4 },
+                { char: 'f', index: 5 },
+                { char: 'i', index: 6 },
+                { char: 'n', index: 7 },
+                { char: 'i', index: 8 },
+                { char: 't', index: 9 },
+                { char: 'y', index: 10 }
+            ]
+        },
+        {
+            sentence: "You've got a friend in me.",
+            source: "Toy Story - Theme Song",
+            translation: "당신에게는 나라는 친구가 있어요.",
+            blanks: [
+                { char: 'Y', index: 0 },
+                { char: 'o', index: 1 },
+                { char: 'u', index: 2 },
+                { char: 'v', index: 5 },
+                { char: 'e', index: 6 },
+                { char: 'g', index: 8 },
+                { char: 'o', index: 9 },
+                { char: 't', index: 10 },
+                { char: 'a', index: 12 },
+                { char: 'f', index: 14 },
+                { char: 'r', index: 15 },
+                { char: 'i', index: 16 }
+            ]
+        },
+        {
+            sentence: "There's a snake in my boot!",
+            source: "Toy Story - Woody",
+            translation: "내 부츠 안에 뱀이 있어!",
             blanks: [
                 { char: 'T', index: 0 },
                 { char: 'h', index: 1 },
                 { char: 'e', index: 2 },
-                { char: 'q', index: 4 },
-                { char: 'u', index: 5 },
-                { char: 'i', index: 6 },
-                { char: 'c', index: 7 },
-                { char: 'k', index: 8 },
-                { char: 'b', index: 10 },
-                { char: 'r', index: 11 },
-                { char: 'o', index: 12 },
-                { char: 'w', index: 13 },
-                { char: 'n', index: 14 }
-            ]
-        },
-        {
-            sentence: "Learning English through interactive puzzles makes studying fun and engaging.",
-            source: "Educational quote",
-            translation: "상호작용하는 퍼즐을 통해 영어를 배우는 것은 공부를 재미있고 흥미롭게 만든다.",
-            blanks: [
-                { char: 'L', index: 0 },
-                { char: 'e', index: 1 },
-                { char: 'a', index: 2 },
                 { char: 'r', index: 3 },
-                { char: 'n', index: 4 },
-                { char: 'i', index: 5 },
-                { char: 'n', index: 6 },
-                { char: 'g', index: 7 },
-                { char: 'E', index: 9 },
-                { char: 'n', index: 10 },
-                { char: 'g', index: 11 },
-                { char: 'l', index: 12 }
+                { char: 'e', index: 4 },
+                { char: 's', index: 6 },
+                { char: 'a', index: 8 },
+                { char: 's', index: 10 },
+                { char: 'n', index: 11 },
+                { char: 'a', index: 12 },
+                { char: 'k', index: 13 },
+                { char: 'e', index: 14 }
             ]
         },
         {
-            sentence: "Adventure awaits those who dare to explore beyond their comfort zone.",
-            source: "Motivational saying",
-            translation: "모험은 자신의 안전지대를 벗어나 탐험할 용기가 있는 사람들을 기다린다.",
+            sentence: "I am Mrs. Nesbitt!",
+            source: "Toy Story - Buzz Lightyear",
+            translation: "나는 네스빗 부인이야!",
             blanks: [
-                { char: 'A', index: 0 },
-                { char: 'd', index: 1 },
-                { char: 'v', index: 2 },
-                { char: 'e', index: 3 },
-                { char: 'n', index: 4 },
-                { char: 't', index: 5 },
-                { char: 'u', index: 6 },
-                { char: 'r', index: 7 },
-                { char: 'e', index: 8 },
-                { char: 'a', index: 10 },
-                { char: 'w', index: 11 },
-                { char: 'a', index: 12 }
+                { char: 'I', index: 0 },
+                { char: 'a', index: 2 },
+                { char: 'm', index: 3 },
+                { char: 'M', index: 5 },
+                { char: 'r', index: 6 },
+                { char: 's', index: 7 },
+                { char: 'N', index: 10 },
+                { char: 'e', index: 11 },
+                { char: 's', index: 12 },
+                { char: 'b', index: 13 },
+                { char: 'i', index: 14 },
+                { char: 't', index: 15 }
             ]
         },
         {
-            sentence: "Technology has revolutionized the way we communicate and share information.",
-            source: "Modern society observation",
-            translation: "기술은 우리가 소통하고 정보를 공유하는 방식을 혁신적으로 변화시켰다.",
+            sentence: "The claw chooses who will go and who will stay.",
+            source: "Toy Story - Aliens",
+            translation: "집게가 누가 갈지 누가 남을지 선택한다.",
             blanks: [
                 { char: 'T', index: 0 },
-                { char: 'e', index: 1 },
-                { char: 'c', index: 2 },
-                { char: 'h', index: 3 },
-                { char: 'n', index: 4 },
-                { char: 'o', index: 5 },
-                { char: 'l', index: 6 },
-                { char: 'o', index: 7 },
-                { char: 'g', index: 8 },
-                { char: 'y', index: 9 },
-                { char: 'h', index: 11 },
-                { char: 'a', index: 12 }
+                { char: 'h', index: 1 },
+                { char: 'e', index: 2 },
+                { char: 'c', index: 4 },
+                { char: 'l', index: 5 },
+                { char: 'a', index: 6 },
+                { char: 'w', index: 7 },
+                { char: 'c', index: 9 },
+                { char: 'h', index: 10 },
+                { char: 'o', index: 11 },
+                { char: 'o', index: 12 },
+                { char: 's', index: 13 }
             ]
         },
         {
-            sentence: "Creativity flourishes when imagination meets determination and hard work.",
-            source: "Artistic philosophy",
-            translation: "창의성은 상상력이 결단력과 노력과 만날 때 꽃을 피운다.",
+            sentence: "Reach for the sky!",
+            source: "Toy Story - Woody",
+            translation: "하늘에 손을 뻗어라!",
             blanks: [
-                { char: 'C', index: 0 },
-                { char: 'r', index: 1 },
-                { char: 'e', index: 2 },
-                { char: 'a', index: 3 },
-                { char: 't', index: 4 },
-                { char: 'i', index: 5 },
-                { char: 'v', index: 6 },
-                { char: 'i', index: 7 },
-                { char: 't', index: 8 },
-                { char: 'y', index: 9 },
-                { char: 'f', index: 11 },
-                { char: 'l', index: 12 }
+                { char: 'R', index: 0 },
+                { char: 'e', index: 1 },
+                { char: 'a', index: 2 },
+                { char: 'c', index: 3 },
+                { char: 'h', index: 4 },
+                { char: 'f', index: 6 },
+                { char: 'o', index: 7 },
+                { char: 'r', index: 8 },
+                { char: 't', index: 10 },
+                { char: 'h', index: 11 },
+                { char: 'e', index: 12 },
+                { char: 's', index: 14 }
             ]
         }
     ];
@@ -147,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const femaleVoices = englishVoices.filter(voice => {
                 const name = voice.name.toLowerCase();
                 return (
-                    // 명시적으로 여성 음성인 것들
                     name.includes('female') || 
                     name.includes('woman') ||
                     name.includes('girl') ||
@@ -160,19 +176,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     name.includes('serena') ||
                     name.includes('zira') ||
                     name.includes('hazel') ||
-                    // 일반적으로 여성 이름들
                     (voice.name.includes('Microsoft') && (
                         name.includes('aria') ||
                         name.includes('jenny') ||
                         name.includes('michelle')
                     )) ||
-                    // Google 여성 음성들
                     (voice.name.includes('Google') && name.includes('female'))
                 );
             });
 
             if (femaleVoices.length > 0) {
-                // 가장 젊은 소리가 나는 음성 우선 선택
                 const preferredFemaleVoices = femaleVoices.filter(voice => {
                     const name = voice.name.toLowerCase();
                     return name.includes('samantha') || name.includes('ava') || name.includes('allison');
@@ -185,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const maleVoices = englishVoices.filter(voice => {
                 const name = voice.name.toLowerCase();
                 return (
-                    // 명시적으로 남성 음성인 것들
                     name.includes('male') || 
                     name.includes('man') ||
                     name.includes('boy') ||
@@ -196,13 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     name.includes('mark') ||
                     name.includes('ryan') ||
                     name.includes('james') ||
-                    // Microsoft 남성 음성들
                     (voice.name.includes('Microsoft') && (
                         name.includes('david') ||
                         name.includes('mark') ||
                         name.includes('james')
                     )) ||
-                    // Google 남성 음성들
                     (voice.name.includes('Google') && name.includes('male'))
                 );
             });
@@ -234,12 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateLivesDisplay() {
-        const livesCount = document.getElementById('lives-count');
-        if (livesCount) {
-            livesCount.textContent = lives;
-        }
-        
-        livesDisplay.innerHTML = 'Life: ';
+        livesDisplay.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const heart = document.createElement('span');
             heart.classList.add('heart-icon');
@@ -676,8 +681,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Using female voice (teenage style):', selectedVoice.name);
             } else {
                 // 남자 음성
-                utterance.rate = 0.8;   // 조금 더 느리게
-                utterance.pitch = 0.9;  // 낮은 톤
+                utterance.rate = 0.9;   // 속도 조정
+                utterance.pitch = 1.0;  // 톤 조정
                 utterance.volume = 1.0;
                 console.log('Using male voice:', selectedVoice.name);
             }
