@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Word Puzzle</h1>
+        <div class="lives-display">
+            Life: <span id="lives-count">5</span>
+        </div>
+        <div class="problem-area">
+            <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
+        </div>
+        <div class="keyboard-area">
+            <!-- Virtual keyboard will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <h2>축하합니다! 🎉</h2>
+            <div class="sentence-display">
+                <div class="original-sentence"></div>
+                <div class="source"></div>
+                <div class="korean-translation"></div>
+            </div>
+            <div class="modal-buttons">
+                <button id="new-quiz-btn" class="modal-btn primary">새 퀴즈</button>
+                <button id="listen-btn" class="modal-btn secondary">듣기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
