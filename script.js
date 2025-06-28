@@ -569,30 +569,61 @@ document.addEventListener('DOMContentLoaded', () => {
             // 전체 문장을 자연스럽게 읽기
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
-            utterance.rate = 0.9; // 약간 느린 속도
+            utterance.rate = 0.85; // 조금 더 느린 속도
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
             
             currentUtterance = utterance;
 
-            // 단어별 하이라이트를 위한 타이밍 계산
-            const avgWordsPerSecond = 2.0; // 읽기 속도 (단어/초)
-            const wordDuration = 1000 / avgWordsPerSecond; // 단어당 시간 (ms)
+            // 단어별 하이라이트를 위한 개선된 타이밍 계산
+            const baseWordsPerSecond = 2.2; // 기본 읽기 속도 (단어/초)
+            const speedAdjustment = 1 / utterance.rate; // 속도 조정 반영
+            const actualWordsPerSecond = baseWordsPerSecond * speedAdjustment;
+            const wordDuration = 1000 / actualWordsPerSecond; // 단어당 시간 (ms)
+            
+            // 하이라이트를 약간 앞서게 하기 위한 오프셋 (200ms 앞서서 시작)
+            const highlightOffset = -200;
 
             let highlightTimer;
+            let highlightTimeouts = [];
             
             function startWordHighlighting() {
-                function highlightNextWord() {
-                    if (currentWordIndex < words.length && isReading) {
-                        highlightModalWord(currentWordIndex);
-                        currentWordIndex++;
-                        
-                        highlightTimer = setTimeout(highlightNextWord, wordDuration);
+                // 모든 단어에 대해 미리 타이밍을 계산하고 스케줄링
+                words.forEach((word, index) => {
+                    const highlightTime = (index * wordDuration) + highlightOffset;
+                    const clearTime = highlightTime + wordDuration * 0.8; // 80% 지점에서 하이라이트 제거
+                    
+                    // 하이라이트 시작
+                    if (highlightTime >= 0) {
+                        const timeout1 = setTimeout(() => {
+                            if (isReading) {
+                                highlightModalWord(index);
+                            }
+                        }, highlightTime);
+                        highlightTimeouts.push(timeout1);
                     } else {
-                        clearWordHighlights();
+                        // 즉시 하이라이트 (음성 시작 전)
+                        highlightModalWord(index);
                     }
-                }
-                highlightNextWord();
+                    
+                    // 하이라이트 제거 (마지막 단어가 아닌 경우)
+                    if (index < words.length - 1) {
+                        const timeout2 = setTimeout(() => {
+                            if (isReading) {
+                                const modalWords = document.querySelectorAll('.modal-word');
+                                if (modalWords[index]) {
+                                    modalWords[index].classList.remove('reading-highlight');
+                                }
+                            }
+                        }, clearTime);
+                        highlightTimeouts.push(timeout2);
+                    }
+                });
+            }
+
+            function clearAllTimeouts() {
+                highlightTimeouts.forEach(timeout => clearTimeout(timeout));
+                highlightTimeouts = [];
             }
 
             utterance.onstart = () => {
@@ -602,22 +633,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             utterance.onend = () => {
                 console.log('TTS ended');
+                clearAllTimeouts();
                 clearWordHighlights();
                 isReading = false;
                 currentUtterance = null;
-                if (highlightTimer) {
-                    clearTimeout(highlightTimer);
-                }
             };
 
             utterance.onerror = (event) => {
                 console.error('TTS error:', event);
+                clearAllTimeouts();
                 clearWordHighlights();
                 isReading = false;
                 currentUtterance = null;
-                if (highlightTimer) {
-                    clearTimeout(highlightTimer);
-                }
             };
 
             speechSynthesis.speak(utterance);
