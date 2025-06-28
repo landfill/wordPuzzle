@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const listenBtn = document.getElementById('listen-btn');
 
     let lives = 5;
-    let currentProblemIndex = 0;
+    let currentProblem = null;
     let activeBlankIndex = -1;
     let problemBlanks = [];
     let usedCharsInProblem = new Set();
@@ -18,146 +18,113 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSentence = '';
     let isReading = false;
     let currentUtterance = null;
-    let voiceToggle = false; // false: 남자 음성, true: 여자 음성
+    let voiceToggle = false;
     let availableVoices = [];
 
-    // 토이 스토리 대사 문제들 - 힌트 번호 완전히 수정
-    const problems = [
-        {
-            sentence: "To infinity and beyond!",
-            source: "Toy Story",
-            translation: "무한대 그 너머로!",
-            blanks: [
-                { char: 'T', index: 0, hintNum: 1 },   // To
-                { char: 'o', index: 1, hintNum: 2 },
-                { char: 'i', index: 3, hintNum: 3 },   // infinity
-                { char: 'f', index: 5, hintNum: 4 },
-                { char: 'i', index: 6, hintNum: 3 },
-                { char: 'n', index: 7, hintNum: 5 },
-                { char: 't', index: 9, hintNum: 6 },
-                { char: 'y', index: 10, hintNum: 7 },
-                { char: 'a', index: 12, hintNum: 8 },  // and
-                { char: 'd', index: 14, hintNum: 9 },
-                { char: 'b', index: 16, hintNum: 10 }, // beyond
-                { char: 'y', index: 17, hintNum: 7 },
-                { char: 'o', index: 18, hintNum: 2 },  // 같은 'o'이므로 2번
-                { char: 'd', index: 20, hintNum: 9 }
-            ]
-        },
-        {
-            sentence: "You've got a friend in me.",
-            source: "Toy Story",
-            translation: "당신에게는 나라는 친구가 있어요.",
-            blanks: [
-                { char: 'Y', index: 0, hintNum: 1 },   // You've
-                { char: 'u', index: 2, hintNum: 2 },
-                { char: 'v', index: 4, hintNum: 3 },
-                { char: 'g', index: 7, hintNum: 4 },   // got
-                { char: 't', index: 9, hintNum: 5 },
-                { char: 'a', index: 11, hintNum: 6 },  // a
-                { char: 'f', index: 13, hintNum: 7 },  // friend
-                { char: 'i', index: 15, hintNum: 8 },
-                { char: 'e', index: 16, hintNum: 9 },
-                { char: 'd', index: 18, hintNum: 10 },
-                { char: 'i', index: 20, hintNum: 8 },  // in (같은 'i'이므로 8번)
-                { char: 'n', index: 21, hintNum: 11 },
-                { char: 'm', index: 23, hintNum: 12 }, // me
-                { char: 'e', index: 24, hintNum: 9 }   // 같은 'e'이므로 9번
-            ]
-        },
-        {
-            sentence: "There's a snake in my boot!",
-            source: "Toy Story",
-            translation: "내 부츠 안에 뱀이 있어!",
-            blanks: [
-                { char: 'T', index: 0, hintNum: 1 },   // There's
-                { char: 'e', index: 2, hintNum: 2 },
-                { char: 'r', index: 3, hintNum: 3 },
-                { char: 's', index: 6, hintNum: 4 },
-                { char: 'a', index: 8, hintNum: 5 },   // a
-                { char: 's', index: 10, hintNum: 4 },  // snake (같은 's'이므로 4번)
-                { char: 'a', index: 12, hintNum: 5 },  // 같은 'a'이므로 5번
-                { char: 'k', index: 13, hintNum: 6 },
-                { char: 'e', index: 14, hintNum: 2 },  // 같은 'e'이므로 2번
-                { char: 'i', index: 16, hintNum: 7 },  // in
-                { char: 'n', index: 17, hintNum: 8 },
-                { char: 'm', index: 19, hintNum: 9 },  // my
-                { char: 'b', index: 22, hintNum: 10 }, // boot
-                { char: 'o', index: 23, hintNum: 11 },
-                { char: 't', index: 25, hintNum: 12 }
-            ]
-        },
-        {
-            sentence: "I am Mrs. Nesbitt!",
-            source: "Toy Story",
-            translation: "나는 네스빗 부인이야!",
-            blanks: [
-                { char: 'I', index: 0, hintNum: 1 },   // I
-                { char: 'a', index: 2, hintNum: 2 },   // am
-                { char: 'm', index: 3, hintNum: 3 },
-                { char: 'M', index: 5, hintNum: 4 },   // Mrs.
-                { char: 's', index: 7, hintNum: 5 },
-                { char: 'N', index: 10, hintNum: 6 },  // Nesbitt
-                { char: 'e', index: 11, hintNum: 7 },
-                { char: 'b', index: 13, hintNum: 8 },
-                { char: 'i', index: 14, hintNum: 1 },  // 같은 'i'이므로 1번
-                { char: 't', index: 15, hintNum: 9 },
-                { char: 't', index: 16, hintNum: 9 }   // 같은 't'이므로 9번
-            ]
-        },
-        {
-            sentence: "The claw chooses who will go and who will stay.",
-            source: "Toy Story",
-            translation: "집게가 누가 갈지 누가 남을지 선택한다.",
-            blanks: [
-                { char: 'T', index: 0, hintNum: 1 },   // The
-                { char: 'e', index: 2, hintNum: 2 },
-                { char: 'c', index: 4, hintNum: 3 },   // claw
-                { char: 'a', index: 6, hintNum: 4 },
-                { char: 'w', index: 7, hintNum: 5 },
-                { char: 'c', index: 9, hintNum: 3 },   // chooses (같은 'c'이므로 3번)
-                { char: 'o', index: 11, hintNum: 6 },
-                { char: 's', index: 13, hintNum: 7 },
-                { char: 'w', index: 16, hintNum: 5 },  // who (같은 'w'이므로 5번)
-                { char: 'o', index: 18, hintNum: 6 },  // 같은 'o'이므로 6번
-                { char: 'w', index: 20, hintNum: 5 },  // will (같은 'w'이므로 5번)
-                { char: 'l', index: 22, hintNum: 8 },
-                { char: 'g', index: 25, hintNum: 9 },  // go
-                { char: 'a', index: 28, hintNum: 4 },  // and (같은 'a'이므로 4번)
-                { char: 'd', index: 30, hintNum: 10 },
-                { char: 'w', index: 32, hintNum: 5 },  // who (같은 'w'이므로 5번)
-                { char: 'o', index: 34, hintNum: 6 },  // 같은 'o'이므로 6번
-                { char: 'w', index: 36, hintNum: 5 },  // will (같은 'w'이므로 5번)
-                { char: 'l', index: 38, hintNum: 8 },  // 같은 'l'이므로 8번
-                { char: 's', index: 40, hintNum: 7 },  // stay (같은 's'이므로 7번)
-                { char: 'a', index: 42, hintNum: 4 }   // 같은 'a'이므로 4번
-            ]
-        },
-        {
-            sentence: "Reach for the sky!",
-            source: "Toy Story",
-            translation: "하늘에 손을 뻗어라!",
-            blanks: [
-                { char: 'R', index: 0, hintNum: 1 },   // Reach
-                { char: 'a', index: 2, hintNum: 2 },
-                { char: 'c', index: 3, hintNum: 3 },
-                { char: 'h', index: 4, hintNum: 4 },
-                { char: 'f', index: 6, hintNum: 5 },   // for
-                { char: 'r', index: 8, hintNum: 6 },
-                { char: 't', index: 10, hintNum: 7 },  // the
-                { char: 'e', index: 12, hintNum: 8 },
-                { char: 's', index: 14, hintNum: 9 },  // sky
-                { char: 'k', index: 15, hintNum: 10 },
-                { char: 'y', index: 16, hintNum: 11 }
+    // content-database.js에서 데이터 가져오기
+    const CONTENT_DATABASE = window.CONTENT_DATABASE || {
+        movies: {
+            'Toy Story': [
+                { sentence: "To infinity and beyond!", translation: "무한대 그 너머로!", difficulty: 'easy' },
+                { sentence: "You've got a friend in me.", translation: "당신에게는 나라는 친구가 있어요.", difficulty: 'medium' }
             ]
         }
-    ];
+    };
 
     const keyboardLayout = [
         ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
+
+    // 자동 빈칸 생성 함수
+    function generateBlanks(sentence, difficulty = 'medium') {
+        const words = sentence.split(' ');
+        const blanks = [];
+        let charIndex = 0;
+        let hintCounter = 1;
+        const charToHint = new Map();
+
+        // 난이도별 빈칸 비율
+        const blankRatio = {
+            easy: 0.3,    // 30% 빈칸
+            medium: 0.5,  // 50% 빈칸
+            hard: 0.7     // 70% 빈칸
+        };
+
+        const targetRatio = blankRatio[difficulty] || 0.5;
+
+        // 모든 알파벳 위치 수집
+        const charPositions = [];
+        let pos = 0;
+        for (let i = 0; i < sentence.length; i++) {
+            if (sentence[i].match(/[a-zA-Z]/)) {
+                charPositions.push({ char: sentence[i], index: i, position: pos++ });
+            }
+        }
+
+        // 균등 분포로 빈칸 선택
+        const totalChars = charPositions.length;
+        const targetBlanks = Math.floor(totalChars * targetRatio);
+        const selectedPositions = [];
+        
+        if (targetBlanks > 0) {
+            const step = totalChars / targetBlanks;
+            
+            for (let i = 0; i < targetBlanks; i++) {
+                const baseIndex = Math.floor(i * step);
+                // 약간의 랜덤성 추가 (±1 범위)
+                const randomOffset = Math.floor(Math.random() * 3) - 1;
+                const finalIndex = Math.max(0, Math.min(totalChars - 1, baseIndex + randomOffset));
+                
+                // 중복 방지
+                if (!selectedPositions.some(p => p.index === charPositions[finalIndex].index)) {
+                    selectedPositions.push(charPositions[finalIndex]);
+                }
+            }
+        }
+
+        // 빈칸 생성
+        selectedPositions.forEach(pos => {
+            const lowerChar = pos.char.toLowerCase();
+            
+            if (!charToHint.has(lowerChar)) {
+                charToHint.set(lowerChar, hintCounter++);
+            }
+            
+            blanks.push({
+                char: pos.char,
+                index: pos.index,
+                hintNum: charToHint.get(lowerChar)
+            });
+        });
+
+        return blanks.sort((a, b) => a.index - b.index);
+    }
+
+    // 랜덤 문제 선택 함수
+    function getRandomProblem() {
+        const categories = Object.keys(CONTENT_DATABASE);
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        
+        const sources = Object.keys(CONTENT_DATABASE[randomCategory]);
+        const randomSource = sources[Math.floor(Math.random() * sources.length)];
+        
+        const sentences = CONTENT_DATABASE[randomCategory][randomSource];
+        const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
+        
+        // 자동으로 빈칸 생성
+        const blanks = generateBlanks(randomSentence.sentence, randomSentence.difficulty);
+        
+        return {
+            sentence: randomSentence.sentence,
+            source: randomSource,
+            translation: randomSentence.translation,
+            category: randomCategory,
+            difficulty: randomSentence.difficulty,
+            blanks: blanks
+        };
+    }
 
     // 음성 로드 함수
     function loadVoices() {
@@ -177,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (isFemale) {
-            // 여성 음성 우선 선택 (틴에이지 스타일)
+            // 여성 음성 우선 선택
             const femaleVoices = englishVoices.filter(voice => {
                 const name = voice.name.toLowerCase();
                 return (
@@ -212,14 +179,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 남성 음성은 디폴트 설정 사용 (첫 번째 영어 음성)
+        // 남성 음성은 디폴트 설정 사용
         return englishVoices.length > 0 ? englishVoices[0] : availableVoices[0];
     }
 
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
-        currentProblemIndex = Math.floor(Math.random() * problems.length);
+        
+        // 새로운 랜덤 문제 생성
+        currentProblem = getRandomProblem();
+        currentSentence = currentProblem.sentence;
+        
         usedCharsInProblem.clear();
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
@@ -227,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isReading = false;
         currentUtterance = null;
         clearWordHighlights();
-        loadProblem(currentProblemIndex);
+        
+        loadProblem();
         updateSourceDisplay();
         createKeyboard();
         updateKeyboardState();
@@ -248,11 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSourceDisplay() {
-        const problem = problems[currentProblemIndex];
-        sourceDisplay.textContent = problem.source;
+        sourceDisplay.textContent = `${currentProblem.source} (${currentProblem.category})`;
     }
 
-    function loadProblem(index) {
+    function loadProblem() {
         problemArea.innerHTML = '';
         problemBlanks = [];
         usedCharsInProblem.clear();
@@ -260,9 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
 
-        const problem = problems[index];
-        currentSentence = problem.sentence;
-        const words = problem.sentence.split(' ');
+        const words = currentProblem.sentence.split(' ');
         
         // Create navigation controls
         const navControls = document.createElement('div');
@@ -282,9 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
         navControls.appendChild(nextBtn);
         problemArea.appendChild(navControls);
 
-        // 빈칸 글자들의 힌트 번호 맵 생성 (빈칸에만 해당)
+        // 빈칸 글자들의 힌트 번호 맵 생성
         const blankCharToHintMap = new Map();
-        problem.blanks.forEach(blank => {
+        currentProblem.blanks.forEach(blank => {
             const char = blank.char.toLowerCase();
             if (!blankCharToHintMap.has(char)) {
                 blankCharToHintMap.set(char, blank.hintNum);
@@ -292,17 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Populate requiredBlankChars
-        problem.blanks.forEach(blank => {
+        currentProblem.blanks.forEach(blank => {
             const char = blank.char.toLowerCase();
             requiredBlankChars.set(char, (requiredBlankChars.get(char) || 0) + 1);
         });
 
         // 고정 글자들 중에서 빈칸에도 나타나는 글자들 찾기
-        const sentence = problem.sentence.toLowerCase();
+        const sentence = currentProblem.sentence.toLowerCase();
         for (let i = 0; i < sentence.length; i++) {
             const char = sentence[i];
             if (char.match(/[a-z]/)) {
-                const isBlank = problem.blanks.some(blank => blank.index === i);
+                const isBlank = currentProblem.blanks.some(blank => blank.index === i);
                 if (!isBlank && blankCharToHintMap.has(char)) {
                     // 고정 글자이지만 빈칸에도 나타나는 글자
                     charToHintNumber.set(char, blankCharToHintMap.get(char));
@@ -331,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const charSlot = document.createElement('div');
                 charSlot.classList.add('char-slot');
 
-                const blankInfo = problem.blanks.find(b => b.index === currentCharIndex);
+                const blankInfo = currentProblem.blanks.find(b => b.index === currentCharIndex);
 
                 if (blankInfo) {
                     const blankSpan = document.createElement('div');
@@ -582,10 +551,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkPuzzleCompletion() {
         const allFilled = problemBlanks.every(blank => blank.classList.contains('correct'));
-        console.log('Checking puzzle completion:', allFilled); // 디버깅용
+        console.log('Checking puzzle completion:', allFilled);
         
         if (allFilled) {
-            console.log('Puzzle completed! Showing modal...'); // 디버깅용
+            console.log('Puzzle completed! Showing modal...');
             setTimeout(() => {
                 showSuccessModal();
             }, 500);
@@ -593,8 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showSuccessModal() {
-        console.log('showSuccessModal called'); // 디버깅용
-        const problem = problems[currentProblemIndex];
+        console.log('showSuccessModal called');
         
         const originalSentenceEl = document.querySelector('.original-sentence');
         const sourceEl = document.querySelector('.source');
@@ -602,16 +570,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 모달 내 문장을 단어별로 분할하여 표시
         if (originalSentenceEl) {
-            createHighlightableSentence(originalSentenceEl, problem.sentence);
+            createHighlightableSentence(originalSentenceEl, currentProblem.sentence);
         }
-        if (sourceEl) sourceEl.textContent = `출처: ${problem.source}`;
-        if (translationEl) translationEl.textContent = problem.translation;
+        if (sourceEl) sourceEl.textContent = `출처: ${currentProblem.source}`;
+        if (translationEl) translationEl.textContent = currentProblem.translation;
         
         if (successModal) {
             successModal.style.display = 'flex';
-            console.log('Modal displayed'); // 디버깅용
+            console.log('Modal displayed');
         } else {
-            console.error('Success modal not found!'); // 디버깅용
+            console.error('Success modal not found!');
         }
     }
 
