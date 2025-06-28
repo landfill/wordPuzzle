@@ -4,12 +4,22 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     margin: 0;
     padding: 10px;
     color: #333;
     font-weight: 600;
     box-sizing: border-box;
+
+    /* --- NEW BACKGROUND --- */
+    /* Fallback color for when the image is loading or fails */
+    background-color: #6a85b6; 
+    /* High-quality, clean background image */
+    background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* This creates a nice effect where the background stays fixed on scroll */
+    background-attachment: fixed; 
 }
 
 .game-container {
@@ -20,10 +30,12 @@ body {
     text-align: center;
     width: 100%;
     max-width: 800px;
+    /* This "frosted glass" effect is key for readability over the background image */
     backdrop-filter: blur(10px);
     box-sizing: border-box;
 }
 
+/* --- (The rest of the CSS is unchanged) --- */
 h1 {
     color: #4a5568;
     margin-bottom: 20px;
