@@ -580,8 +580,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const actualWordsPerSecond = baseWordsPerSecond * speedAdjustment;
             const wordDuration = 1000 / actualWordsPerSecond; // 단어당 시간 (ms)
             
-            // 하이라이트를 100ms 앞서게 하기 위한 오프셋
-            const highlightOffset = 100;
+            // 하이라이트를 50ms 앞서게 하기 위한 오프셋
+            const highlightOffset = 50;
 
             let highlightTimeouts = [];
             
