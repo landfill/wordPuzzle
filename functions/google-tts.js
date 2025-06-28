@@ -1,4 +1,4 @@
-// functions/google-tts.js (에러 처리 강화 최종 버전)
+// functions/google-tts.js (SSML 변환 기능이 추가된 최종 버전)
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -8,33 +8,39 @@ export async function onRequest(context) {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
-  // 2. AI 음성 사용 스위치가 꺼져 있으면, 클라이언트에 알려주고 중단
+  // 2. AI 음성 사용 스위치가 꺼져 있으면 중단
   if (env.ENABLE_GOOGLE_TTS !== 'true') {
     return new Response(JSON.stringify({ 
       fallback: true, 
-      message: 'Google TTS is disabled via environment variable.' 
+      message: 'Google TTS is disabled.' 
     }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   try {
-    // 3. API 키가 Cloudflare에 설정되어 있는지 확인
+    // 3. API 키 설정 확인
     const apiKey = env.GOOGLE_TTS_API_KEY;
     if (!apiKey) {
-      // API 키가 없으면 에러를 발생시켜 클라이언트에 알림
-      throw new Error("CRITICAL: GOOGLE_TTS_API_KEY environment variable is not set in Cloudflare.");
+      throw new Error("CRITICAL: GOOGLE_TTS_API_KEY is not set in Cloudflare environment.");
     }
     
     const { text, voice, pitch, speakingRate } = await request.json();
+
+    // 4. (핵심 수정) 일반 텍스트를 SSML 형식으로 변환
+    // 예: "Hello world" -> "<speak><mark name="0"/>Hello <mark name="1"/>world</speak>"
+    const words = text.split(' ');
+    const ssmlText = `<speak>${words.map((word, index) => `<mark name="${index}"/>${word}`).join(' ')}</speak>`;
+
     const ttsUrl = `https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=${apiKey}`;
 
     const requestBody = {
-      input: { text: text },
+      // input을 'text'가 아닌 'ssml'로 변경
+      input: { ssml: ssmlText }, 
       voice: { languageCode: voice.languageCode, name: voice.name },
       audioConfig: { audioEncoding: 'MP3', pitch: pitch, speakingRate: speakingRate },
-      enableTimePointing: ['SSML_MARK'],
+      enableTimePointing: ['SSML_MARK'], // SSML의 <mark> 태그 시간 정보를 요청
     };
 
-    // 4. Google TTS API에 요청
+    // 5. Google TTS API에 요청
     const ttsResponse = await fetch(ttsUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -49,8 +55,19 @@ export async function onRequest(context) {
 
     const data = await ttsResponse.json();
     
-    // 5. 성공 시 오디오 데이터와 시간 정보 반환
-    return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+    // 6. 성공 시, 클라이언트가 사용하기 쉽도록 시간 정보만 정리하여 반환
+    const simplifiedTimepoints = data.timepoints
+        .filter(point => point.markName !== "0") // 첫 단어 시작점(0초)은 제외할 수 있음
+        .map((point, index) => ({
+             // Google은 markName을 주지만, 우리는 순서(index)와 시간만 필요함
+             wordIndex: index,
+             timeSeconds: point.timeSeconds
+        }));
+
+    return new Response(JSON.stringify({
+      audioContent: data.audioContent,
+      timepoints: simplifiedTimepoints,
+    }), { headers: { 'Content-Type': 'application/json' } });
 
   } catch (error) {
     console.error('Cloudflare Function Error:', error.message);
