@@ -33,7 +33,7 @@ h1 {
 
 .lives-display {
     font-size: 1.3em;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -52,6 +52,18 @@ h1 {
 .heart-icon.lost {
     color: #cbd5e0;
     transform: scale(0.8);
+}
+
+.source-display {
+    font-size: 0.8em;
+    color: #718096;
+    margin-bottom: 15px;
+    font-weight: 600;
+    background: #edf2f7;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: inline-block;
+    border: 1px solid #e2e8f0;
 }
 
 .problem-area {
@@ -486,12 +498,18 @@ h1 {
     
     .lives-display {
         font-size: 1.1em;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
         gap: 6px;
     }
     
     .heart-icon {
         font-size: 1.8em;
+    }
+    
+    .source-display {
+        font-size: 0.7em;
+        padding: 5px 10px;
+        margin-bottom: 12px;
     }
     
     .problem-area {

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
+    const sourceDisplay = document.querySelector('.source-display');
     const successModal = document.getElementById('success-modal');
     const newQuizBtn = document.getElementById('new-quiz-btn');
     const listenBtn = document.getElementById('listen-btn');
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const problems = [
         {
             sentence: "To infinity and beyond!",
-            source: "Toy Story - Buzz Lightyear",
+            source: "Toy Story",
             translation: "무한대 그 너머로!",
             blanks: [
                 { char: 'T', index: 0 },
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             sentence: "You've got a friend in me.",
-            source: "Toy Story - Theme Song",
+            source: "Toy Story",
             translation: "당신에게는 나라는 친구가 있어요.",
             blanks: [
                 { char: 'Y', index: 0 },
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             sentence: "There's a snake in my boot!",
-            source: "Toy Story - Woody",
+            source: "Toy Story",
             translation: "내 부츠 안에 뱀이 있어!",
             blanks: [
                 { char: 'T', index: 0 },
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             sentence: "I am Mrs. Nesbitt!",
-            source: "Toy Story - Buzz Lightyear",
+            source: "Toy Story",
             translation: "나는 네스빗 부인이야!",
             blanks: [
                 { char: 'I', index: 0 },
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             sentence: "The claw chooses who will go and who will stay.",
-            source: "Toy Story - Aliens",
+            source: "Toy Story",
             translation: "집게가 누가 갈지 누가 남을지 선택한다.",
             blanks: [
                 { char: 'T', index: 0 },
@@ -117,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             sentence: "Reach for the sky!",
-            source: "Toy Story - Woody",
+            source: "Toy Story",
             translation: "하늘에 손을 뻗어라!",
             blanks: [
                 { char: 'R', index: 0 },
@@ -211,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUtterance = null;
         clearWordHighlights();
         loadProblem(currentProblemIndex);
+        updateSourceDisplay();
         createKeyboard();
         updateKeyboardState();
         updateHintVisibility();
@@ -227,6 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             livesDisplay.appendChild(heart);
         }
+    }
+
+    function updateSourceDisplay() {
+        const problem = problems[currentProblemIndex];
+        sourceDisplay.textContent = problem.source;
     }
 
     function loadProblem(index) {
