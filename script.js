@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
 
-    // --- 3. TTS & Highlight Functions (COMPLETELY REWRITTEN AND VERIFIED) ---
+    // --- 3. TTS & Highlight Functions ---
 
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function speakSentence() {
         const existingAudio = document.getElementById('tts-audio');
         if (isReading) {
-            if (existingAudio) existingAudio.pause();
+            if (existingAudio) {
+                existingAudio.pause();
+            }
             speechSynthesis.cancel();
             return;
         }
@@ -82,9 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
+            
             if (!audioContent || !timepoints || timepoints.length === 0) {
                 throw new Error("Invalid data (no audio or timepoints) received from TTS server.");
             }
+            
+            // Filter and sort timepoints just in case they are out of order
+            const wordTimepoints = timepoints
+                .filter(t => !isNaN(parseInt(t.markName, 10)))
+                .sort((a, b) => parseInt(a.markName, 10) - parseInt(b.markName, 10));
 
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
@@ -98,9 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentTime = audio.currentTime;
                 let currentWordIndex = -1;
 
-                // Find the index of the last word that has started
-                for (let i = 0; i < timepoints.length; i++) {
-                    if (currentTime >= timepoints[i].timeSeconds) {
+                for (let i = 0; i < wordTimepoints.length; i++) {
+                    if (currentTime >= wordTimepoints[i].timeSeconds) {
                         currentWordIndex = i;
                     } else {
                         break;
@@ -113,24 +120,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
-            const cleanup = () => {
+            const cleanup = (isEnded = false) => {
+                if (isEnded) {
+                    highlightModalWord(wordTimepoints.length - 1);
+                }
+                
                 audio.removeEventListener('timeupdate', timeUpdateHandler);
                 isReading = false;
-                clearWordHighlights();
                 listenBtn.classList.remove('disabled');
-                if (audio) {
-                    audio.remove();
-                    URL.revokeObjectURL(audioUrl);
-                }
+
+                setTimeout(() => {
+                    clearWordHighlights();
+                    if (audio) {
+                        audio.remove();
+                        URL.revokeObjectURL(audioUrl);
+                    }
+                }, 500);
             };
 
             audio.addEventListener('timeupdate', timeUpdateHandler);
-            audio.addEventListener('ended', cleanup);
-            audio.addEventListener('pause', cleanup);
+            audio.addEventListener('ended', () => cleanup(true));
+            audio.addEventListener('pause', () => cleanup(false));
 
             audio.play().catch(e => {
                 console.error("Audio playback failed:", e);
-                cleanup();
+                cleanup(false);
             });
 
         } catch (error) {
@@ -430,7 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Load browser voices for fallback
     if ('speechSynthesis' in window) {
         const loadBrowserVoices = () => {
             browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
