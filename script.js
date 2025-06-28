@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 빈칸의 힌트 번호도 업데이트
         problemBlanks.forEach(blank => {
             const hintSpan = blank.parentElement.querySelector('.hint-number');
-            if (hintSpan && blank.textContent && blank.textContent !== 'X') {
+            if (hintSpan && blank.classList.contains('correct')) {
                 const char = blank.dataset.correctChar;
                 const totalRequired = requiredBlankChars.get(char) || 0;
                 const currentFilled = correctlyFilledBlankChars.get(char) || 0;
@@ -427,10 +427,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateKeyboardState();
             updateHintVisibility();
 
-            const nextBlankIndex = activeBlankIndex + 1;
-            if (nextBlankIndex < problemBlanks.length) {
+            // 다음 빈칸으로 이동하거나 완성 체크
+            const nextBlankIndex = findNextEmptyBlank();
+            if (nextBlankIndex !== -1) {
                 setActiveBlank(nextBlankIndex);
             } else {
+                // 모든 빈칸이 채워졌는지 확인
                 checkPuzzleCompletion();
             }
         } else {
@@ -450,9 +452,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function findNextEmptyBlank() {
+        for (let i = 0; i < problemBlanks.length; i++) {
+            const blank = problemBlanks[i];
+            if (!blank.classList.contains('correct')) {
+                return i;
+            }
+        }
+        return -1; // 모든 빈칸이 채워짐
+    }
+
     function checkPuzzleCompletion() {
-        const allFilled = problemBlanks.every(blank => blank.textContent !== '' && blank.textContent !== 'X');
+        const allFilled = problemBlanks.every(blank => blank.classList.contains('correct'));
+        console.log('Checking puzzle completion:', allFilled); // 디버깅용
+        
         if (allFilled) {
+            console.log('Puzzle completed! Showing modal...'); // 디버깅용
             setTimeout(() => {
                 showSuccessModal();
             }, 500);
@@ -460,17 +475,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showSuccessModal() {
+        console.log('showSuccessModal called'); // 디버깅용
         const problem = problems[currentProblemIndex];
         
-        document.querySelector('.original-sentence').textContent = problem.sentence;
-        document.querySelector('.source').textContent = `출처: ${problem.source}`;
-        document.querySelector('.korean-translation').textContent = problem.translation;
+        const originalSentenceEl = document.querySelector('.original-sentence');
+        const sourceEl = document.querySelector('.source');
+        const translationEl = document.querySelector('.korean-translation');
         
-        successModal.style.display = 'flex';
+        if (originalSentenceEl) originalSentenceEl.textContent = problem.sentence;
+        if (sourceEl) sourceEl.textContent = `출처: ${problem.source}`;
+        if (translationEl) translationEl.textContent = problem.translation;
+        
+        if (successModal) {
+            successModal.style.display = 'flex';
+            console.log('Modal displayed'); // 디버깅용
+        } else {
+            console.error('Success modal not found!'); // 디버깅용
+        }
     }
 
     function hideSuccessModal() {
-        successModal.style.display = 'none';
+        if (successModal) {
+            successModal.style.display = 'none';
+        }
     }
 
     function speakSentence() {
@@ -485,20 +512,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event listeners
-    newQuizBtn.addEventListener('click', () => {
-        hideSuccessModal();
-        initializeGame();
-    });
-
-    listenBtn.addEventListener('click', () => {
-        speakSentence();
-    });
-
-    successModal.addEventListener('click', (e) => {
-        if (e.target === successModal) {
+    if (newQuizBtn) {
+        newQuizBtn.addEventListener('click', () => {
             hideSuccessModal();
-        }
-    });
+            initializeGame();
+        });
+    }
+
+    if (listenBtn) {
+        listenBtn.addEventListener('click', () => {
+            speakSentence();
+        });
+    }
+
+    if (successModal) {
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                hideSuccessModal();
+            }
+        });
+    }
 
     // Keyboard event listener
     document.addEventListener('keydown', (e) => {
