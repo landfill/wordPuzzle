@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
     
+    // --- Core Game Functions ---
+    
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
@@ -53,9 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
-        isReading = false;
         
-        if (isReading) speechSynthesis.cancel();
+        if (isReading) {
+            isReading = false;
+            speechSynthesis.cancel();
+        }
 
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
@@ -114,21 +118,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.korean-translation').textContent = translation;
         successModal.style.display = 'flex';
     }
+    
+    // --- TTS & Highlight Functions (RESTORED) ---
 
     function createHighlightableSentence(container, sentence) {
         container.innerHTML = '';
-        const words = sentence.split(' ');
-        words.forEach((word, index) => {
-            const wordSpan = document.createElement('span');
-            wordSpan.classList.add('modal-word');
-            wordSpan.dataset.wordIndex = index;
-            wordSpan.textContent = word;
-            container.appendChild(wordSpan);
-            if (index < words.length - 1) container.appendChild(document.createTextNode(' '));
+        const words = sentence.split(/(\s+)/); // Split by spaces but keep them
+        words.forEach(word => {
+            if (word.trim().length > 0) {
+                const wordSpan = document.createElement('span');
+                wordSpan.classList.add('modal-word');
+                wordSpan.textContent = word;
+                container.appendChild(wordSpan);
+            } else {
+                container.appendChild(document.createTextNode(word)); // Add spaces back
+            }
         });
     }
 
-    // --- TTS Functions (Restored & Improved) ---
     function loadVoices() {
         availableVoices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith('en-'));
     }
@@ -144,18 +151,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
             voiceToggle = !voiceToggle;
-            utterance.voice = voiceToggle && availableVoices[1] ? availableVoices[1] : availableVoices[0];
+            utterance.voice = voiceToggle && availableVoices.length > 1 ? availableVoices[1] : availableVoices[0];
 
             utterance.onboundary = (event) => {
                 if (event.name === 'word') {
-                    const words = currentSentence.split(' ');
+                    const allWords = Array.from(document.querySelectorAll('.modal-word'));
                     let charCount = 0;
-                    for (let i = 0; i < words.length; i++) {
-                        charCount += words[i].length + 1;
-                        if (event.charIndex < charCount) {
+                    for (let i = 0; i < allWords.length; i++) {
+                        charCount += allWords[i].textContent.length;
+                        if(event.charIndex < charCount) {
                             highlightModalWord(i);
                             break;
                         }
+                        // Account for spaces between words
+                        charCount++; 
                     }
                 }
             };
@@ -203,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     listenBtn.addEventListener('click', speakSentence);
 
     document.addEventListener('keydown', (e) => {
+        if (successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') return;
         if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
             handleKeyPress(e.key);
         } else if (e.key === 'ArrowLeft') {
@@ -212,101 +222,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis'in window) {
         speechSynthesis.getVoices().length === 0 ? (speechSynthesis.onvoiceschanged = loadVoices) : loadVoices();
     }
     
     initializeGame();
-    
-    // --- (The rest of the helper functions) ---
+
+    // --- Other Helper Functions ---
     function loadProblem(problem) {
         problemArea.innerHTML = '';
         const words = problem.sentence.split(' ');
-
-        // Create navigation controls
         const navControls = document.createElement('div');
-        navControls.classList.add('navigation-controls');
-        const prevBtn = document.createElement('button');
-        prevBtn.classList.add('nav-button');
-        prevBtn.innerHTML = '◀';
-        prevBtn.addEventListener('click', () => navigateBlank(-1));
-        const nextBtn = document.createElement('button');
-        nextBtn.classList.add('nav-button');
-        nextBtn.innerHTML = '▶';
-        nextBtn.addEventListener('click', () => navigateBlank(1));
-        navControls.appendChild(prevBtn);
-        navControls.appendChild(nextBtn);
+        navControls.className = 'navigation-controls';
+        navControls.innerHTML = `<button class="nav-button">◀</button><button class="nav-button">▶</button>`;
+        navControls.firstChild.onclick = () => navigateBlank(-1);
+        navControls.lastChild.onclick = () => navigateBlank(1);
         problemArea.appendChild(navControls);
-
         const blankCharToHintMap = new Map();
-        problem.blanks.forEach(blank => {
-            const char = blank.char.toLowerCase();
-            if (!blankCharToHintMap.has(char)) blankCharToHintMap.set(char, blank.hintNum);
-            requiredBlankChars.set(char, (requiredBlankChars.get(char) || 0) + 1);
-        });
-
-        for (let i = 0; i < problem.sentence.length; i++) {
-            const char = problem.sentence[i].toLowerCase();
-            if (char.match(/[a-z]/)) {
-                if (!problem.blanks.some(b => b.index === i)) {
-                    blankCharToHintMap.has(char) ? charToHintNumber.set(char, blankCharToHintMap.get(char)) : usedCharsInProblem.add(char);
-                }
-            }
-        }
-        
-        let charIndex = 0;
-        let blankCounter = 0;
-        words.forEach(word => {
-            const wordGroup = document.createElement('div');
-            wordGroup.classList.add('word-group');
-            for (let i = 0; i < word.length; i++) {
-                const char = word[i], currentCharIndex = charIndex + i;
-                const charSlot = document.createElement('div');
-                charSlot.classList.add('char-slot');
-                const blankInfo = problem.blanks.find(b => b.index === currentCharIndex);
-                if (blankInfo) {
-                    const blankSpan = document.createElement('div');
-                    blankSpan.className = 'word-blank';
-                    blankSpan.dataset.correctChar = blankInfo.char.toLowerCase();
-                    blankSpan.dataset.blankIndex = blankCounter++;
-                    blankSpan.addEventListener('click', () => setActiveBlank(parseInt(blankSpan.dataset.blankIndex)));
-                    const hintSpan = document.createElement('div');
-                    hintSpan.className = 'hint-number';
-                    hintSpan.textContent = blankInfo.hintNum;
-                    charSlot.append(blankSpan, hintSpan);
-                    problemBlanks.push(blankSpan);
-                } else {
-                    const charSpan = document.createElement('div');
-                    const hintSpan = document.createElement('div');
-                    hintSpan.className = 'hint-number';
-                    charSpan.className = 'fixed-char-text';
-                    if (char.match(/[a-zA-Z]/)) {
-                        charSpan.textContent = char.toUpperCase();
-                        const lowerChar = char.toLowerCase();
-                        if (charToHintNumber.has(lowerChar)) {
-                            hintSpan.textContent = charToHintNumber.get(lowerChar);
-                            hintSpan.dataset.char = lowerChar;
-                        } else {
-                            hintSpan.style.visibility = 'hidden';
-                        }
-                    } else {
-                        charSpan.textContent = char;
-                        hintSpan.style.visibility = 'hidden';
-                    }
-                    charSlot.append(charSpan, hintSpan);
-                }
-                wordGroup.appendChild(charSlot);
-            }
-            problemArea.appendChild(wordGroup);
-            charIndex += word.length + 1;
-        });
+        problem.blanks.forEach(b => { const c = b.char.toLowerCase(); if (!blankCharToHintMap.has(c)) blankCharToHintMap.set(c, b.hintNum); requiredBlankChars.set(c, (requiredBlankChars.get(c) || 0) + 1); });
+        for (let i = 0; i < problem.sentence.length; i++) { const c = problem.sentence[i].toLowerCase(); if (c.match(/[a-z]/) && !problem.blanks.some(b => b.index === i)) { blankCharToHintMap.has(c) ? charToHintNumber.set(c, blankCharToHintMap.get(c)) : usedCharsInProblem.add(c); } }
+        let charIndex = 0, blankCounter = 0;
+        words.forEach(word => { const group = document.createElement('div'); group.className = 'word-group'; for (let i = 0; i < word.length; i++) { const char = word[i], curIdx = charIndex + i; const slot = document.createElement('div'); slot.className = 'char-slot'; const bInfo = problem.blanks.find(b => b.index === curIdx); if (bInfo) { const bSpan = document.createElement('div'); bSpan.className = 'word-blank'; bSpan.dataset.correctChar = bInfo.char.toLowerCase(); bSpan.dataset.blankIndex = blankCounter++; bSpan.onclick = () => setActiveBlank(parseInt(bSpan.dataset.blankIndex)); const hSpan = document.createElement('div'); hSpan.className = 'hint-number'; hSpan.textContent = bInfo.hintNum; slot.append(bSpan, hSpan); problemBlanks.push(bSpan); } else { const cSpan = document.createElement('div'), hSpan = document.createElement('div'); hSpan.className = 'hint-number'; cSpan.className = 'fixed-char-text'; if (char.match(/[a-zA-Z]/)) { cSpan.textContent = char.toUpperCase(); const lc = char.toLowerCase(); if (charToHintNumber.has(lc)) { hSpan.textContent = charToHintNumber.get(lc); hSpan.dataset.char = lc; } else { hSpan.style.visibility = 'hidden'; } } else { cSpan.textContent = char; hSpan.style.visibility = 'hidden'; } slot.append(cSpan, hSpan); } group.appendChild(slot); } problemArea.appendChild(group); charIndex += word.length + 1; });
         if (problemBlanks.length > 0) setActiveBlank(0);
     }
-    function updateSourceDisplay(problem) { sourceDisplay.textContent = `${problem.source} (${problem.category})`; }
+    function updateSourceDisplay(p) { sourceDisplay.textContent = `${p.source} (${p.category})`; }
     function updateLivesDisplay() { livesDisplay.innerHTML = Array(5).fill(0).map((_, i) => `<span class="heart-icon ${i >= lives ? 'lost' : ''}">♥</span>`).join(''); }
     function navigateBlank(dir) { if (problemBlanks.length === 0) return; activeBlankIndex = (activeBlankIndex + dir + problemBlanks.length) % problemBlanks.length; setActiveBlank(activeBlankIndex); }
-    function setActiveBlank(index) { if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) problemBlanks[activeBlankIndex].classList.remove('active'); activeBlankIndex = index; if (problemBlanks[activeBlankIndex]) { problemBlanks[activeBlankIndex].classList.add('active'); document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank')); problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank'); } }
-    function createKeyboard() { keyboardArea.innerHTML = ''; keyboardLayout.forEach((row, rIdx) => { const rowDiv = document.createElement('div'); rowDiv.className = 'keyboard-row'; if (rIdx === keyboardLayout.length - 1) { const prevBtn = document.createElement('button'); prevBtn.className = 'blank-nav-btn'; prevBtn.innerHTML = '◀'; prevBtn.onclick = () => navigateBlank(-1); rowDiv.appendChild(prevBtn); } row.forEach(key => { const keyDiv = document.createElement('div'); keyDiv.className = 'key'; keyDiv.textContent = key.toUpperCase(); keyDiv.dataset.key = key; keyDiv.onclick = () => handleKeyPress(key); rowDiv.appendChild(keyDiv); }); if (rIdx === keyboardLayout.length - 1) { const nextBtn = document.createElement('button'); nextBtn.className = 'blank-nav-btn'; nextBtn.innerHTML = '▶'; nextBtn.onclick = () => navigateBlank(1); rowDiv.appendChild(nextBtn); } keyboardArea.appendChild(rowDiv); }); }
-    function updateKeyboardState() { keyboardLayout.flat().forEach(key => { const keyDiv = keyboardArea.querySelector(`[data-key="${key}"]`); if (!keyDiv) return; const required = requiredBlankChars.get(key) || 0; const filled = correctlyFilledBlankChars.get(key) || 0; const disabled = usedCharsInProblem.has(key) || (required > 0 && filled >= required); keyDiv.classList.toggle('disabled', disabled); keyDiv.style.pointerEvents = disabled ? 'none' : 'auto'; }); }
-    function updateHintVisibility() { document.querySelectorAll('.hint-number[data-char]').forEach(span => { const char = span.dataset.char; const required = requiredBlankChars.get(char) || 0; const filled = correctlyFilledBlankChars.get(char) || 0; span.style.visibility = filled >= required ? 'hidden' : 'visible'; }); }
+    function setActiveBlank(idx) { if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) problemBlanks[activeBlankIndex].classList.remove('active'); activeBlankIndex = idx; if (problemBlanks[activeBlankIndex]) { problemBlanks[activeBlankIndex].classList.add('active'); document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank')); problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank'); } }
+    function createKeyboard() { keyboardArea.innerHTML = ''; keyboardLayout.forEach((row, rIdx) => { const rDiv = document.createElement('div'); rDiv.className = 'keyboard-row'; if (rIdx === keyboardLayout.length - 1) { const pBtn = document.createElement('button'); pBtn.className = 'blank-nav-btn'; pBtn.innerHTML = '◀'; pBtn.onclick = () => navigateBlank(-1); rDiv.appendChild(pBtn); } row.forEach(k => { const kDiv = document.createElement('div'); kDiv.className = 'key'; kDiv.textContent = k.toUpperCase(); kDiv.dataset.key = k; kDiv.onclick = () => handleKeyPress(k); rDiv.appendChild(kDiv); }); if (rIdx === keyboardLayout.length - 1) { const nBtn = document.createElement('button'); nBtn.className = 'blank-nav-btn'; nBtn.innerHTML = '▶'; nBtn.onclick = () => navigateBlank(1); rDiv.appendChild(nBtn); } keyboardArea.appendChild(rDiv); }); }
+    function updateKeyboardState() { keyboardLayout.flat().forEach(k => { const el = keyboardArea.querySelector(`[data-key="${k}"]`); if (!el) return; const req = requiredBlankChars.get(k) || 0, fill = correctlyFilledBlankChars.get(k) || 0, dis = usedCharsInProblem.has(k) || (req > 0 && fill >= req); el.classList.toggle('disabled', dis); el.style.pointerEvents = dis ? 'none' : 'auto'; }); }
+    function updateHintVisibility() { document.querySelectorAll('.hint-number[data-char]').forEach(s => { const c = s.dataset.char, req = requiredBlankChars.get(c) || 0, fill = correctlyFilledBlankChars.get(c) || 0; s.style.visibility = fill >= req ? 'hidden' : 'visible'; }); }
 });
