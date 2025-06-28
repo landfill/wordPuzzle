@@ -193,36 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 return preferredFemaleVoices.length > 0 ? preferredFemaleVoices[0] : femaleVoices[0];
             }
-        } else {
-            // 남성 음성 우선 선택
-            const maleVoices = englishVoices.filter(voice => {
-                const name = voice.name.toLowerCase();
-                return (
-                    name.includes('male') || 
-                    name.includes('man') ||
-                    name.includes('boy') ||
-                    name.includes('alex') ||
-                    name.includes('tom') ||
-                    name.includes('daniel') ||
-                    name.includes('david') ||
-                    name.includes('mark') ||
-                    name.includes('ryan') ||
-                    name.includes('james') ||
-                    (voice.name.includes('Microsoft') && (
-                        name.includes('david') ||
-                        name.includes('mark') ||
-                        name.includes('james')
-                    )) ||
-                    (voice.name.includes('Google') && name.includes('male'))
-                );
-            });
-
-            if (maleVoices.length > 0) {
-                return maleVoices[0];
-            }
         }
 
-        // 기본값: 첫 번째 영어 음성
+        // 남성 음성은 디폴트 설정 사용 (첫 번째 영어 음성)
         return englishVoices.length > 0 ? englishVoices[0] : availableVoices[0];
     }
 
@@ -680,11 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 utterance.volume = 1.0;
                 console.log('Using female voice (teenage style):', selectedVoice.name);
             } else {
-                // 남자 음성
-                utterance.rate = 0.9;   // 속도 조정
-                utterance.pitch = 1.0;  // 톤 조정
-                utterance.volume = 1.0;
-                console.log('Using male voice:', selectedVoice.name);
+                // 남자 음성 (디폴트 설정)
+                utterance.rate = 0.9;   // 디폴트 속도
+                utterance.pitch = 1.0;  // 디폴트 톤
+                utterance.volume = 1.0; // 디폴트 볼륨
+                console.log('Using male voice (default):', selectedVoice.name);
             }
             
             currentUtterance = utterance;
