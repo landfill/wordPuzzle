@@ -56,7 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 { char: 'a', index: 12 },
                 { char: 'f', index: 14 },
                 { char: 'r', index: 15 },
-                { char: 'i', index: 16 }
+                { char: 'i', index: 16 },
+                { char: 'e', index: 17 },
+                { char: 'n', index: 18 },
+                { char: 'd', index: 19 },
+                { char: 'i', index: 21 },
+                { char: 'n', index: 22 },
+                { char: 'm', index: 24 },
+                { char: 'e', index: 25 }
             ]
         },
         {
@@ -266,9 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
         navControls.appendChild(nextBtn);
         problemArea.appendChild(navControls);
 
-        // 같은 글자에 대해 같은 힌트 번호 할당
+        // 같은 글자에 대해 같은 힌트 번호 할당 (수정된 로직)
         let hintCounter = 1;
         const uniqueChars = [...new Set(problem.blanks.map(b => b.char.toLowerCase()))];
+        uniqueChars.sort(); // 알파벳 순으로 정렬하여 일관성 있는 번호 부여
         uniqueChars.forEach(char => {
             charToHintNumber.set(char, hintCounter++);
         });
