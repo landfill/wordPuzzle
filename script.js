@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let correctlyFilledBlankChars = new Map();
     let charToHintNumber = new Map();
     let currentSentence = '';
+    let isReading = false;
 
     const problems = [
         {
@@ -129,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         requiredBlankChars.clear();
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
+        isReading = false;
         loadProblem(currentProblemIndex);
         createKeyboard();
         updateKeyboardState();
@@ -202,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         words.forEach((word, wordIndex) => {
             const wordGroup = document.createElement('div');
             wordGroup.classList.add('word-group');
+            wordGroup.dataset.wordIndex = wordIndex;
             
             let hasActiveBlank = false;
 
@@ -500,12 +503,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function clearWordHighlights() {
+        document.querySelectorAll('.word-group').forEach(group => {
+            group.classList.remove('reading-highlight');
+        });
+    }
+
+    function highlightWord(wordIndex) {
+        clearWordHighlights();
+        const wordGroup = document.querySelector(`[data-word-index="${wordIndex}"]`);
+        if (wordGroup) {
+            wordGroup.classList.add('reading-highlight');
+        }
+    }
+
     function speakSentence() {
+        if (isReading) {
+            speechSynthesis.cancel();
+            clearWordHighlights();
+            isReading = false;
+            return;
+        }
+
         if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(currentSentence);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-            speechSynthesis.speak(utterance);
+            const words = currentSentence.split(' ');
+            let currentWordIndex = 0;
+            isReading = true;
+
+            function speakNextWord() {
+                if (currentWordIndex >= words.length || !isReading) {
+                    clearWordHighlights();
+                    isReading = false;
+                    return;
+                }
+
+                highlightWord(currentWordIndex);
+                
+                const utterance = new SpeechSynthesisUtterance(words[currentWordIndex]);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.6; // 느린 속도로 설정
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+
+                utterance.onend = () => {
+                    currentWordIndex++;
+                    setTimeout(() => {
+                        speakNextWord();
+                    }, 300); // 단어 사이 300ms 간격
+                };
+
+                utterance.onerror = () => {
+                    clearWordHighlights();
+                    isReading = false;
+                };
+
+                speechSynthesis.speak(utterance);
+            }
+
+            speakNextWord();
         } else {
             alert('죄송합니다. 이 브라우저는 음성 재생을 지원하지 않습니다.');
         }
