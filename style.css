@@ -13,9 +13,8 @@ body {
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 20px; /* 양옆 패딩은 유지 */
-    padding-top: 50px; /* 상단 패딩은 하트 위치 때문에 유지 */
-    padding-bottom: 20px;
+    padding: 20px;
+    padding-top: 50px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -23,15 +22,13 @@ body {
     max-width: 800px;
     backdrop-filter: blur(12px);
     box-sizing: border-box;
-    position: relative; /* 하트 위치 기준점 */
+    position: relative;
 }
 
-/* "Word Puzzle" 타이틀 삭제됨 */
 h1 {
     display: none; 
 }
 
-/* 하트 위치 및 크기 조정 */
 .lives-display {
     position: absolute;
     top: 22px;
@@ -41,35 +38,74 @@ h1 {
 }
 
 .heart-icon {
-    font-size: 1.5em; /* 크기 축소 */
+    font-size: 1.5em;
 }
 
-/* 동적 타이틀로 사용될 Source Display */
+.heart-icon.lost {
+    color: #cbd5e0;
+    transform: scale(0.8);
+}
+
 .source-display {
-    font-size: 1.4em; /* 타이틀 역할을 하도록 글자 크기 키움 */
+    font-size: 1.4em;
     font-weight: 700;
     color: #333;
     background: transparent;
     border: none;
-    margin-bottom: 25px; /* 문제 영역과의 간격 */
+    margin-bottom: 25px;
 }
 
-/* 문제 영역 여백 및 행간 조정 */
+/* --- 핵심 수정 부분 --- */
 .problem-area {
-    padding: 15px; /* 상하좌우 패딩 축소 */
+    background-color: rgba(247, 250, 252, 0.8);
+    border: 2px solid #e2e8f0;
+    padding: 20px; /* 충분한 내부 여백 확보 */
     margin-bottom: 15px;
-    gap: 8px; /* 단어 그룹 간의 가로 간격 */
-    row-gap: 12px; /* 단어 그룹 간의 세로 간격(행간) 축소 */
+    border-radius: 15px;
     min-height: 120px;
+    
+    /* 가로 정렬 및 자동 줄바꿈 로직 복원 */
+    display: flex;
+    flex-wrap: wrap; /* 아이템이 넘치면 다음 줄로 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 10px; /* 단어 그룹(블록) 사이의 간격 */
 }
 
-/* 단어 그룹(블록) 여백 조정 */
 .word-group {
-    padding: 10px 14px; /* 상하좌우 패딩 약간 축소 */
-    gap: 4px; /* 글자와 빈칸 사이 간격 */
+    /* (핵심) word-group이 세로로 길어지는 것을 방지하고, 내부 아이템을 가로로 정렬 */
+    display: inline-flex; 
+    align-items: center;
+    
+    background: white;
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    gap: 4px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+/* --- (여기까지 핵심 수정) --- */
+
+
+.word-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* 글자 자간 조정 */
+.word-group.has-active-blank {
+    border-color: #4299e1;
+    box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
+}
+
+.char-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin: 0 1px;
+}
+
 .fixed-char-text {
     font-size: 1.2em;
     font-weight: 700;
@@ -79,8 +115,8 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 18px; /* 최소 너비 조정 */
-    letter-spacing: -0.5px; /* 자간 축소 */
+    min-width: 18px;
+    letter-spacing: -0.5px;
 }
 
 .word-blank {
@@ -88,14 +124,13 @@ h1 {
     height: 30px;
     border: 3px solid #cbd5e0;
     border-radius: 8px;
-    font-size: 1.2em;
-    font-weight: 700;
-    text-transform: uppercase;
-    /* (나머지 속성은 동일) */
     text-align: center;
     line-height: 24px;
     cursor: pointer;
     background: white;
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
     transition: all 0.2s ease;
     position: relative;
 }
@@ -153,8 +188,6 @@ h1 {
     justify-content: center;
     transition: all 0.3s ease;
 }
-
-/* --- (키보드 및 모달 CSS는 이전과 동일) --- */
 
 .keyboard-area {
     display: flex;
