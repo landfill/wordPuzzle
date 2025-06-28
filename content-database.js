@@ -23,8 +23,7 @@ const CONTENT_DATABASE = {
         ],
         'Iron Man 2 (2010)': [
             { sentence: "I’m Iron Man. The suit and I are one.", translation: "나는 아이언맨이다. 수트와 나는 하나야.", difficulty: "medium" },
-            { sentence: "If you can make God bleed, people will cease to believe in him.", translation: "신이 피를 흘릴 수 있다면, 사람들은 믿음을 버릴 거야.", difficulty: "hard" },
-            { sentence: "I am a genius, billionaire, playboy, philanthropist.", translation: "나는 천재이자 억만장자, 바람둥이, 자선가다.", difficulty: 'easy' }
+            { sentence: "If you can make God bleed, people will cease to believe in him.", translation: "신이 피를 흘릴 수 있다면, 사람들은 믿음을 버릴 거야.", difficulty: "hard" }            
         ],
         'Thor (2011)': [
             { sentence: "Whosoever holds this hammer, if he be worthy, shall possess the power of Thor.", translation: "이 망치를 들 수 있는 자, 그가 자격이 있다면, 토르의 힘을 가질 것이다.", difficulty: "hard" },
