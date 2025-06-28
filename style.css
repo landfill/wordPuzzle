@@ -10,35 +10,29 @@ body {
     font-weight: 600;
     box-sizing: border-box;
 
-    /* --- NEW BACKGROUND --- */
-    background-color: #f0f2f5; /* Fallback color */
-    /* A soft, clean, and bright gradient background image */
-    background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=2000');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; 
+    /* --- BACKGROUND REMOVED --- */
+    /* All background properties have been removed to make it transparent */
 }
 
 .game-container {
-    background-color: rgba(255, 255, 255, 0.9); /* Slightly adjusted for the new background */
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
     max-width: 800px;
-    backdrop-filter: blur(12px); /* Frosted glass effect */
+    backdrop-filter: blur(12px);
     box-sizing: border-box;
 }
 
+/* --- (The rest of the CSS is unchanged) --- */
 h1 {
     color: #4a5568;
     margin-bottom: 20px;
     font-size: 2em;
     font-weight: 700;
 }
-
 .lives-display {
     font-size: 1.3em;
     margin-bottom: 15px;
@@ -48,7 +42,6 @@ h1 {
     gap: 8px;
     color: #4a5568;
 }
-
 .heart-icon {
     color: #e53e3e;
     font-size: 2em;
@@ -56,12 +49,10 @@ h1 {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     transition: all 0.3s ease;
 }
-
 .heart-icon.lost {
     color: #cbd5e0;
     transform: scale(0.8);
 }
-
 .source-display {
     font-size: 0.8em;
     color: #718096;
@@ -73,7 +64,6 @@ h1 {
     display: inline-block;
     border: 1px solid #e2e8f0;
 }
-
 .problem-area {
     background-color: rgba(247, 250, 252, 0.8);
     border: 2px solid #e2e8f0;
@@ -89,9 +79,6 @@ h1 {
     position: relative;
     box-sizing: border-box;
 }
-
-/* REMOVED .navigation-controls and .nav-button styles */
-
 .word-group {
     background: white;
     border-radius: 12px;
@@ -106,17 +93,14 @@ h1 {
     position: relative;
     z-index: 1;
 }
-
 .word-group:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
-
 .word-group.has-active-blank {
     border-color: #4299e1;
     box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
 }
-
 .char-slot {
     display: flex;
     flex-direction: column;
@@ -124,7 +108,6 @@ h1 {
     position: relative;
     margin: 0 1px;
 }
-
 .fixed-char-text {
     font-size: 1.2em;
     font-weight: 700;
@@ -138,7 +121,6 @@ h1 {
     min-width: 20px;
     transition: all 0.3s ease;
 }
-
 .word-blank {
     width: 30px;
     height: 30px;
@@ -154,44 +136,37 @@ h1 {
     transition: all 0.2s ease;
     position: relative;
 }
-
 .word-blank:hover {
     border-color: #4299e1;
     transform: scale(1.05);
 }
-
 .word-blank.active {
     background: linear-gradient(135deg, #48bb78, #38a169);
     border-color: #38a169;
     color: white;
     animation: pulse 1.5s infinite;
 }
-
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
 }
-
 .word-blank.correct {
     background: linear-gradient(135deg, #48bb78, #38a169);
     border-color: #38a169;
     color: white;
     animation: none;
 }
-
 .word-blank.incorrect {
     background: linear-gradient(135deg, #f56565, #e53e3e);
     border-color: #e53e3e;
     color: white;
     animation: shake 0.5s ease-in-out;
 }
-
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
-
 .hint-number {
     font-size: 0.7em;
     color: #718096;
@@ -208,7 +183,6 @@ h1 {
     justify-content: center;
     transition: all 0.3s ease;
 }
-
 .keyboard-area {
     display: flex;
     flex-direction: column;
@@ -221,7 +195,6 @@ h1 {
     box-sizing: border-box;
     border: 2px solid rgba(135, 206, 250, 0.3);
 }
-
 .keyboard-row {
     display: flex;
     justify-content: center;
@@ -230,11 +203,9 @@ h1 {
     max-width: 100%;
     overflow: hidden;
 }
-
 .keyboard-row:last-child {
     padding: 0 50px;
 }
-
 .key {
     background: white;
     color: #4a5568;
@@ -252,18 +223,15 @@ h1 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
 }
-
 .key:hover {
     background: #f7fafc;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
-
 .key:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .key.disabled {
     background: #a0aec0;
     color: #718096;
@@ -271,13 +239,11 @@ h1 {
     transform: none;
     border-color: #a0aec0;
 }
-
 .key.disabled:hover {
     transform: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background: #a0aec0;
 }
-
 .blank-nav-btn {
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
@@ -290,13 +256,10 @@ h1 {
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
     flex-shrink: 0;
 }
-
 .blank-nav-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
-
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -312,7 +275,6 @@ h1 {
     padding: 20px;
     box-sizing: border-box;
 }
-
 .modal-content {
     background: white;
     padding: 30px;
@@ -326,7 +288,6 @@ h1 {
     max-height: 90vh;
     overflow-y: auto;
 }
-
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -337,19 +298,16 @@ h1 {
         transform: translateY(0) scale(1);
     }
 }
-
 .modal-content h2 {
     color: #4a5568;
     margin-bottom: 25px;
     font-size: 1.8em;
     font-weight: 700;
 }
-
 .sentence-display {
     margin-bottom: 25px;
     text-align: left;
 }
-
 .original-sentence {
     font-size: 1.2em;
     font-weight: 600;
@@ -361,8 +319,6 @@ h1 {
     border-left: 4px solid #4299e1;
     line-height: 1.6;
 }
-
-/* 모달 내 단어 하이라이트 스타일 */
 .modal-word {
     display: inline;
     padding: 2px 4px;
@@ -370,7 +326,6 @@ h1 {
     transition: all 0.3s ease;
     position: relative;
 }
-
 .modal-word.reading-highlight {
     background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
     color: #2d3748 !important;
@@ -380,7 +335,6 @@ h1 {
     z-index: 10;
     animation: modalWordPulse 1s ease-in-out infinite;
 }
-
 @keyframes modalWordPulse {
     0%, 100% { 
         box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
@@ -389,14 +343,12 @@ h1 {
         box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
     }
 }
-
 .source {
     font-size: 0.9em;
     color: #718096;
     margin-bottom: 12px;
     font-style: italic;
 }
-
 .korean-translation {
     font-size: 1em;
     color: #4a5568;
@@ -405,14 +357,12 @@ h1 {
     border-radius: 10px;
     line-height: 1.6;
 }
-
 .modal-buttons {
     display: flex;
     gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
 }
-
 .modal-btn {
     padding: 10px 25px;
     border: none;
@@ -423,34 +373,27 @@ h1 {
     transition: all 0.2s ease;
     min-width: 100px;
 }
-
 .modal-btn.primary {
     background: linear-gradient(135deg, #48bb78, #38a169);
     color: white;
     box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
 }
-
 .modal-btn.primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
 }
-
 .modal-btn.secondary {
     background: linear-gradient(135deg, #4299e1, #3182ce);
     color: white;
     box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
 }
-
 .modal-btn.secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4);
 }
-
 .modal-btn:active {
     transform: translateY(0);
 }
-
-/* Responsive Styles */
 @media (max-width: 768px) {
     body { padding: 5px; }
     .game-container { padding: 15px; width: 100%; max-width: none; margin: 0; }
