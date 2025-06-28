@@ -36,19 +36,9 @@ const CONTENT_DATABASE = {
             difficulty: "medium"
         },
         {
-            sentence: "I'm not saying that I'm responsible for this country's well-being, but I will say that the day I retired is the day things started to fall apart.",
-            translation: "내가 이 나라의 안녕에 책임이 있다고 말하는 건 아니지만, 내가 은퇴한 날부터 모든 게 엉망이 되기 시작했다는 건 말할 수 있지.",
-            difficulty: "medium"
-        },
-        {
             sentence: "Heroes are made by the path they choose, not the powers they are graced with.",
             translation: "영웅은 부여받은 힘이 아니라, 선택한 길에 의해 만들어진다.",
             difficulty: "medium"
-        },
-        {
-            sentence: "My armor was never a distraction or a hobby. It was a cocoon. And now I'm a changed man. I am a different man. I am… reborn.",
-            translation: "내 슈트는 그저 취미나 기분 전환이 아니었어. 그건 마치 고치 같았지. 그리고 이제 난 바뀐 사람이야. 난 다른 사람이야. 난… 다시 태어났어.",
-            difficulty: "hard"
         }
     ],
     'The Incredible Hulk (2008)': [
@@ -108,16 +98,6 @@ const CONTENT_DATABASE = {
             sentence: "The arc reactor, that's what's powering the suit? That's old tech. That's a gimmick.",
             translation: "아크 원자로, 그게 슈트를 움직이는 거야? 그거 구식 기술이잖아. 그냥 속임수지.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is watching. That's a good thing, because the world is now safe. Thanks to me.",
-            translation: "세상이 지켜보고 있지. 좋은 일이야, 왜냐면 이제 세상은 안전하거든. 나 덕분에.",
-            difficulty: "hard"
-        },
-        {
-            sentence: "I have successfully privatized world peace!",
-            translation: "나는 성공적으로 세계 평화를 민영화했다!",
-            difficulty: "hard"
         }
     ],
     'Thor (2011)': [
@@ -145,11 +125,6 @@ const CONTENT_DATABASE = {
             sentence: "The Bifrost is a bridge between worlds. It can take you anywhere.",
             translation: "비프로스트는 세상들을 잇는 다리야. 널 어디든 데려다줄 수 있지.",
             difficulty: "medium"
-        },
-        {
-            sentence: "Your ancestors called it magic, and you call it science. I come from a place where they're one and the same.",
-            translation: "너희 조상들은 이걸 마법이라 불렀고, 너희는 과학이라 부르지. 내가 온 곳에서는 그 둘이 같은 거야.",
-            difficulty: "hard"
         }
     ],
     'Captain America: The First Avenger (2011)': [
@@ -167,11 +142,6 @@ const CONTENT_DATABASE = {
             sentence: "I don’t like bullies. I don’t care where they’re from.",
             translation: "불량배는 싫어. 어디서 왔든 상관없어.",
             difficulty: "easy"
-        },
-        {
-            sentence: "A strong man who has known power all his life will not have respect for that power, but a weak man knows the value of strength, and knows compassion.",
-            translation: "평생 힘을 알아온 강자는 그 힘을 존중하지 않지만, 약자는 힘의 가치를 알고 연민도 알지.",
-            difficulty: "medium"
         },
         {
             sentence: "Sometimes the best you can do is just to take a swing.",
@@ -206,11 +176,6 @@ const CONTENT_DATABASE = {
             difficulty: "easy"
         },
         {
-            sentence: "There was an idea... to bring together a group of remarkable people, to see if they could become something more.",
-            translation: "하나의 아이디어가 있었지... 특별한 사람들을 모아서, 그들이 더 대단한 존재가 될 수 있는지 보려는.",
-            difficulty: "easy"
-        },
-        {
             sentence: "I've got a great team. Just a little rough around the edges.",
             translation: "나에겐 훌륭한 팀이 있어. 좀 거칠긴 하지만.",
             difficulty: "medium"
@@ -224,11 +189,6 @@ const CONTENT_DATABASE = {
             sentence: "I have to know. Can you see me now?",
             translation: "알아야겠어. 지금 날 볼 수 있나요?",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "hard"
         },
         {
             sentence: "Humanity. You were made for more than just fighting. You were made to serve.",
@@ -260,11 +220,6 @@ const CONTENT_DATABASE = {
         {
             sentence: "You're a man who has everything, and nothing.",
             translation: "당신은 모든 것을 가졌지만, 아무것도 갖지 못한 남자야.",
-            difficulty: "hard"
-        },
-        {
-            sentence: "I'm not saying that I'm responsible for this country's well-being, but I will say that the day I retired is the day things started to fall apart.",
-            translation: "내가 이 나라의 안녕에 책임이 있다고 말하는 건 아니지만, 내가 은퇴한 날부터 모든 게 엉망이 되기 시작했다는 건 말할 수 있지.",
             difficulty: "hard"
         }
     ],
@@ -377,11 +332,6 @@ const CONTENT_DATABASE = {
             sentence: "I have to know. Can you see me now?",
             translation: "알아야겠어. 지금 날 볼 수 있나요?",
             difficulty: "hard"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Avengers: Age of Ultron (2015)': [
@@ -408,11 +358,6 @@ const CONTENT_DATABASE = {
         {
             sentence: "The only thing standing in your way is you.",
             translation: "네 길을 막는 유일한 것은 너 자신뿐이야.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
             difficulty: "medium"
         },
         {
@@ -451,11 +396,6 @@ const CONTENT_DATABASE = {
             sentence: "You have to be a hero, not just a man.",
             translation: "당신은 그냥 남자가 아니라, 영웅이 되어야 해.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "hard"
         }
     ],
     'Captain America: Civil War (2016)': [
@@ -488,16 +428,6 @@ const CONTENT_DATABASE = {
             sentence: "I don't have to be a hero. I just have to be a man.",
             translation: "나는 영웅이 될 필요 없어. 그냥 남자면 돼.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
-        },
-        {
-            sentence: "When you're a kid, you think you can do anything. But you can't. You can't save everyone.",
-            translation: "어렸을 때는 뭐든지 할 수 있다고 생각했지. 하지만 아니야. 모두를 구할 수는 없어.",
-            difficulty: "hard"
         }
     ],
     'Doctor Strange (2016)': [
@@ -535,11 +465,6 @@ const CONTENT_DATABASE = {
             sentence: "I have seen the future, and it is full of destruction. The nine realms will fall.",
             translation: "나는 미래를 봤고, 그곳은 파괴로 가득 차 있어. 아홉 왕국이 무너질 거야.",
             difficulty: "hard"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Guardians of the Galaxy Vol. 2 (2017)': [
@@ -562,11 +487,6 @@ const CONTENT_DATABASE = {
             sentence: "I'm not a hero. I'm a father.",
             translation: "난 영웅이 아니야. 난 아빠야.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "hard"
         }
     ],
     'Spider-Man: Homecoming (2017)': [
@@ -599,11 +519,6 @@ const CONTENT_DATABASE = {
             sentence: "The best thing you can do is just to take a swing.",
             translation: "때로는 그냥 한번 휘두르는 게 최선일 때도 있어.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Thor: Ragnarok (2017)': [
@@ -631,16 +546,6 @@ const CONTENT_DATABASE = {
             sentence: "The Bifrost is a bridge between worlds. It can take you anywhere.",
             translation: "비프로스트는 세상들을 잇는 다리야. 널 어디든 데려다줄 수 있지.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I have seen the future, and it is full of destruction. The nine realms will fall.",
-            translation: "나는 미래를 봤고, 그곳은 파괴로 가득 차 있어. 아홉 왕국이 무너질 거야.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "Your ancestors called it magic, and you call it science. I come from a place where they're one and the same.",
-            translation: "너희 조상들은 이걸 마법이라 불렀고, 너희는 과학이라 부르지. 내가 온 곳에서는 그 둘이 같은 거야.",
-            difficulty: "hard"
         }
     ],
     'Black Panther (2018)': [
@@ -658,24 +563,9 @@ const CONTENT_DATABASE = {
             sentence: "A king's heart is not just for him. It's for his people.",
             translation: "왕의 심장은 그 자신만을 위한 것이 아니야. 그의 백성들을 위한 것이지.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I have seen the future, and it is full of destruction. The nine realms will fall.",
-            translation: "나는 미래를 봤고, 그곳은 파괴로 가득 차 있어. 아홉 왕국이 무너질 거야.",
-            difficulty: "hard"
-        },
-        {
-            sentence: "To build a better world, you have to tear down the old one. Let's start with yours.",
-            translation: "더 나은 세상을 만들려면, 오래된 세상을 허물어야 해. 너희 세상부터 시작하자고.",
-            difficulty: "hard"
         }
     ],
     'Avengers: Infinity War (2018)': [
-        {
-            sentence: "I am Groot.",
-            translation: "나는 그루트다.",
-            difficulty: "easy"
-        },
         {
             sentence: "We are Groot.",
             translation: "우리는 그루트다.",
@@ -739,11 +629,6 @@ const CONTENT_DATABASE = {
             difficulty: "medium"
         },
         {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "medium"
-        },
-        {
             sentence: "To build a better world, you have to tear down the old one. Let's start with yours.",
             translation: "더 나은 세상을 만들려면, 오래된 세상을 허물어야 해. 너희 세상부터 시작하자고.",
             difficulty: "hard"
@@ -764,16 +649,6 @@ const CONTENT_DATABASE = {
             sentence: "We're not the only ones with a plan.",
             translation: "계획을 가진 건 우리뿐만이 아니야.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Avengers: Endgame (2019)': [
@@ -821,11 +696,6 @@ const CONTENT_DATABASE = {
             sentence: "I'm going to tear you apart, from the inside out.",
             translation: "널 안에서부터 산산조각 내줄게.",
             difficulty: "hard"
-        },
-        {
-            sentence: "To build a better world, you have to tear down the old one. Let's start with yours.",
-            translation: "더 나은 세상을 만들려면, 오래된 세상을 허물어야 해. 너희 세상부터 시작하자고.",
-            difficulty: "hard"
         }
     ],
     'Spider-Man: Far From Home (2019)': [
@@ -848,11 +718,6 @@ const CONTENT_DATABASE = {
             sentence: "The world needs us to be better. We need to be better.",
             translation: "세상은 우리가 더 나아지길 원해. 우리는 더 나아져야 해.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Black Widow (2021)': [
@@ -870,16 +735,6 @@ const CONTENT_DATABASE = {
             sentence: "We create our own demons.",
             translation: "우리는 우리만의 악마를 만들어낸다.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "To build a better world, you have to tear down the old one. Let's start with yours.",
-            translation: "더 나은 세상을 만들려면, 오래된 세상을 허물어야 해. 너희 세상부터 시작하자고.",
-            difficulty: "hard"
         }
     ],
     'Shang-Chi and the Legend of the Ten Rings (2021)': [
@@ -902,11 +757,6 @@ const CONTENT_DATABASE = {
             sentence: "The only thing standing in your way is you.",
             translation: "네 길을 막는 유일한 것은 너 자신뿐이야.",
             difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
     'Eternals (2021)': [
@@ -919,16 +769,6 @@ const CONTENT_DATABASE = {
             sentence: "We have to be better. We need to be better.",
             translation: "우리는 더 나아져야 해. 더 나아질 필요가 있어.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The world is a fragile place, and we're not the only ones who know it. But you're not the only ones with a plan.",
-            translation: "세상은 깨지기 쉬운 곳이고, 그걸 아는 건 우리뿐만이 아니야. 하지만 계획을 가진 것도 너희뿐만이 아니지.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "To build a better world, you have to tear down the old one. Let's start with yours.",
-            translation: "더 나은 세상을 만들려면, 오래된 세상을 허물어야 해. 너희 세상부터 시작하자고.",
-            difficulty: "hard"
         }
     ],
     'Spider-Man: No Way Home (2021)': [
@@ -956,19 +796,9 @@ const CONTENT_DATABASE = {
             sentence: "I don't have to be a hero. I just have to be a man.",
             translation: "나는 영웅이 될 필요 없어. 그냥 남자면 돼.",
             difficulty: "medium"
-        },
-        {
-            sentence: "The best thing you can do is just to take a swing.",
-            translation: "때로는 그냥 한번 휘두르는 게 최선일 때도 있어.",
-            difficulty: "medium"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
-            difficulty: "hard"
         }
     ],
-    '"Doctor Strange in the Multiverse of Madness (2022)': [
+    'Doctor Strange in the Multiverse of Madness (2022)': [
         {
             sentence: "I love you in every universe.",
             translation: "모든 우주에서 널 사랑해.",
@@ -987,11 +817,6 @@ const CONTENT_DATABASE = {
         {
             sentence: "I have seen the future, and it is full of destruction. The nine realms will fall.",
             translation: "나는 미래를 봤고, 그곳은 파괴로 가득 차 있어. 아홉 왕국이 무너질 거야.",
-            difficulty: "hard"
-        },
-        {
-            sentence: "I'm not a soldier. I'm a ghost. And I'm going to haunt you for the rest of your life.",
-            translation: "난 군인이 아니야. 난 유령이야. 그리고 네 평생을 따라다닐 거야.",
             difficulty: "hard"
         }
     ],      
