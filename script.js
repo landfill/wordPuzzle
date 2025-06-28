@@ -351,7 +351,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = Array(5).fill(0).map((_, i) => `<span class="heart-icon ${i >= lives ? 'lost' : ''}">♥</span>`).join('');
+        livesDisplay.innerHTML = ''; // 기존 내용을 비움
+        // 5개의 막대를 생성
+        for (let i = 0; i < 5; i++) {
+            const bar = document.createElement('div');
+            bar.classList.add('life-bar');
+            // 현재 남은 생명(lives)보다 인덱스가 크거나 같으면 'lost' 클래스 추가
+            if (i >= lives) {
+                bar.classList.add('lost');
+            }
+            livesDisplay.appendChild(bar);
+        }
     }
     
     function navigateBlank(dir) {
