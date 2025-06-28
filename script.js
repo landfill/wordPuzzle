@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let charToHintNumber = new Map();
     let currentSentence = '';
     let isReading = false;
+    let currentUtterance = null;
 
     const problems = [
         {
@@ -131,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
         isReading = false;
+        currentUtterance = null;
         clearWordHighlights();
         loadProblem(currentProblemIndex);
         createKeyboard();
@@ -502,6 +504,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (successModal) {
             successModal.style.display = 'none';
         }
+        // TTS 중지
+        if (isReading) {
+            speechSynthesis.cancel();
+            clearWordHighlights();
+            isReading = false;
+        }
     }
 
     function clearWordHighlights() {
@@ -510,18 +518,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function highlightWord(wordIndex) {
+    function highlightWordByText(targetWord, wordIndex) {
         clearWordHighlights();
-        const wordGroup = document.querySelector(`[data-word-index="${wordIndex}"]`);
-        if (wordGroup) {
-            wordGroup.classList.add('reading-highlight');
-            console.log(`Highlighting word ${wordIndex}:`, wordGroup); // 디버깅용
-        } else {
-            console.log(`Word group not found for index ${wordIndex}`); // 디버깅용
-        }
+        
+        // 모든 단어 그룹을 확인하여 일치하는 단어 찾기
+        const wordGroups = document.querySelectorAll('.word-group');
+        
+        wordGroups.forEach((group, index) => {
+            // 단어 그룹에서 실제 텍스트 추출
+            const chars = [];
+            group.querySelectorAll('.char-slot').forEach(slot => {
+                const fixedChar = slot.querySelector('.fixed-char-text');
+                const blankChar = slot.querySelector('.word-blank');
+                
+                if (fixedChar) {
+                    chars.push(fixedChar.textContent.toLowerCase());
+                } else if (blankChar && blankChar.classList.contains('correct')) {
+                    chars.push(blankChar.textContent.toLowerCase());
+                } else if (blankChar) {
+                    // 빈칸이 채워지지 않은 경우 정답 문자 사용
+                    chars.push(blankChar.dataset.correctChar);
+                }
+            });
+            
+            const groupWord = chars.join('').replace(/[^a-z]/g, '');
+            const cleanTargetWord = targetWord.toLowerCase().replace(/[^a-z]/g, '');
+            
+            if (groupWord === cleanTargetWord) {
+                group.classList.add('reading-highlight');
+                console.log(`Highlighting word: "${targetWord}" (group ${index})`);
+                return;
+            }
+        });
     }
 
     function speakSentence() {
+        // 이미 읽고 있으면 중지
         if (isReading) {
             speechSynthesis.cancel();
             clearWordHighlights();
@@ -530,43 +562,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if ('speechSynthesis' in window) {
+            isReading = true;
             const words = currentSentence.split(' ');
             let currentWordIndex = 0;
-            isReading = true;
 
-            function speakNextWord() {
-                if (currentWordIndex >= words.length || !isReading) {
-                    clearWordHighlights();
-                    isReading = false;
-                    return;
+            // 전체 문장을 자연스럽게 읽기
+            const utterance = new SpeechSynthesisUtterance(currentSentence);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0; // 정상 속도
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            currentUtterance = utterance;
+
+            // 단어별 하이라이트를 위한 타이밍 계산
+            const avgWordsPerSecond = 2.5; // 평균 읽기 속도 (단어/초)
+            const wordDuration = 1000 / avgWordsPerSecond; // 단어당 시간 (ms)
+
+            let highlightTimer;
+            
+            function startWordHighlighting() {
+                function highlightNextWord() {
+                    if (currentWordIndex < words.length && isReading) {
+                        const word = words[currentWordIndex];
+                        console.log(`Highlighting word ${currentWordIndex}: "${word}"`);
+                        highlightWordByText(word, currentWordIndex);
+                        currentWordIndex++;
+                        
+                        highlightTimer = setTimeout(highlightNextWord, wordDuration);
+                    } else {
+                        clearWordHighlights();
+                    }
                 }
-
-                console.log(`Speaking word ${currentWordIndex}: ${words[currentWordIndex]}`); // 디버깅용
-                highlightWord(currentWordIndex);
-                
-                const utterance = new SpeechSynthesisUtterance(words[currentWordIndex]);
-                utterance.lang = 'en-US';
-                utterance.rate = 1.0; // 정상 속도
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-
-                utterance.onend = () => {
-                    currentWordIndex++;
-                    setTimeout(() => {
-                        speakNextWord();
-                    }, 150); // 단어 사이 150ms 간격
-                };
-
-                utterance.onerror = () => {
-                    console.error('TTS error occurred');
-                    clearWordHighlights();
-                    isReading = false;
-                };
-
-                speechSynthesis.speak(utterance);
+                highlightNextWord();
             }
 
-            speakNextWord();
+            utterance.onstart = () => {
+                console.log('TTS started');
+                startWordHighlighting();
+            };
+
+            utterance.onend = () => {
+                console.log('TTS ended');
+                clearWordHighlights();
+                isReading = false;
+                currentUtterance = null;
+                if (highlightTimer) {
+                    clearTimeout(highlightTimer);
+                }
+            };
+
+            utterance.onerror = (event) => {
+                console.error('TTS error:', event);
+                clearWordHighlights();
+                isReading = false;
+                currentUtterance = null;
+                if (highlightTimer) {
+                    clearTimeout(highlightTimer);
+                }
+            };
+
+            speechSynthesis.speak(utterance);
         } else {
             alert('죄송합니다. 이 브라우저는 음성 재생을 지원하지 않습니다.');
         }
