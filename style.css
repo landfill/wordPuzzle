@@ -29,11 +29,12 @@ h1 {
     display: none;
 }
 
-/* --- 라이프 표시 스타일 (안테나 막대 형태로 변경) --- */
+/* --- 라이프 표시 스타일 (동일 크기 막대로 변경) --- */
 .lives-display {
     position: absolute;
     top: 20px;
     left: 15px;
+    right: 15px; /* 제목 박스와 동일한 너비를 갖도록 설정 */
     margin: 0;
     display: flex;
     align-items: flex-end; /* 막대가 아래 정렬되도록 */
@@ -42,18 +43,12 @@ h1 {
 }
 
 .life-bar {
-    width: 4px; /* 막대 너비 */
+    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정 */
+    height: 30%; /* 가장 작은 안테나 높이로 통일 */
     background-color: #e53e3e; /* 빨간색 */
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
 }
-
-/* 막대 높이를 각각 다르게 설정하여 안테나 모양 생성 */
-.life-bar:nth-child(1) { height: 30%; }
-.life-bar:nth-child(2) { height: 50%; }
-.life-bar:nth-child(3) { height: 70%; }
-.life-bar:nth-child(4) { height: 85%; }
-.life-bar:nth-child(5) { height: 100%; }
 
 .life-bar.lost {
     opacity: 0.2; /* 사라지는 효과 */
