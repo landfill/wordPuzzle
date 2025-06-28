@@ -10,26 +10,83 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Core Game Functions ---
     // ...
 
+    // THIS FUNCTION IS NOW CORRECTED
     function loadProblem(problem) {
+        // Clear previous problem
         problemArea.innerHTML = '';
         const words = problem.sentence.split(' ');
 
-        /* THIS BLOCK HAS BEEN REMOVED
-        const navControls = document.createElement('div');
-        navControls.className = 'navigation-controls';
-        navControls.innerHTML = `<button class="nav-button">◀</button><button class="nav-button">▶</button>`;
-        navControls.firstChild.onclick = () => navigateBlank(-1);
-        navControls.lastChild.onclick = () => navigateBlank(1);
-        problemArea.appendChild(navControls);
-        */
+        // The block that created the extra buttons is now permanently removed.
 
         const blankCharToHintMap = new Map();
-        // ... (The rest of the function remains the same)
-        problem.blanks.forEach(b => { const c = b.char.toLowerCase(); if (!blankCharToHintMap.has(c)) blankCharToHintMap.set(c, b.hintNum); requiredBlankChars.set(c, (requiredBlankChars.get(c) || 0) + 1); });
-        for (let i = 0; i < problem.sentence.length; i++) { const c = problem.sentence[i].toLowerCase(); if (c.match(/[a-z]/) && !problem.blanks.some(b => b.index === i)) { blankCharToHintMap.has(c) ? charToHintNumber.set(c, blankCharToHintMap.get(c)) : usedCharsInProblem.add(c); } }
-        let charIndex = 0, blankCounter = 0;
-        words.forEach(word => { const group = document.createElement('div'); group.className = 'word-group'; for (let i = 0; i < word.length; i++) { const char = word[i], curIdx = charIndex + i; const slot = document.createElement('div'); slot.className = 'char-slot'; const bInfo = problem.blanks.find(b => b.index === curIdx); if (bInfo) { const bSpan = document.createElement('div'); bSpan.className = 'word-blank'; bSpan.dataset.correctChar = bInfo.char.toLowerCase(); bSpan.dataset.blankIndex = blankCounter++; bSpan.onclick = () => setActiveBlank(parseInt(bSpan.dataset.blankIndex)); const hSpan = document.createElement('div'); hSpan.className = 'hint-number'; hSpan.textContent = bInfo.hintNum; slot.append(bSpan, hSpan); problemBlanks.push(bSpan); } else { const cSpan = document.createElement('div'), hSpan = document.createElement('div'); hSpan.className = 'hint-number'; cSpan.className = 'fixed-char-text'; if (char.match(/[a-zA-Z]/)) { cSpan.textContent = char.toUpperCase(); const lc = char.toLowerCase(); if (charToHintNumber.has(lc)) { hSpan.textContent = charToHintNumber.get(lc); hSpan.dataset.char = lc; } else { hSpan.style.visibility = 'hidden'; } } else { cSpan.textContent = char; hSpan.style.visibility = 'hidden'; } slot.append(cSpan, hSpan); } group.appendChild(slot); } problemArea.appendChild(group); charIndex += word.length + 1; });
-        if (problemBlanks.length > 0) setActiveBlank(0);
+        problem.blanks.forEach(b => { 
+            const c = b.char.toLowerCase(); 
+            if (!blankCharToHintMap.has(c)) {
+                blankCharToHintMap.set(c, b.hintNum);
+            }
+            requiredBlankChars.set(c, (requiredBlankChars.get(c) || 0) + 1);
+        });
+
+        for (let i = 0; i < problem.sentence.length; i++) {
+            const c = problem.sentence[i].toLowerCase();
+            if (c.match(/[a-z]/) && !problem.blanks.some(b => b.index === i)) {
+                if (blankCharToHintMap.has(c)) {
+                    charToHintNumber.set(c, blankCharToHintMap.get(c));
+                } else {
+                    usedCharsInProblem.add(c);
+                }
+            }
+        }
+        
+        let charIndex = 0;
+        let blankCounter = 0;
+        words.forEach(word => {
+            const group = document.createElement('div');
+            group.className = 'word-group';
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i], curIdx = charIndex + i;
+                const slot = document.createElement('div');
+                slot.className = 'char-slot';
+                const bInfo = problem.blanks.find(b => b.index === curIdx);
+                if (bInfo) {
+                    const bSpan = document.createElement('div');
+                    bSpan.className = 'word-blank';
+                    bSpan.dataset.correctChar = bInfo.char.toLowerCase();
+                    bSpan.dataset.blankIndex = blankCounter++;
+                    bSpan.onclick = () => setActiveBlank(parseInt(bSpan.dataset.blankIndex));
+                    const hSpan = document.createElement('div');
+                    hSpan.className = 'hint-number';
+                    hSpan.textContent = bInfo.hintNum;
+                    slot.append(bSpan, hSpan);
+                    problemBlanks.push(bSpan);
+                } else {
+                    const cSpan = document.createElement('div'), hSpan = document.createElement('div');
+                    hSpan.className = 'hint-number';
+                    cSpan.className = 'fixed-char-text';
+                    if (char.match(/[a-zA-Z]/)) {
+                        cSpan.textContent = char.toUpperCase();
+                        const lc = char.toLowerCase();
+                        if (charToHintNumber.has(lc)) {
+                            hSpan.textContent = charToHintNumber.get(lc);
+                            hSpan.dataset.char = lc;
+                        } else {
+                            hSpan.style.visibility = 'hidden';
+                        }
+                    } else {
+                        cSpan.textContent = char;
+                        hSpan.style.visibility = 'hidden';
+                    }
+                    slot.append(cSpan, hSpan);
+                }
+                group.appendChild(slot);
+            }
+            problemArea.appendChild(group);
+            charIndex += word.length + 1;
+        });
+
+        if (problemBlanks.length > 0) {
+            setActiveBlank(0);
+        }
     }
     
     // ... (The rest of the script is unchanged from the previous correct version)
