@@ -17,7 +17,7 @@ const CONTENT_DATABASE = {
             { sentence: "Sometimes you gotta run before you can walk.", translation: "때로는 걷기 전에 뛰어야 할 때도 있어.", difficulty: "medium" }
         ],
         'The Incredible Hulk (2008)': [
-            { sentence: "Hulk smash!", translation: "헐크 박살!", difficulty: "easy' },
+            { sentence: "Hulk smash!", translation: "헐크 박살!", difficulty: 'easy' },
             { sentence: "You won't like me when I'm angry.", translation: "나 화나면 안 좋아할 걸.", difficulty: 'easy' },
             { sentence: "I’m not always in control.", translation: "난 항상 통제할 수 있는 게 아니야.", difficulty: 'medium' }
         ],
