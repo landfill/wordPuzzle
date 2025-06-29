@@ -11,6 +11,7 @@ body {
     box-sizing: border-box;
 }
 
+/* --- 수정된 부분 --- */
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px 15px 15px; 
@@ -24,7 +25,8 @@ body {
     position: relative; 
     display: flex;
     flex-direction: column;
-    min-height: 600px; 
+    /* 5줄 문제를 기준으로 데스크톱 최소 높이를 620px로 고정 */
+    min-height: 620px; 
 }
 
 h1 {
@@ -74,7 +76,6 @@ h1 {
     align-items: center;
 }
 
-/* --- 수정된 부분 --- */
 .problem-area {
     background-color: rgba(227, 242, 253, 0.9); 
     border: 2px solid #bbdefb;
@@ -84,15 +85,13 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    /* align-items는 그대로 두고, align-content를 추가하여 줄 그룹을 제어 */
     align-items: center; 
-    align-content: center; /* 이 한 줄이 핵심! 줄 그룹을 중앙에 배치 */
+    align-content: center; 
     gap: 6px; 
     overflow-y: auto;
     flex-grow: 1; 
     min-height: 200px;
 }
-/* --- 수정 끝 --- */
 
 .word-group {
     display: inline-flex; 
@@ -449,9 +448,11 @@ h1 {
     transform: translateY(0);
 }
 
+/* --- 수정된 부분 --- */
 @media (max-width: 768px) {
     .game-container {
-        min-height: 90vh;
+        /* 모바일에서는 화면 높이에 맞춰 더 타이트한 높이 고정 */
+        min-height: 580px; 
     }
 
     .source-display {
