@@ -14,7 +14,6 @@ body {
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 15px;
-    padding-top: 50px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -22,40 +21,42 @@ body {
     max-width: 800px;
     backdrop-filter: blur(12px);
     box-sizing: border-box;
-    position: relative;
+    position: relative; 
+    display: flex;
+    flex-direction: column;
+    height: 90vh; 
+    max-height: 700px; 
+    min-height: 550px; 
 }
 
 h1 {
     display: none;
 }
 
-/* --- 라이프 표시 스타일 (동일 크기 막대로 변경) --- */
 .lives-display {
     position: absolute;
     top: 20px;
     left: 15px;
-    right: 15px; /* 제목 박스와 동일한 너비를 갖도록 설정 */
     margin: 0;
     display: flex;
-    align-items: flex-end; /* 막대가 아래 정렬되도록 */
-    gap: 2px; /* 막대 사이의 미세한 간격 */
-    height: 18px; /* 컨테이너 높이 지정 */
+    align-items: flex-end;
+    gap: 2px;
+    height: 18px;
+    width: calc(100% - 30px); 
 }
 
 .life-bar {
-    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정 */
-    height: 30%; /* 가장 작은 안테나 높이로 통일 */
-    background-color: #e53e3e; /* 빨간색 */
+    flex: 1;
+    height: 30%;
+    background-color: #e53e3e;
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
 }
 
 .life-bar.lost {
-    opacity: 0.2; /* 사라지는 효과 */
-    background-color: #cbd5e0; /* 회색으로 변경 */
+    opacity: 0.2;
+    background-color: #cbd5e0;
 }
-/* ------------------------------------ */
-
 
 .source-display {
     display: block;
@@ -69,6 +70,7 @@ h1 {
     border-radius: 12px;
     padding: 10px 15px;
     margin: 0 auto 15px auto;
+    flex-shrink: 0;
 }
 
 .problem-area {
@@ -77,27 +79,27 @@ h1 {
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 15px;
-    min-height: 120px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 6px; 
+    overflow-y: auto;
+    flex-grow: 1; 
+    min-height: 0;
 }
 
-/* --- 수정된 부분 시작 --- */
 .word-group {
     display: inline-flex; 
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 6px; /* 기존 6px 8px에서 상하좌우 여백 통일 및 축소 */
+    padding: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    gap: 2px; /* 기존 4px에서 줄여 글자 사이 간격(자간) 대폭 축소 */
+    gap: 2px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
 }
-/* --- 수정된 부분 끝 --- */
 
 .word-group:hover {
     transform: translateY(-2px);
@@ -116,8 +118,6 @@ h1 {
     position: relative;
     margin: 0; 
 }
-
-/* --- 수정된 부분 시작 --- */
 .fixed-char-text {
     font-size: 1.2em;
     font-weight: 700;
@@ -127,17 +127,17 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 15px; /* 기존 16px에서 줄여 너비 축소 */
+    min-width: 15px;
     letter-spacing: -0.5px;
 }
 
 .word-blank {
-    width: 26px; /* 기존 28px에서 줄여 너비 축소 */
-    height: 26px; /* 기존 28px에서 줄여 높이 축소 */
+    width: 26px;
+    height: 26px;
     border: 3px solid #cbd5e0;
     border-radius: 8px;
     text-align: center;
-    line-height: 20px; /* 높이 변경에 따라 조정 */
+    line-height: 20px;
     cursor: pointer;
     background: white;
     font-size: 1.2em;
@@ -146,7 +146,6 @@ h1 {
     transition: all 0.2s ease;
     position: relative;
 }
-/* --- 수정된 부분 끝 --- */
 
 
 .word-blank:hover {
@@ -214,6 +213,7 @@ h1 {
     position: relative;
     box-sizing: border-box;
     border: 2px solid rgba(135, 206, 250, 0.3);
+    flex-shrink: 0;
 }
 
 .keyboard-row {
@@ -445,28 +445,43 @@ h1 {
     transform: translateY(0);
 }
 
+/* --- 모바일 반응형 수정 시작 --- */
 @media (max-width: 768px) {
-    .word-blank {
-        width: 25px;
-        height: 25px;
-        font-size: 1em;
-        line-height: 19px;
+    .word-group {
+        padding: 5px; /* 내부 여백 축소 */
+        gap: 1px; /* 글자 간격 최소화 */
     }
+
+    .fixed-char-text {
+        font-size: 1.1em; /* 폰트 크기 축소 */
+        min-height: 28px; /* 높이 조정 */
+    }
+
+    .word-blank {
+        font-size: 1.1em; /* 폰트 크기 축소 */
+        width: 24px;      /* 너비 축소 */
+        height: 24px;     /* 높이 축소 */
+        line-height: 18px; /* 라인 높이 조정 */
+    }
+
     .hint-number {
-        font-size: 0.6em;
+        font-size: 0.65em;
         padding: 1px 4px;
         margin-top: 3px;
         min-width: 12px;
         min-height: 14px;
     }
+
     .modal-buttons {
         flex-direction: column;
         align-items: center;
         gap: 10px;
     }
+
     .modal-btn {
         width: 100%;
         max-width: 200px;
         padding: 12px 20px;
     }
 }
+/* --- 모바일 반응형 수정 끝 --- */
