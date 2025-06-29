@@ -107,10 +107,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let lastHighlightedIndex = -1;
 
+            // --- 수정된 부분 시작 ---
+            // 첫 단어 하이라이트를 미리 예약
+            if (wordTimepoints.length > 0) {
+                const firstWordStartTime = wordTimepoints[0].timeSeconds * 1000;
+                setTimeout(() => {
+                    // isReading 상태를 다시 확인하여, 중간에 취소된 경우 하이라이트하지 않음
+                    if (!isReading) return;
+                    highlightModalWord(0);
+                    lastHighlightedIndex = 0; // 첫 단어는 이미 처리되었음을 표시
+                }, firstWordStartTime);
+            }
+            // --- 수정된 부분 끝 ---
+
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
                 let currentWordIndex = -1;
 
+                // 다음 하이라이트할 단어를 찾음
                 for (let i = 0; i < wordTimepoints.length; i++) {
                     if (currentTime >= wordTimepoints[i].timeSeconds) {
                         currentWordIndex = i;
@@ -118,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         break;
                     }
                 }
-
+                
                 if (currentWordIndex !== -1 && currentWordIndex !== lastHighlightedIndex) {
                     highlightModalWord(currentWordIndex);
                     lastHighlightedIndex = currentWordIndex;
@@ -351,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = ''; // 기존 내용을 비움 
+        livesDisplay.innerHTML = ''; // 기존 내용을 비움
         // 5개의 막대를 생성
         for (let i = 0; i < 5; i++) {
             const bar = document.createElement('div');
