@@ -11,10 +11,10 @@ body {
     box-sizing: border-box;
 }
 
-/* --- 수정의 핵심 1 --- */
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 50px 15px 15px; 
+    /* 상단 패딩 조정으로 생명력 바와 제목 간격 조절 */
+    padding: 40px 15px 15px; 
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -25,9 +25,8 @@ body {
     position: relative; 
     display: flex;
     flex-direction: column;
-    /* 최소 높이를 지정하여 컨테이너가 줄어드는 것을 방지 */
-    min-height: 85vh;
-    max-height: 95vh;
+    /* 데스크톱 기준 최소 높이를 지정해 전체 틀 고정 */
+    min-height: 600px; 
 }
 
 h1 {
@@ -36,7 +35,8 @@ h1 {
 
 .lives-display {
     position: absolute;
-    top: 20px;
+    /* top 값을 조정해 제목과의 간격 조절 */
+    top: 15px; 
     left: 15px;
     margin: 0;
     display: flex;
@@ -60,7 +60,6 @@ h1 {
 }
 
 .source-display {
-    display: block;
     width: 100%;
     box-sizing: border-box;
     font-size: 1.3em;
@@ -71,41 +70,30 @@ h1 {
     border-radius: 12px;
     padding: 10px 15px;
     margin: 0 auto 15px auto;
-    flex-shrink: 0; /* 크기가 줄어들지 않도록 설정 */
+    flex-shrink: 0;
+    /* 고정 높이를 부여하고 내용을 세로 중앙 정렬 */
+    min-height: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* --- 수정의 핵심 2 --- */
 .problem-area {
-    background-color: rgba(247, 250, 252, 0.8);
-    border: 2px solid #e2e8f0;
+    /* 배경색을 변경하여 빈 공간을 디자인 요소로 활용 */
+    background-color: rgba(227, 242, 253, 0.9); 
+    border: 2px solid #bbdefb; /* 배경색에 어울리는 테두리 색상 */
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 15px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center; /* 내부 콘텐츠를 세로 중앙에 배치 */
+    align-items: center;
     gap: 6px; 
     overflow-y: auto;
-    /* flex-grow를 사용해 남은 모든 세로 공간을 차지 */
     flex-grow: 1; 
-    min-height: 200px; /* 문제 영역의 최소 높이를 보장 */
+    min-height: 200px;
 }
-
-.keyboard-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 5px;
-    background: linear-gradient(135deg, rgba(230, 230, 250, 0.2), rgba(210, 220, 240, 0.3));
-    border-radius: 15px;
-    position: relative;
-    box-sizing: border-box;
-    border: 2px solid rgba(135, 206, 250, 0.3);
-    flex-shrink: 0; /* 크기가 줄어들지 않도록 설정 */
-}
-/* --- 수정의 핵심 끝 --- */
 
 .word-group {
     display: inline-flex; 
@@ -165,7 +153,6 @@ h1 {
     position: relative;
 }
 
-
 .word-blank:hover {
     border-color: #4299e1;
     transform: scale(1.05);
@@ -220,6 +207,19 @@ h1 {
     transition: all 0.3s ease;
 }
 
+.keyboard-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 5px;
+    background: linear-gradient(135deg, rgba(230, 230, 250, 0.2), rgba(210, 220, 240, 0.3));
+    border-radius: 15px;
+    position: relative;
+    box-sizing: border-box;
+    border: 2px solid rgba(135, 206, 250, 0.3);
+    flex-shrink: 0;
+}
 
 .keyboard-row {
     display: flex;
@@ -450,24 +450,33 @@ h1 {
     transform: translateY(0);
 }
 
-/* --- 모바일 밀도 최적화 --- */
 @media (max-width: 768px) {
+    .game-container {
+        /* 모바일에서는 화면 높이를 꽉 채우도록 설정 */
+        min-height: 90vh;
+    }
+
+    .source-display {
+        min-height: 65px; /* 모바일 제목 높이 조정 */
+        font-size: 1.1em; /* 모바일 제목 폰트 조정 */
+    }
+
     .word-group {
         padding: 5px; 
         gap: 1px;
     }
 
     .fixed-char-text {
-        font-size: 1.0em; /* 폰트 크기 추가 축소 */
-        min-height: 26px; /* 높이 조정 */
-        min-width: 12px; /* 너비 조정 */
+        font-size: 1.0em; 
+        min-height: 26px; 
+        min-width: 12px;
     }
 
     .word-blank {
-        font-size: 1.0em; /* 폰트 크기 추가 축소 */
-        width: 22px;      /* 너비 축소 */
-        height: 22px;     /* 높이 축소 */
-        line-height: 16px; /* 라인 높이 조정 */
+        font-size: 1.0em; 
+        width: 22px;
+        height: 22px;
+        line-height: 18px; /* line-height는 height보다 작아야 함 */
         border-width: 2px;
     }
 
