@@ -43,7 +43,7 @@ h1 {
 }
 
 .life-bar {
-    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정  */
+    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정 */
     height: 30%; /* 가장 작은 안테나 높이로 통일 */
     background-color: #e53e3e; /* 빨간색 */
     border-radius: 2px;
@@ -71,6 +71,7 @@ h1 {
     margin: 0 auto 15px auto;
 }
 
+/* --- 수정된 부분 시작 --- */
 .problem-area {
     background-color: rgba(247, 250, 252, 0.8);
     border: 2px solid #e2e8f0;
@@ -82,7 +83,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 6px; /* 기존 8px에서 줄여 단어 그룹 간 간격 축소 */
 }
 
 .word-group {
@@ -90,12 +91,13 @@ h1 {
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 8px 12px;
+    padding: 6px 8px; /* 기존 8px 12px에서 줄여 박스 크기 축소 */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     gap: 4px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
 }
+/* --- 수정된 부분 끝 --- */
 
 .word-group:hover {
     transform: translateY(-2px);
@@ -107,12 +109,13 @@ h1 {
     box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
 }
 
+/* --- 수정된 부분 시작 --- */
 .char-slot {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    margin: 0 1px;
+    margin: 0; /* 기존 0 1px에서 줄여 글자 간격 축소 */
 }
 
 .fixed-char-text {
@@ -124,17 +127,17 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 18px;
+    min-width: 16px; /* 기존 18px에서 줄여 너비 축소 */
     letter-spacing: -0.5px;
 }
 
 .word-blank {
-    width: 30px;
-    height: 30px;
+    width: 28px; /* 기존 30px에서 줄여 너비 축소 */
+    height: 28px; /* 기존 30px에서 줄여 높이 축소 */
     border: 3px solid #cbd5e0;
     border-radius: 8px;
     text-align: center;
-    line-height: 24px;
+    line-height: 22px; /* 높이에 맞게 조정 */
     cursor: pointer;
     background: white;
     font-size: 1.2em;
@@ -143,6 +146,7 @@ h1 {
     transition: all 0.2s ease;
     position: relative;
 }
+/* --- 수정된 부분 끝 --- */
 
 .word-blank:hover {
     border-color: #4299e1;
