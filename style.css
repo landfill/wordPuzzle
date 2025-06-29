@@ -71,7 +71,6 @@ h1 {
     margin: 0 auto 15px auto;
 }
 
-/* --- 수정된 부분 시작 --- */
 .problem-area {
     background-color: rgba(247, 250, 252, 0.8);
     border: 2px solid #e2e8f0;
@@ -83,17 +82,18 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 6px; /* 기존 8px에서 줄여 단어 그룹 간 간격 축소 */
+    gap: 6px; 
 }
 
+/* --- 수정된 부분 시작 --- */
 .word-group {
     display: inline-flex; 
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 6px 8px; /* 기존 8px 12px에서 줄여 박스 크기 축소 */
+    padding: 6px; /* 기존 6px 8px에서 상하좌우 여백 통일 및 축소 */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    gap: 4px;
+    gap: 2px; /* 기존 4px에서 줄여 글자 사이 간격(자간) 대폭 축소 */
     border: 2px solid transparent;
     transition: all 0.3s ease;
 }
@@ -109,15 +109,15 @@ h1 {
     box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
 }
 
-/* --- 수정된 부분 시작 --- */
 .char-slot {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    margin: 0; /* 기존 0 1px에서 줄여 글자 간격 축소 */
+    margin: 0; 
 }
 
+/* --- 수정된 부분 시작 --- */
 .fixed-char-text {
     font-size: 1.2em;
     font-weight: 700;
@@ -127,17 +127,17 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 16px; /* 기존 18px에서 줄여 너비 축소 */
+    min-width: 15px; /* 기존 16px에서 줄여 너비 축소 */
     letter-spacing: -0.5px;
 }
 
 .word-blank {
-    width: 28px; /* 기존 30px에서 줄여 너비 축소 */
-    height: 28px; /* 기존 30px에서 줄여 높이 축소 */
+    width: 26px; /* 기존 28px에서 줄여 너비 축소 */
+    height: 26px; /* 기존 28px에서 줄여 높이 축소 */
     border: 3px solid #cbd5e0;
     border-radius: 8px;
     text-align: center;
-    line-height: 22px; /* 높이에 맞게 조정 */
+    line-height: 20px; /* 높이 변경에 따라 조정 */
     cursor: pointer;
     background: white;
     font-size: 1.2em;
@@ -147,6 +147,7 @@ h1 {
     position: relative;
 }
 /* --- 수정된 부분 끝 --- */
+
 
 .word-blank:hover {
     border-color: #4299e1;
