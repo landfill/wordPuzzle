@@ -105,42 +105,26 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
 
-            let lastHighlightedIndex = -1;
-
-            // --- 수정된 부분 시작 ---
-            // 첫 단어 하이라이트를 미리 예약
-            if (wordTimepoints.length > 0) {
-                const firstWordStartTime = wordTimepoints[0].timeSeconds * 1000;
-                setTimeout(() => {
-                    // isReading 상태를 다시 확인하여, 중간에 취소된 경우 하이라이트하지 않음
-                    if (!isReading) return;
-                    highlightModalWord(0);
-                    lastHighlightedIndex = 0; // 첫 단어는 이미 처리되었음을 표시
-                }, firstWordStartTime);
-            }
-            // --- 수정된 부분 끝 ---
-
+// --- 수정된 부분 시작 ---
+            // '다음에 하이라이트할 단어'의 인덱스를 추적하는 변수
+            let nextHighlightIndex = 0; 
+            
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                let currentWordIndex = -1;
-
-                // 다음 하이라이트할 단어를 찾음
-                for (let i = 0; i < wordTimepoints.length; i++) {
-                    if (currentTime >= wordTimepoints[i].timeSeconds) {
-                        currentWordIndex = i;
-                    } else {
-                        break;
-                    }
-                }
                 
-                if (currentWordIndex !== -1 && currentWordIndex !== lastHighlightedIndex) {
-                    highlightModalWord(currentWordIndex);
-                    lastHighlightedIndex = currentWordIndex;
+                // '따라잡기' 로직: 현재 시간까지 발음되었어야 할 모든 단어를 순차적으로 하이라이트
+                while (
+                    nextHighlightIndex < wordTimepoints.length &&
+                    currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
+                ) {
+                    highlightModalWord(nextHighlightIndex);
+                    nextHighlightIndex++; // 다음 단어를 목표로 설정
                 }
             };
 
             const cleanup = (isEnded = false) => {
-                if (isEnded) {
+                // 재생이 정상적으로 끝나면, 마지막 단어를 확실히 하이라이트
+                if (isEnded && wordTimepoints.length > 0) {
                     highlightModalWord(wordTimepoints.length - 1);
                 }
                 
@@ -156,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }, 500);
             };
+            // --- 수정된 부분 끝 ---
 
             audio.addEventListener('timeupdate', timeUpdateHandler);
             audio.addEventListener('ended', () => cleanup(true));
