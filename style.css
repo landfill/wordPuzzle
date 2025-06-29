@@ -11,9 +11,11 @@ body {
     box-sizing: border-box;
 }
 
+/* --- 수정된 부분 시작 --- */
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 15px;
+    /* 상단 패딩을 늘려 생명력 바 공간 확보 */
+    padding: 50px 15px 15px; 
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -24,34 +26,38 @@ body {
     position: relative; 
     display: flex;
     flex-direction: column;
-    height: 90vh; 
-    max-height: 700px; 
-    min-height: 550px; 
+    /* 고정 높이 속성 제거하여 내용물에 맞게 크기 조절 */
+    /* height: 90vh; 제거 */
+    /* max-height: 700px; 제거 */
+    /* min-height: 550px; 제거 */
 }
+/* --- 수정된 부분 끝 --- */
 
 h1 {
     display: none;
 }
 
+/* --- 수정된 부분 시작 --- */
 .lives-display {
     position: absolute;
-    top: 20px;
+    top: 20px; /* 상단 패딩 영역 내에 위치 */
     left: 15px;
     margin: 0;
     display: flex;
     align-items: flex-end;
     gap: 2px;
-    height: 18px;
+    height: 6px; /* 막대 높이를 약간 조정하여 디자인 개선 */
     width: calc(100% - 30px); 
 }
 
 .life-bar {
     flex: 1;
-    height: 30%;
+    height: 100%; /* 부모 높이를 따르도록 변경 */
     background-color: #e53e3e;
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
 }
+/* --- 수정된 부분 끝 --- */
 
 .life-bar.lost {
     opacity: 0.2;
@@ -445,23 +451,22 @@ h1 {
     transform: translateY(0);
 }
 
-/* --- 모바일 반응형 수정 시작 --- */
 @media (max-width: 768px) {
     .word-group {
-        padding: 5px; /* 내부 여백 축소 */
-        gap: 1px; /* 글자 간격 최소화 */
+        padding: 5px; 
+        gap: 1px;
     }
 
     .fixed-char-text {
-        font-size: 1.1em; /* 폰트 크기 축소 */
-        min-height: 28px; /* 높이 조정 */
+        font-size: 1.1em;
+        min-height: 28px;
     }
 
     .word-blank {
-        font-size: 1.1em; /* 폰트 크기 축소 */
-        width: 24px;      /* 너비 축소 */
-        height: 24px;     /* 높이 축소 */
-        line-height: 18px; /* 라인 높이 조정 */
+        font-size: 1.1em;
+        width: 24px;
+        height: 24px;
+        line-height: 18px;
     }
 
     .hint-number {
@@ -484,4 +489,3 @@ h1 {
         padding: 12px 20px;
     }
 }
-/* --- 모바일 반응형 수정 끝 --- */
