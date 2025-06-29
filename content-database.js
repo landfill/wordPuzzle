@@ -2,7 +2,7 @@
 const CONTENT_DATABASE = {
     movies: {
         'Toy Story': [
-            { sentence: "To infinity and beyond!", translation: "무한대 그 너머로!", difficulty: 'easy' },
+            { sentence: "To infinity and beyond!", translation: "무한한 우주 그 너머로!", difficulty: 'easy' },
             { sentence: "You've got a friend in me.", translation: "당신에게는 나라는 친구가 있어요.", difficulty: 'medium' },
             { sentence: "There's a snake in my boot!", translation: "내 부츠 안에 뱀이 있어!", difficulty: 'medium' },
             { sentence: "I am Mrs. Nesbitt!", translation: "나는 네스빗 부인이야!", difficulty: 'easy' },

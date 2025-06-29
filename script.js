@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = ''; // 기존 내용을 비움
+        livesDisplay.innerHTML = ''; // 기존 내용을 비움 
         // 5개의 막대를 생성
         for (let i = 0; i < 5; i++) {
             const bar = document.createElement('div');

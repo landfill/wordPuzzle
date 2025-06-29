@@ -48,7 +48,7 @@ class ContentGenerator {
     }
 
     /**
-     * 랜덤 문제를 생성합니다.
+     * 랜덤 문제를 생성.
      * 한 번 출제된 문제는 풀에서 제거되어 반복 출제되지 않습니다.
      */
     generateRandomProblem() {

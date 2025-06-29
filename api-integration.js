@@ -56,7 +56,7 @@ class APIIntegration {
             return null;
         }
     }
-
+ 
     // 인기 영화 목록 가져오기
     async getPopularMovies() {
         try {

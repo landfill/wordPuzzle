@@ -43,7 +43,7 @@ h1 {
 }
 
 .life-bar {
-    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정 */
+    flex: 1; /* 5개의 막대가 공간을 균등하게 차지하도록 설정  */
     height: 30%; /* 가장 작은 안테나 높이로 통일 */
     background-color: #e53e3e; /* 빨간색 */
     border-radius: 2px;

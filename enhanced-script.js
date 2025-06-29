@@ -1,4 +1,4 @@
-// 기존 script.js에 통합할 수 있는 향상된 버전
+// 기존 script.js에 통합할 수 있는 향상된 버전 
 import ContentGenerator from './content-generator.js';
 import CONTENT_DATABASE from './content-database.js';
 

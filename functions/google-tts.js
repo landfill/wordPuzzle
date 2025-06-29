@@ -1,7 +1,7 @@
 // Cloudflare Function: acts as a secure proxy to the Google TTS API.
 // Its only job is to receive text, forward it to Google with a secret API key,
 // and return the raw response (audio + timepoints) to the client.
-
+ 
 export async function onRequest(context) {
     const { request, env } = context;
 
