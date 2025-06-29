@@ -11,7 +11,7 @@ body {
     box-sizing: border-box;
 }
 
-/* --- 수정된 부분 --- */
+/* --- 최종 수정 --- */
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px 15px 15px; 
@@ -25,9 +25,10 @@ body {
     position: relative; 
     display: flex;
     flex-direction: column;
-    /* 5줄 문제를 기준으로 데스크톱 최소 높이를 620px로 고정 */
-    min-height: 620px; 
+    /* 5줄 문제를 기준으로 높이를 620px로 '고정'. min-height 대신 height를 사용해 크기 변동을 원천 차단 */
+    height: 620px; 
 }
+/* --- 수정 끝 --- */
 
 h1 {
     display: none;
@@ -90,7 +91,7 @@ h1 {
     gap: 6px; 
     overflow-y: auto;
     flex-grow: 1; 
-    min-height: 200px;
+    min-height: 0; /* flex-grow가 제대로 동작하기 위해 필요 */
 }
 
 .word-group {
@@ -448,11 +449,11 @@ h1 {
     transform: translateY(0);
 }
 
-/* --- 수정된 부분 --- */
+/* --- 최종 수정 --- */
 @media (max-width: 768px) {
     .game-container {
-        /* 모바일에서는 화면 높이에 맞춰 더 타이트한 높이 고정 */
-        min-height: 580px; 
+        /* 모바일에서도 고정된 높이를 적용하여 레이아웃 안정성 확보 */
+        height: 580px; 
     }
 
     .source-display {
