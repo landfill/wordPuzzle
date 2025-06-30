@@ -140,22 +140,29 @@ body {
     background: #edf2f7;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 10px 50px 10px 15px; /* 오른쪽 패딩을 늘려 홈 버튼 공간 확보 */
+    padding: 10px 15px;
     margin: 0 auto 15px auto;
     flex-shrink: 0;
     min-height: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative; /* 홈 버튼의 위치 기준이 되도록 설정 */
+    position: relative; /* 홈 버튼의 위치 기준 */
+}
+
+#source-text {
+    /* 텍스트가 너무 길 경우 잘리도록 설정 */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 40px; /* 홈 버튼 공간 확보 */
 }
 
 #home-btn {
     position: absolute;
-    /* .source-display의 중앙에 위치하도록 설정 */
     top: 50%; 
+    right: 12px;
     transform: translateY(-50%);
-    right: 12px; /* 오른쪽 끝에 배치 */
 
     background: none;
     border: none;
@@ -189,6 +196,8 @@ body {
     flex-grow: 1; 
     min-height: 0;
 }
+
+/* 이하 CSS는 변경 없음 */
 
 .word-group {
     display: inline-flex; 

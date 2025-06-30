@@ -45,12 +45,13 @@
     <div id="game-screen" class="screen" style="display: none;">
         <!-- Game Container (Actual Layout) -->
         <div class="game-container">
-            <button id="home-btn" title="Go to Home">🏠</button>
             <div class="lives-display">
                 <!-- Hearts will be inserted here by JavaScript -->
             </div>
+            <!-- source-display 안에 버튼을 포함하는 구조로 변경 -->
             <div class="source-display">
-                <!-- Source information will be inserted here by JavaScript -->
+                <span id="source-text"></span>
+                <button id="home-btn" title="Go to Home">🏠</button>
             </div>
             <div class="problem-area">
                 <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
@@ -61,8 +62,7 @@
         </div>
     </div>
 
-
-    <!-- Success Modal -->
+    <!-- Modals -->
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <h2>성공! 🎉</h2>
@@ -78,7 +78,6 @@
         </div>
     </div>
 
-    <!-- Game Over Modal -->
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
             <h2>Game Over 💔</h2>

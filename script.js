@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
-    const sourceDisplay = document.querySelector('.source-display');
+    const sourceText = document.getElementById('source-text'); // source-display -> source-text 로 변경
     const successModal = document.getElementById('success-modal');
     const gameOverModal = document.getElementById('game-over-modal');
     const newQuizBtn = document.getElementById('new-quiz-btn');
@@ -375,8 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // updateSourceDisplay 함수 수정
     function updateSourceDisplay(p) {
-        sourceDisplay.textContent = `${p.source} (${p.category})`;
+        // .textContent 대신 #source-text의 내용을 변경
+        sourceText.textContent = `${p.source} (${p.category})`;
     }
     
     function updateLivesDisplay() {
@@ -474,12 +476,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newQuizBtn.addEventListener('click', () => {
         successModal.style.display = 'none';
-        initializeGame(); // Uses the saved selectedCategory
+        initializeGame();
     });
 
     retryBtn.addEventListener('click', () => {
         gameOverModal.style.display = 'none';
-        initializeGame(); // Uses the saved selectedCategory
+        initializeGame();
     });
 
     listenBtn.addEventListener('click', speakSentence);
@@ -508,6 +510,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Initial setup: Show category screen first
     showCategoryScreen();
 });
