@@ -9,11 +9,10 @@ body {
     color: #333;
     font-weight: 600;
     box-sizing: border-box;
-    /* --- 수정된 부분 --- */
     background: #f0f2f5;
 }
 
-/* --- 추가된 부분 --- */
+/* --- 카테고리 화면 스타일 (수정 없음) --- */
 .screen {
     width: 100%;
     height: 100%;
@@ -86,16 +85,37 @@ body {
     color: #2d3748;
 }
 
+/* --- 수정된 부분 시작 --- */
+
+/* 게임 컨테이너 패딩 조정 */
+.game-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    /* 상단 패딩을 줄여 홈 버튼 공간 확보 */
+    padding: 30px 15px 15px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    backdrop-filter: blur(12px);
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 680px;
+}
+
+/* 홈 버튼 위치 및 크기 조정 */
 #home-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 8px; /* 위쪽 여백 */
+    right: 8px; /* 오른쪽 여백 */
     background: none;
     border: none;
-    font-size: 1.8em;
+    font-size: 1.5em; /* 크기 살짝 줄임 */
     cursor: pointer;
     padding: 5px;
-    opacity: 0.7;
+    opacity: 0.6;
     transition: all 0.2s ease;
     z-index: 10;
 }
@@ -104,39 +124,21 @@ body {
     opacity: 1;
     transform: scale(1.1);
 }
-/* --- 추가 끝 --- */
 
-
-/* --- game-container 스타일은 거의 그대로 유지 --- */
-.game-container {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 15px 15px; 
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 800px;
-    backdrop-filter: blur(12px);
-    box-sizing: border-box;
-    position: relative; 
-    display: flex;
-    flex-direction: column;
-    height: 680px; 
-}
-
+/* 라이프바 위치와 너비를 원래대로 복원 */
 .lives-display {
     position: absolute;
-    top: 15px; 
-    /* 홈 버튼 공간 확보를 위해 왼쪽으로 조금 이동 */
-    left: 55px; 
+    top: 15px;
+    left: 15px; /* 원래 위치로 복원 */
     margin: 0;
     display: flex;
     align-items: flex-end;
     gap: 2px;
     height: 6px;
-    /* 홈 버튼 공간만큼 너비 감소 */
-    width: calc(100% - 90px); 
+    width: calc(100% - 30px); /* 원래 너비로 복원 */
 }
+
+/* --- 수정 끝 --- */
 
 .life-bar {
     flex: 1;
@@ -151,6 +153,7 @@ body {
     background-color: #cbd5e0;
 }
 
+/* 소스 표시 영역의 상단 마진을 추가하여 라이프바와의 간격 확보 */
 .source-display {
     width: 100%;
     box-sizing: border-box;
@@ -161,7 +164,7 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 10px 15px;
-    margin: 0 auto 15px auto;
+    margin: 10px auto 15px auto; /* 상단 마진 추가 (10px) */
     flex-shrink: 0;
     min-height: 75px;
     display: flex;
@@ -170,7 +173,7 @@ body {
 }
 
 .problem-area {
-    background-color: rgba(227, 242, 253, 0.9); 
+    background-color: rgba(227, 242, 253, 0.9);
     border: 2px solid #bbdefb;
     padding: 15px;
     margin-bottom: 15px;
@@ -178,16 +181,16 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center; 
-    align-content: center; 
-    gap: 6px; 
+    align-items: center;
+    align-content: center;
+    gap: 6px;
     overflow-y: auto;
-    flex-grow: 1; 
+    flex-grow: 1;
     min-height: 0;
 }
 
 .word-group {
-    display: inline-flex; 
+    display: inline-flex;
     align-items: center;
     background: white;
     border-radius: 12px;
@@ -213,7 +216,7 @@ body {
     flex-direction: column;
     align-items: center;
     position: relative;
-    margin: 0; 
+    margin: 0;
 }
 .fixed-char-text {
     font-size: 1.2em;
@@ -542,7 +545,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* --- 추가된 부분 --- */
     .category-grid {
         grid-template-columns: 1fr 1fr;
         gap: 15px;
@@ -551,7 +553,6 @@ body {
     .category-container {
         padding: 20px;
     }
-    /* --- 추가 끝 --- */
     
     .game-container {
         height: 650px; 
@@ -560,6 +561,7 @@ body {
     .source-display {
         min-height: 65px;
         font-size: 1.1em;
+        margin-top: 5px; /* 모바일에서 상단 마진 줄임 */
     }
 
     .word-group {
