@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isReading = true;
         listenBtn.classList.add('disabled');
-        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' };
+        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-B' };
 
         try {
             const response = await fetch('/google-tts', {
@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let nextHighlightIndex = 0; 
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                while (
+                // 'while'을 'if'로 변경하여 한 번의 timeupdate 이벤트에서 하나의 단어만 처리하도록 수정
+                if (
                     nextHighlightIndex < wordTimepoints.length &&
                     currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
                 ) {
