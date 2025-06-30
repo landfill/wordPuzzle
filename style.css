@@ -25,7 +25,7 @@ body {
     flex-direction: column;
 }
 
-/* 카테고리 선택 화면 스타일 */
+/* --- 수정된 부분: 카테고리 화면 크기 고정 --- */
 .category-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px;
@@ -35,6 +35,13 @@ body {
     width: 100%;
     max-width: 800px;
     backdrop-filter: blur(12px);
+    
+    /* 게임 화면과 높이를 동일하게 설정 */
+    height: 680px;
+    /* 내부 콘텐츠를 수직 중앙 정렬하기 위해 flex로 변경 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .category-container h1 {
@@ -86,12 +93,9 @@ body {
     color: #2d3748;
 }
 
-/* --- 게임 레이아웃 최종 수정 --- */
-
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    /* 홈 버튼과 라이프바가 들어갈 수 있도록 상단 패딩을 늘림 */
-    padding: 60px 15px 15px;
+    padding: 40px 15px 15px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -105,44 +109,54 @@ body {
     height: 680px; 
 }
 
-/* --- 홈 버튼과 라이프바 최종 스타일 --- */
+/* --- 수정된 부분: 홈 버튼 스타일 --- */
 #home-btn {
     position: absolute;
-    top: 10px;      /* 가장 위쪽에 배치 */
+    top: 15px;
     right: 15px;
-    background: none;
+    background: transparent;
     border: none;
-    font-size: 1.5em;  /* 더 작게 수정 */
-    line-height: 1;
-    padding: 5px;
     cursor: pointer;
-    opacity: 0.7;
+    padding: 5px;
+    opacity: 0.6;
     transition: all 0.2s ease;
     z-index: 10;
+    width: 32px; /* 버튼 박스 크기 지정 */
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #home-btn:hover {
     opacity: 1;
-    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+}
+
+#home-btn svg {
+    width: 20px; /* 아이콘 크기 */
+    height: 20px;
+    stroke: #718096; /* 아이콘 색상 (고스트 버튼 스타일) */
+    stroke-width: 2.5; /* 아이콘 선 굵기 */
 }
 
 .lives-display {
     position: absolute;
-    top: 40px; /* 홈 버튼 아래에 위치하도록 top 값 조정 */
+    top: 15px; 
     left: 15px;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 2px;
-    height: 6px;
-    width: calc(100% - 30px); /* 원래 너비로 복원 */
+    height: 32px; /* 홈 버튼과 높이를 맞춤 */
+    /* 오른쪽을 홈 버튼이 차지할 공간(50px)만큼 띄움 */
+    right: 50px; 
 }
-/* --- 최종 스타일 끝 --- */
-
 
 .life-bar {
     flex: 1;
-    height: 100%;
+    height: 6px; /* 실제 바의 높이 */
     background-color: #e53e3e;
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
@@ -545,13 +559,9 @@ body {
 }
 
 @media (max-width: 768px) {
-    .category-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-    }
-
+    /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
-        padding: 20px;
+        height: 650px; 
     }
     
     .game-container {
