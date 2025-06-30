@@ -41,6 +41,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-sizing: border-box; /* Added for consistency */
 }
 
 .category-container h1 {
@@ -161,7 +162,7 @@ body {
     gap: 2px;
     height: 38px;
     /* 오른쪽을 홈 버튼이 차지할 공간만큼 띄움 */
-    right: 60px; 
+    right: 65px; /* MODIFIED: Increased value from 60px to 65px to prevent overlap */
 }
 
 .life-bar {
@@ -572,8 +573,9 @@ body {
 @media (max-width: 768px) {
     /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
-        height: auto; /* 모바일에서는 자동 높이로 */
-        max-height: 90vh;
+        /* MODIFIED: Matched height to game-container for consistency */
+        height: 95vh;
+        max-height: 700px;
     }
     
     .game-container {
