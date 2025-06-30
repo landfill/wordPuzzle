@@ -272,23 +272,30 @@ document.addEventListener('DOMContentLoaded', () => {
         successModal.style.display = 'flex';
     }
 
-    function createHighlightableSentence(container, sentence) {
-        container.innerHTML = '';
-        // 서버의 SSML 생성 방식과 일치시키기 위해 공백으로만 단어를 나눔.
-        const words = sentence.split(' ');
-        words.forEach((word, index) => {
-            if (word) {
-                const span = document.createElement('span');
-                span.className = 'modal-word';
-                span.textContent = word;
-                container.appendChild(span);
-                // 마지막 단어가 아니면 공백 추가
-                if (index < words.length - 1) {
-                    container.appendChild(document.createTextNode(' '));
-                }
-            }
-        });
-    }
+// script.js 파일의 이 함수만 교체하세요.
+
+function createHighlightableSentence(container, sentence) {
+    container.innerHTML = '';
+    
+    // [최종 수정] 서버(google-tts.js)의 단어 분리 방식('split(' ')')과 완벽하게 일치시킵니다.
+    // 이렇게 하면 클라이언트와 서버가 단어를 세는 방식이 동일해져 인덱스가 꼬이지 않습니다.
+    const words = sentence.split(' '); 
+    
+    words.forEach((word, index) => {
+        // 서버 로직이 'A  B'를 ['A', '', 'B']로 만드는 경우에 대비해 빈 문자열(word)을 건너뜁니다.
+        if (word) { 
+            const span = document.createElement('span');
+            span.className = 'modal-word';
+            span.textContent = word;
+            container.appendChild(span);
+        }
+        
+        // 마지막 단어가 아니면 공백을 추가하여 문장 형태를 유지합니다.
+        if (index < words.length - 1) {
+            container.appendChild(document.createTextNode(' '));
+        }
+    });
+}
     
     function highlightModalWord(idx) {
         clearWordHighlights();
