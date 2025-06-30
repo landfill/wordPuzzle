@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isReading = false;
     let browserVoices = [];
     let selectedCategory = 'all';
+    let isAudioContextUnlocked = false; // ADDED: 오디오 컨텍스트 잠금 해제 상태 추적
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -87,6 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function speakSentence() {
+        // ADDED: 오디오 컨텍스트 잠금 해제 로직
+        if (!isAudioContextUnlocked) {
+            const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGliAv4/GgAgbG93LXBhc3SA/xxwAAA=");
+            try {
+                await silentAudio.play();
+                isAudioContextUnlocked = true;
+                console.log("Audio context unlocked on mobile.");
+            } catch (e) {
+                console.error("Audio context unlock failed", e);
+                // 실패하더라도 일단 진행. 다음 시도에서 성공할 수 있음.
+            }
+        }        
         stopAllSounds();
 
         isReading = true;
