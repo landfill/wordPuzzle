@@ -107,16 +107,17 @@ body {
 /* --- 홈 버튼과 라이프바 최종 스타일 --- */
 #home-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 15px;      /* 컨테이너 상단에서 15px */
+    right: 15px;     /* 컨테이너 오른쪽에서 15px */
     background: none;
     border: none;
-    font-size: 1.8em;
+    font-size: 1.6em;  /* 크기 추가 조정 */
+    line-height: 1;  /* 수직 정렬을 위해 추가 */
     cursor: pointer;
     padding: 5px;
     opacity: 0.7;
     transition: all 0.2s ease;
-    z-index: 10; /* 다른 요소 위에 오도록 */
+    z-index: 10;
 }
 
 #home-btn:hover {
@@ -133,8 +134,8 @@ body {
     align-items: flex-end;
     gap: 2px;
     height: 6px;
-    /* 전체 너비에서 좌우 여백과 홈 버튼 공간(약 60px)을 뺌 */
-    width: calc(100% - 30px - 60px);
+    /* 원래 너비로 완전히 복원. 홈 버튼은 이 위에 떠 있게 됨 */
+    width: calc(100% - 30px); 
 }
 /* --- 최종 스타일 끝 --- */
 
@@ -168,7 +169,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: static; /* position 속성 제거 */
 }
 
 .problem-area {
