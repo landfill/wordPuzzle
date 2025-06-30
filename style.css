@@ -25,18 +25,18 @@ body {
     flex-direction: column;
 }
 
-/* --- 수정된 부분: 카테고리 화면 스타일 --- */
+/* 카테고리 선택 화면 스타일 */
 .category-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px;
-    border-radius: 20px; /* 문제 화면과 동일한 라운드 처리 */
+    border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
     max-width: 800px;
     backdrop-filter: blur(12px);
     
-    height: 680px; /* 문제 화면과 동일한 높이 */
+    height: 680px;
     
     display: flex;
     flex-direction: column;
@@ -92,6 +92,8 @@ body {
     color: #2d3748;
 }
 
+/* --- 게임 레이아웃 최종 수정 --- */
+
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px 15px 15px;
@@ -108,7 +110,7 @@ body {
     height: 680px; 
 }
 
-/* --- 수정된 부분: 홈 버튼과 라이프바 최종 스타일 --- */
+/* --- 홈 버튼과 라이프바 최종 스타일 --- */
 #home-btn {
     position: absolute;
     top: 15px;
@@ -119,7 +121,7 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px; /* 샘플보다 살짝 작게 조정 */
+    width: 38px;
     height: 38px;
     background: transparent;
     border: 2px solid #e2e8f0;
@@ -127,6 +129,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     color: #4a5568;
+    padding: 0; /* 패딩 초기화 */
 }
 
 #home-btn:hover {
@@ -156,14 +159,14 @@ body {
     display: flex;
     align-items: center;
     gap: 2px;
-    height: 38px; /* 홈 버튼과 높이를 맞춤 */
-    /* 오른쪽을 홈 버튼 영역(너비 38px + 여백 15px + 추가여백 5px = 58px)만큼 띄움 */
-    right: 58px;
+    height: 38px;
+    /* 오른쪽을 홈 버튼이 차지할 공간만큼 띄움 */
+    right: 60px; 
 }
 
 .life-bar {
     flex: 1;
-    height: 6px; /* 실제 바의 높이 */
+    height: 6px;
     background-color: #e53e3e;
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
@@ -568,9 +571,14 @@ body {
 
 @media (max-width: 768px) {
     /* 모바일에서 카테고리 화면 높이 조정 */
-    .category-container, .game-container {
+    .category-container {
+        height: auto; /* 모바일에서는 자동 높이로 */
+        max-height: 90vh;
+    }
+    
+    .game-container {
         height: 95vh;
-        max-height: 700px; /* 최대 높이 제한 */
+        max-height: 700px;
     }
     
     .source-display {
