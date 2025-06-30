@@ -1,3 +1,5 @@
+--- START OF FILE style.css ---
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
@@ -41,7 +43,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-sizing: border-box; /* Added for consistency */
+    box-sizing: border-box;
 }
 
 .category-container h1 {
@@ -97,7 +99,8 @@ body {
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 15px 15px;
+    /* MODIFIED: Padding adjusted for new layout */
+    padding: 15px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -105,7 +108,7 @@ body {
     max-width: 800px;
     backdrop-filter: blur(12px);
     box-sizing: border-box;
-    position: relative; 
+    /* REMOVED: position: relative; no longer needed for child positioning */
     display: flex;
     flex-direction: column;
     height: 680px; 
@@ -113,12 +116,14 @@ body {
 
 /* --- 홈 버튼과 라이프바 최종 스타일 --- */
 #home-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 10;
-    
-    /* 제공된 샘플 CSS 적용 */
+    /* REMOVED: Absolute positioning properties */
+    /* position: absolute; top: 15px; right: 15px; z-index: 10; */
+
+    /* MODIFIED: Placed in flex flow */
+    align-self: flex-end; /* Aligns button to the right in the column flex container */
+    margin-bottom: 10px;
+
+    /* Original styles */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -130,7 +135,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     color: #4a5568;
-    padding: 0; /* 패딩 초기화 */
+    padding: 0;
 }
 
 #home-btn:hover {
@@ -153,16 +158,17 @@ body {
 
 
 .lives-display {
-    position: absolute;
-    top: 15px; 
-    left: 15px;
-    margin: 0;
+    /* REMOVED: Absolute positioning properties */
+    /* position: absolute; top: 15px; left: 15px; right: 60px; height: 38px; */
+    
+    /* MODIFIED: Placed in flex flow */
+    width: 100%;
+    margin: 0 0 15px 0; /* Sets bottom margin */
+
+    /* Original styles */
     display: flex;
     align-items: center;
     gap: 2px;
-    height: 38px;
-    /* 오른쪽을 홈 버튼이 차지할 공간만큼 띄움 */
-    right: 65px; /* MODIFIED: Increased value from 60px to 65px to prevent overlap */
 }
 
 .life-bar {
@@ -573,9 +579,15 @@ body {
 @media (max-width: 768px) {
     /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
-        /* MODIFIED: Matched height to game-container for consistency */
         height: 95vh;
         max-height: 700px;
+        padding: 20px;
+    }
+    
+    /* ADDED: Forces a 2-column layout on mobile to prevent scrolling */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
     
     .game-container {

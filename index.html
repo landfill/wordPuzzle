@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -45,16 +47,15 @@
     <div id="game-screen" class="screen" style="display: none;">
         <!-- Game Container (Actual Layout) -->
         <div class="game-container">
-            <div class="lives-display">
-                <!-- Hearts will be inserted here by JavaScript -->
-            </div>
-            <!-- 홈 버튼을 SVG 아이콘으로 교체 (샘플 JSX 기반) -->
+            <!-- MODIFIED: 홈 버튼을 라이프바 위로 이동 -->
             <button id="home-btn" title="Go to Home">
                 <svg viewBox="0 0 24 24">
                     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
             </button>
-            
+            <div class="lives-display">
+                <!-- Hearts will be inserted here by JavaScript -->
+            </div>
             <div class="source-display">
                 <!-- Source information will be inserted here by JavaScript -->
             </div>
