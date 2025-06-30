@@ -7,9 +7,11 @@
 
 Word Puzzle Game은 유명한 영화 대사, 노래 가사, 책 구절, 그리고 명언들 속 빈칸을 채우며 영어 실력과 타자 실력을 동시에 향상시킬 수 있는 인터랙티브 웹 게임입니다. 문장을 완성한 후에는 AI가 읽어주는 자연스러운 음성으로 전체 문장을 들으며 리스닝 훈련까지 경험할 수 있습니다.
 
-![Word Puzzle Game Screenshot](https://github.com/user-attachments/assets/df5a29fa-5527-4e6f-9f18-bdb6730beec9)
-![bb9dee0e-a7ae-40b1-a263-a40ffecc769f](https://github.com/user-attachments/assets/dd3bf51b-7f1c-4bf4-99c1-6c2a9c846cd8)
-![bcc7e72c-2303-4389-8b7e-788f6e066246](https://github.com/user-attachments/assets/da53f343-00c6-4f14-a6a6-7a81a43c0579)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/df5a29fa-5527-4e6f-9f18-bdb6730beec9" width="260" alt="Category Selection Screen">
+  <img src="https://github.com/user-attachments/assets/dd3bf51b-7f1c-4bf4-99c1-6c2a9c846cd8" width="260" alt="Game Play Screen">
+  <img src="https://github.com/user-attachments/assets/da53f343-00c6-4f14-a6a6-7a81a43c0579" width="260" alt="Success Modal Screen">
+</p>
 
 ---
 
