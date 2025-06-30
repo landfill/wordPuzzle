@@ -11,15 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
-    const sourceDisplay = document.querySelector('.source-display'); // 원래대로 되돌림
+    const sourceDisplay = document.querySelector('.source-display');
     const successModal = document.getElementById('success-modal');
     const gameOverModal = document.getElementById('game-over-modal');
     const newQuizBtn = document.getElementById('new-quiz-btn');
     const listenBtn = document.getElementById('listen-btn');
     const retryBtn = document.getElementById('retry-btn');
 
-    // 이하 코드는 이전 버전과 동일하게 유지...
-    // (이하 코드 생략)
     // --- 2. Game State & Configuration ---
     let lives = 5;
     let currentProblem;
@@ -33,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isReading = false;
     let browserVoices = [];
     let selectedCategory = 'all';
-    let isAudioContextUnlocked = false; // ADDED: 오디오 컨텍스트 잠금 해제 상태 추적
+    let isAudioContextUnlocked = false; // 모바일 오디오 재생을 위한 플래그
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -66,13 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function stopAllSounds() {
-        if (isReading) {
-            const audio = document.getElementById('tts-audio');
-            if (audio) {
-                audio.pause();
-                audio.remove();
-            }
-            speechSynthesis.cancel();
+        const existingAudio = document.getElementById('tts-audio');
+        if (existingAudio) {
+            existingAudio.pause();
+            // 오디오 요소를 즉시 제거하기 위해 cleanup 로직을 직접 호출하지 않고 여기서 처리
+            existingAudio.remove();
+        }
+        speechSynthesis.cancel();
+        
+        if(isReading) {
             isReading = false;
             listenBtn.classList.remove('disabled');
         }
@@ -88,22 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function speakSentence() {
-        // ADDED: 오디오 컨텍스트 잠금 해제 로직
+        // [해결책 1] 모바일 브라우저의 오디오 재생 잠금을 해제합니다.
+        // 앱 흐름이 변경되어 이 로직이 반드시 필요합니다.
         if (!isAudioContextUnlocked) {
             const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGliAv4/GgAgbG93LXBhc3SA/xxwAAA=");
             try {
                 await silentAudio.play();
                 isAudioContextUnlocked = true;
-                console.log("Audio context unlocked on mobile.");
             } catch (e) {
-                console.error("Audio context unlock failed", e);
-                // 실패하더라도 일단 진행. 다음 시도에서 성공할 수 있음.
+                // 실패해도 다음 로직은 진행합니다.
             }
         }        
+        
         stopAllSounds();
 
         isReading = true;
         listenBtn.classList.add('disabled');
+        // 사용자가 선호하는 남성 목소리로 설정
         const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-B' };
 
         try {
@@ -113,16 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ text: currentSentence, voice: voiceOptions, pitch: 1.0, speakingRate: 1.0 }),
             });
 
-            if (response.status === 403) {
-                speakWithBrowserTTS();
-                isReading = false;
-                listenBtn.classList.remove('disabled');
-                return;
-            }
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Server responded with ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
@@ -132,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const wordTimepoints = timepoints
-                .filter(t => !isNaN(parseInt(t.markName, 10)))
+                .filter(t => t.markName && !isNaN(parseInt(t.markName, 10)))
                 .sort((a, b) => parseInt(a.markName, 10) - parseInt(b.markName, 10));
 
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
@@ -144,8 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let nextHighlightIndex = 0; 
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                // 'while'을 'if'로 변경하여 한 번의 timeupdate 이벤트에서 하나의 단어만 처리하도록 수정
-                if (
+                
+                // [해결책 2] 'if'가 아닌 'while'을 사용하여 하이라이트 누락 문제를 해결합니다.
+                // 이것이 origin-script.js의 정상 작동 방식입니다.
+                while (
                     nextHighlightIndex < wordTimepoints.length &&
                     currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
                 ) {
@@ -165,10 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     clearWordHighlights();
-                    if (audio) {
-                        audio.remove();
-                        URL.revokeObjectURL(audioUrl);
+                    if (document.getElementById('tts-audio')) {
+                        document.getElementById('tts-audio').remove();
                     }
+                    URL.revokeObjectURL(audioUrl);
                 }, 500);
             };
 
@@ -176,13 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.addEventListener('ended', () => cleanup(true));
             audio.addEventListener('pause', () => cleanup(false));
 
-            audio.play().catch(e => {
-                console.error("Audio playback failed:", e);
-                cleanup(false);
-            });
+            await audio.play();
 
         } catch (error) {
-            console.error('Could not use Google TTS. Reason:', error.message);
+            console.error('TTS Process Failed:', error);
             alert(`AI 음성 재생에 실패했습니다. 기본 음성으로 대체합니다.`);
             speakWithBrowserTTS();
             isReading = false;
@@ -280,14 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createHighlightableSentence(container, sentence) {
         container.innerHTML = '';
-        sentence.split(/(\s+)/).forEach(word => {
-            if (word.trim().length > 0) {
+        sentence.split(/(\s+)/).forEach((part, index) => {
+            if (part.trim().length > 0) {
                 const span = document.createElement('span');
                 span.className = 'modal-word';
-                span.textContent = word;
+                span.textContent = part;
                 container.appendChild(span);
             } else {
-                container.appendChild(document.createTextNode(word));
+                container.appendChild(document.createTextNode(part));
             }
         });
     }
@@ -384,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateSourceDisplay(p) {
-        sourceDisplay.textContent = `${p.source} (${p.category})`; // 원래대로 되돌림
+        sourceDisplay.textContent = `${p.source} (${p.category})`;
     }
     
     function updateLivesDisplay() {
