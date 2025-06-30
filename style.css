@@ -90,7 +90,8 @@ body {
 
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 15px 15px;
+    /* 홈 버튼과 라이프바가 들어갈 수 있도록 상단 패딩을 늘림 */
+    padding: 60px 15px 15px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -107,14 +108,14 @@ body {
 /* --- 홈 버튼과 라이프바 최종 스타일 --- */
 #home-btn {
     position: absolute;
-    top: 15px;      /* 컨테이너 상단에서 15px */
-    right: 15px;     /* 컨테이너 오른쪽에서 15px */
+    top: 10px;      /* 가장 위쪽에 배치 */
+    right: 15px;
     background: none;
     border: none;
-    font-size: 1.6em;  /* 크기 추가 조정 */
-    line-height: 1;  /* 수직 정렬을 위해 추가 */
-    cursor: pointer;
+    font-size: 1.5em;  /* 더 작게 수정 */
+    line-height: 1;
     padding: 5px;
+    cursor: pointer;
     opacity: 0.7;
     transition: all 0.2s ease;
     z-index: 10;
@@ -127,15 +128,14 @@ body {
 
 .lives-display {
     position: absolute;
-    top: 15px; 
+    top: 40px; /* 홈 버튼 아래에 위치하도록 top 값 조정 */
     left: 15px;
     margin: 0;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 2px;
     height: 6px;
-    /* 원래 너비로 완전히 복원. 홈 버튼은 이 위에 떠 있게 됨 */
-    width: calc(100% - 30px); 
+    width: calc(100% - 30px); /* 원래 너비로 복원 */
 }
 /* --- 최종 스타일 끝 --- */
 
