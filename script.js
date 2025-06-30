@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isReading = false;
     let browserVoices = [];
     let selectedCategory = 'all';
-    let isAudioContextUnlocked = false; // 모바일 오디오 재생을 위한 플래그
+    let isAudioContextUnlocked = false; // [추가] 모바일 오디오 재생을 위한 플래그
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingAudio = document.getElementById('tts-audio');
         if (existingAudio) {
             existingAudio.pause();
-            existingAudio.remove();
+            existingAudio.remove(); // DOM에서 완전히 제거
         }
         speechSynthesis.cancel();
         
@@ -87,20 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function speakSentence() {
-        // [해결 1] 모바일 오디오 잠금 해제 (새로운 앱 흐름 때문에 필수)
+        // [수정 1] 모바일 오디오 잠금 해제 로직
         if (!isAudioContextUnlocked) {
             const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGliAv4/GgAgbG93LXBhc3SA/xxwAAA=");
             try {
                 await silentAudio.play();
                 isAudioContextUnlocked = true;
-            } catch (e) { /* 실패해도 계속 진행 */ }
+                console.log("AudioContext unlocked for mobile.");
+            } catch (e) {
+                console.error("AudioContext unlock failed", e);
+            }
         }
         
         stopAllSounds();
 
         isReading = true;
         listenBtn.classList.add('disabled');
-        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-B' }; // 선호하는 남성 목소리
+        // [수정 2] 목소리를 main 브랜치와 동일한 남성 목소리로 변경
+        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' }; 
 
         try {
             const response = await fetch('/google-tts', {
@@ -110,16 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (response.status === 403) {
-                // 서버에서 Google TTS가 비활성화된 경우의 처리
-                const data = await response.json();
-                console.warn(data.message || 'Google TTS is disabled.');
                 speakWithBrowserTTS();
                 isReading = false;
                 listenBtn.classList.remove('disabled');
                 return;
             }
-
-            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Server responded with ${response.status}`);
+            }
 
             const data = await response.json();
             const { audioContent, timepoints } = data;
@@ -128,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error("Invalid data (no audio or timepoints) received.");
             }
 
-            // 서버에서 이미 markName 기준으로 정렬된 데이터를 주므로, 프론트에서 재정렬할 필요 없음.
             const wordTimepoints = timepoints;
 
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
@@ -141,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
                 
-                // [해결 2] 'if'가 아닌 'while' 루프 복원 (origin-script의 정상 작동 방식)
+                // [수정 3] 하이라이트 로직을 'if'가 아닌 'while' 루프로 복원
                 while (
                     nextHighlightIndex < wordTimepoints.length &&
                     currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
@@ -162,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     clearWordHighlights();
+                    // 오디오 객체를 확실히 제거
                     const el = document.getElementById('tts-audio');
                     if (el) el.remove();
                     URL.revokeObjectURL(audioUrl);
@@ -171,7 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.addEventListener('timeupdate', timeUpdateHandler);
             audio.addEventListener('ended', () => cleanup(true));
             audio.addEventListener('pause', () => cleanup(false));
-            audio.addEventListener('error', () => cleanup(false));
+            audio.addEventListener('error', (e) => {
+                console.error("Audio playback error:", e);
+                cleanup(false);
+            });
 
             await audio.play();
 
@@ -187,10 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
+        // 카테고리에 맞는 문제 생성
         currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
         
         if (!currentProblem) {
-            alert("선택한 카테고리의 문제를 모두 풀었습니다! 다른 카테고리를 선택해주세요.");
+            alert("선택한 카테고리의 문제를 모두 풀었거나 문제가 없습니다. 홈으로 돌아갑니다.");
             showCategoryScreen();
             return;
         }
@@ -272,30 +279,30 @@ document.addEventListener('DOMContentLoaded', () => {
         successModal.style.display = 'flex';
     }
 
-// script.js 파일의 이 함수만 교체하세요.
-
-function createHighlightableSentence(container, sentence) {
-    container.innerHTML = '';
-    
-    // [최종 수정] 서버(google-tts.js)의 단어 분리 방식('split(' ')')과 완벽하게 일치시킵니다.
-    // 이렇게 하면 클라이언트와 서버가 단어를 세는 방식이 동일해져 인덱스가 꼬이지 않습니다.
-    const words = sentence.split(' '); 
-    
-    words.forEach((word, index) => {
-        // 서버 로직이 'A  B'를 ['A', '', 'B']로 만드는 경우에 대비해 빈 문자열(word)을 건너뜁니다.
-        if (word) { 
-            const span = document.createElement('span');
-            span.className = 'modal-word';
-            span.textContent = word;
-            container.appendChild(span);
-        }
+    // [수정 4] 단어 분리 방식을 서버와 일치시키기 위한 최종 버전
+    function createHighlightableSentence(container, sentence) {
+        container.innerHTML = '';
         
-        // 마지막 단어가 아니면 공백을 추가하여 문장 형태를 유지합니다.
-        if (index < words.length - 1) {
-            container.appendChild(document.createTextNode(' '));
-        }
-    });
-}
+        // 서버(google-tts.js)의 단어 분리 방식('split(' ')')과 완벽하게 일치시킵니다.
+        // 이렇게 하면 클라이언트와 서버가 단어를 세는 방식이 동일해져 인덱스가 꼬이지 않습니다.
+        const words = sentence.split(' '); 
+        
+        words.forEach((word, index) => {
+            // 서버 로직이 'A  B'를 ['A', '', 'B']로 만드는 경우에 대비해 빈 문자열(word)을 건너뜁니다.
+            if (word) { 
+                const span = document.createElement('span');
+                span.className = 'modal-word';
+                span.textContent = word;
+                container.appendChild(span);
+            }
+            
+            // 마지막 단어가 아니면서, 다음 단어가 빈 문자열이 아닐 때만 공백을 추가하여
+            // 문장 끝이나 연속된 공백 뒤에 불필요한 공백이 생기지 않도록 합니다.
+            if (index < words.length - 1 && words[index+1]) {
+                container.appendChild(document.createTextNode(' '));
+            }
+        });
+    }
     
     function highlightModalWord(idx) {
         clearWordHighlights();
@@ -473,6 +480,8 @@ function createHighlightableSentence(container, sentence) {
             s.style.visibility = fill >= req ? 'hidden' : 'visible';
         });
     }
+
+    // --- Event Listeners & Initialization ---
 
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
