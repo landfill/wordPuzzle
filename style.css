@@ -88,10 +88,9 @@ body {
 
 /* --- 게임 레이아웃 최종 수정 --- */
 
-/* 게임 화면의 실제 레이아웃을 담당하는 컨테이너 */
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 15px 15px; /* 원래 패딩으로 복원 */
+    padding: 40px 15px 15px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -105,27 +104,6 @@ body {
     height: 680px; 
 }
 
-/* 홈 버튼 위치 */
-#home-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.8em;
-    cursor: pointer;
-    padding: 5px;
-    opacity: 0.7;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-#home-btn:hover {
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-/* 라이프바 위치와 너비를 원래대로 복원 */
 .lives-display {
     position: absolute;
     top: 15px; 
@@ -135,7 +113,7 @@ body {
     align-items: flex-end;
     gap: 2px;
     height: 6px;
-    width: calc(100% - 70px); /* 홈 버튼 공간을 고려하여 너비 살짝 조정 */
+    width: calc(100% - 30px);
 }
 
 
@@ -152,6 +130,7 @@ body {
     background-color: #cbd5e0;
 }
 
+/* --- 수정된 부분 시작 --- */
 .source-display {
     width: 100%;
     box-sizing: border-box;
@@ -161,13 +140,37 @@ body {
     background: #edf2f7;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 10px 15px;
-    margin: 0 auto 15px auto; /* 상단 마진을 다시 0으로 해도 됨 (패딩이 있으므로) */
+    padding: 10px 50px 10px 15px; /* 오른쪽 패딩을 늘려 홈 버튼 공간 확보 */
+    margin: 0 auto 15px auto;
     flex-shrink: 0;
     min-height: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative; /* 홈 버튼의 위치 기준이 되도록 설정 */
+}
+
+#home-btn {
+    position: absolute;
+    /* .source-display의 중앙에 위치하도록 설정 */
+    top: 50%; 
+    transform: translateY(-50%);
+    right: 12px; /* 오른쪽 끝에 배치 */
+
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+/* --- 수정 끝 --- */
+
+#home-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .problem-area {
