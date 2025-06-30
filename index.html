@@ -7,7 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
+    <!-- Category Selection Screen -->
+    <div id="category-selection-screen" class="screen">
+        <div class="category-container">
+            <h1>Word Puzzle</h1>
+            <p class="subtitle">카테고리를 선택하여 퀴즈를 시작하세요!</p>
+            <div class="category-grid">
+                <div class="category-card" data-category="movies">
+                    <span class="card-icon">🎬</span>
+                    <span class="card-text">Movies</span>
+                </div>
+                <div class="category-card" data-category="songs">
+                    <span class="card-icon">🎵</span>
+                    <span class="card-text">Songs</span>
+                </div>
+                <div class="category-card" data-category="books">
+                    <span class="card-icon">📚</span>
+                    <span class="card-text">Books</span>
+                </div>
+                <div class="category-card" data-category="quotes">
+                    <span class="card-icon">💬</span>
+                    <span class="card-text">Quotes</span>
+                </div>
+                <div class="category-card" data-category="daily_travel_phrases">
+                    <span class="card-icon">✈️</span>
+                    <span class="card-text">Travel</span>
+                </div>
+                <div class="category-card" data-category="all">
+                    <span class="card-icon">✨</span>
+                    <span class="card-text">Random Mix</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen game-container" style="display: none;">
+        <button id="home-btn" title="Go to Home">🏠</button>
         <div class="lives-display">
             <!-- Hearts will be inserted here by JavaScript -->
         </div>
@@ -22,7 +58,7 @@
         </div>
     </div>
 
-    <!-- Success Modal  -->
+    <!-- Success Modal -->
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <h2>성공! 🎉</h2>
@@ -38,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Game Over Modal (TRANSLATED) -->
+    <!-- Game Over Modal -->
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
             <h2>Game Over 💔</h2>

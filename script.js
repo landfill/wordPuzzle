@@ -3,6 +3,11 @@ import CONTENT_DATABASE from './content-database.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
+    const categorySelectionScreen = document.getElementById('category-selection-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const categoryCards = document.querySelectorAll('.category-card');
+    const homeBtn = document.getElementById('home-btn');
+
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
@@ -24,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let charToHintNumber = new Map();
     let currentSentence = '';
     let isReading = false;
-    let browserVoices = []; // For fallback
+    let browserVoices = [];
+    let selectedCategory = 'all'; // Default category
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -38,12 +44,41 @@ document.addEventListener('DOMContentLoaded', () => {
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
+    
+    // --- 3. Screen & Flow Management ---
+    
+    function showCategoryScreen() {
+        gameScreen.style.display = 'none';
+        categorySelectionScreen.style.display = 'flex';
+        stopAllSounds();
+    }
+    
+    function showGameScreen() {
+        categorySelectionScreen.style.display = 'none';
+        gameScreen.style.display = 'flex';
+    }
 
-    // --- 3. TTS & Highlight Functions ---
+    function startGame(category) {
+        selectedCategory = category;
+        showGameScreen();
+        initializeGame();
+    }
+    
+    function stopAllSounds() {
+        if (isReading) {
+            const audio = document.getElementById('tts-audio');
+            if (audio) {
+                audio.pause();
+                audio.remove();
+            }
+            speechSynthesis.cancel();
+            isReading = false;
+            listenBtn.classList.remove('disabled');
+        }
+    }
 
-    /**
-     * 기본 브라우저 TTS를 사용하는 백업(Fallback) 함수
-     */
+    // --- 4. TTS & Highlight Functions ---
+
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
@@ -52,19 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
             speechSynthesis.speak(utterance);
         }
     }
-
-    /**
-     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환
-     */
+    
     async function speakSentence() {
-        const existingAudio = document.getElementById('tts-audio');
-        if (isReading) {
-            if (existingAudio) {
-                existingAudio.pause();
-            }
-            speechSynthesis.cancel();
-            return;
-        }
+        stopAllSounds(); // Ensure no other sound is playing
 
         isReading = true;
         listenBtn.classList.add('disabled');
@@ -105,24 +130,19 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
 
-            // '다음에 하이라이트할 단어'의 인덱스를 추적하는 변수
             let nextHighlightIndex = 0; 
-            
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
-                
-                // '따라잡기' 로직: 현재 시간까지 발음되었어야 할 모든 단어를 순차적으로 하이라이트
                 while (
                     nextHighlightIndex < wordTimepoints.length &&
                     currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
                 ) {
                     highlightModalWord(nextHighlightIndex);
-                    nextHighlightIndex++; // 다음 단어를 목표로 설정
+                    nextHighlightIndex++;
                 }
             };
 
             const cleanup = (isEnded = false) => {
-                // 재생이 정상적으로 끝나면, 마지막 단어를 확실히 하이라이트
                 if (isEnded && wordTimepoints.length > 0) {
                     highlightModalWord(wordTimepoints.length - 1);
                 }
@@ -158,12 +178,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- 4. Core Game Logic ---
+    // --- 5. Core Game Logic ---
     
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
-        currentProblem = contentGenerator.generateRandomProblem();
+        currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
+        
+        if (!currentProblem) {
+            alert("선택한 카테고리의 문제를 모두 풀었습니다! 다른 카테고리를 선택해주세요.");
+            showCategoryScreen();
+            return;
+        }
+
         currentSentence = currentProblem.sentence;
         
         activeBlankIndex = -1;
@@ -173,13 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
         
-        if (isReading) {
-            const audio = document.getElementById('tts-audio');
-            if (audio) {
-                audio.pause();
-            }
-            speechSynthesis.cancel();
-        }
+        stopAllSounds();
 
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
@@ -204,27 +225,21 @@ document.addEventListener('DOMContentLoaded', () => {
             updateKeyboardState();
             updateHintVisibility();
             
-            // --- 수정된 부분 시작 ---
-            // 다음 빈칸을 찾는 로직 수정
-            // 현재 입력한 칸 다음부터 순환하며 아직 채워지지 않은 칸을 찾음
             let nextIdx = -1;
             const totalBlanks = problemBlanks.length;
             for (let i = 1; i <= totalBlanks; i++) {
                 const checkIndex = (activeBlankIndex + i) % totalBlanks;
                 if (!problemBlanks[checkIndex].classList.contains('correct')) {
                     nextIdx = checkIndex;
-                    break; // 다음 빈칸을 찾았으므로 탐색 중단
+                    break;
                 }
             }
 
             if (nextIdx !== -1) {
-                // 다음 빈칸이 있으면 포커스 이동
                 setActiveBlank(nextIdx);
             } else {
-                // 모든 빈칸이 채워졌으면 성공 처리
                 checkPuzzleCompletion();
             }
-            // --- 수정된 부분 끝 ---
 
         } else {
             blank.classList.add('incorrect');
@@ -245,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 5. UI Update & Helper Functions ---
+    // --- 6. UI Update & Helper Functions ---
 
     function showSuccessModal() {
         const { sentence, source, translation, category } = currentProblem;
@@ -365,12 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = ''; // 기존 내용을 비움
-        // 5개의 막대를 생성
+        livesDisplay.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const bar = document.createElement('div');
             bar.classList.add('life-bar');
-            // 현재 남은 생명(lives)보다 인덱스가 크거나 같으면 'lost' 클래스 추가
             if (i >= lives) {
                 bar.classList.add('lost');
             }
@@ -448,22 +461,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 6. Event Listeners & Initialization ---
+    // --- 7. Event Listeners & Initialization ---
+
+    categoryCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const category = card.dataset.category;
+            startGame(category);
+        });
+    });
+
+    homeBtn.addEventListener('click', showCategoryScreen);
 
     newQuizBtn.addEventListener('click', () => {
         successModal.style.display = 'none';
-        initializeGame();
+        initializeGame(); // Uses the saved selectedCategory
     });
 
     retryBtn.addEventListener('click', () => {
         gameOverModal.style.display = 'none';
-        initializeGame();
+        initializeGame(); // Uses the saved selectedCategory
     });
 
     listenBtn.addEventListener('click', speakSentence);
 
     document.addEventListener('keydown', (e) => {
-        if (successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') return;
+        if (gameScreen.style.display === 'none' || successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') {
+            return;
+        }
         if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
             handleKeyPress(e.key);
         } else if (e.key === 'ArrowLeft') {
@@ -484,5 +508,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    initializeGame();
+    // Initial setup: Show category screen first
+    showCategoryScreen();
 });
