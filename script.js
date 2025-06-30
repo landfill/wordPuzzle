@@ -11,13 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
-    const sourceText = document.getElementById('source-text'); // source-display -> source-text 로 변경
+    const sourceDisplay = document.querySelector('.source-display'); // 원래대로 되돌림
     const successModal = document.getElementById('success-modal');
     const gameOverModal = document.getElementById('game-over-modal');
     const newQuizBtn = document.getElementById('new-quiz-btn');
     const listenBtn = document.getElementById('listen-btn');
     const retryBtn = document.getElementById('retry-btn');
 
+    // 이하 코드는 이전 버전과 동일하게 유지...
+    // (이하 코드 생략)
     // --- 2. Game State & Configuration ---
     let lives = 5;
     let currentProblem;
@@ -30,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSentence = '';
     let isReading = false;
     let browserVoices = [];
-    let selectedCategory = 'all'; // Default category
+    let selectedCategory = 'all';
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -44,8 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
-    
-    // --- 3. Screen & Flow Management ---
     
     function showCategoryScreen() {
         gameScreen.style.display = 'none';
@@ -77,8 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 4. TTS & Highlight Functions ---
-
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
@@ -89,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function speakSentence() {
-        stopAllSounds(); // Ensure no other sound is playing
+        stopAllSounds();
 
         isReading = true;
         listenBtn.classList.add('disabled');
@@ -178,8 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- 5. Core Game Logic ---
-    
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
@@ -259,8 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(showSuccessModal, 500);
         }
     }
-
-    // --- 6. UI Update & Helper Functions ---
 
     function showSuccessModal() {
         const { sentence, source, translation, category } = currentProblem;
@@ -375,10 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // updateSourceDisplay 함수 수정
     function updateSourceDisplay(p) {
-        // .textContent 대신 #source-text의 내용을 변경
-        sourceText.textContent = `${p.source} (${p.category})`;
+        sourceDisplay.textContent = `${p.source} (${p.category})`; // 원래대로 되돌림
     }
     
     function updateLivesDisplay() {
@@ -462,8 +454,6 @@ document.addEventListener('DOMContentLoaded', () => {
             s.style.visibility = fill >= req ? 'hidden' : 'visible';
         });
     }
-
-    // --- 7. Event Listeners & Initialization ---
 
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {

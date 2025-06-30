@@ -48,10 +48,11 @@
             <div class="lives-display">
                 <!-- Hearts will be inserted here by JavaScript -->
             </div>
-            <!-- source-display 안에 버튼을 포함하는 구조로 변경 -->
+            <!-- 홈 버튼을 game-container의 직속 자식으로 배치 -->
+            <button id="home-btn" title="Go to Home">🏠</button>
+            
             <div class="source-display">
-                <span id="source-text"></span>
-                <button id="home-btn" title="Go to Home">🏠</button>
+                <!-- Source information will be inserted here by JavaScript -->
             </div>
             <div class="problem-area">
                 <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
@@ -62,7 +63,7 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals (변경 없음) -->
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <h2>성공! 🎉</h2>
