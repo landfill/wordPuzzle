@@ -105,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
 
-// --- 수정된 부분 시작 ---
             // '다음에 하이라이트할 단어'의 인덱스를 추적하는 변수
             let nextHighlightIndex = 0; 
             
@@ -140,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }, 500);
             };
-            // --- 수정된 부분 끝 ---
 
             audio.addEventListener('timeupdate', timeUpdateHandler);
             audio.addEventListener('ended', () => cleanup(true));
@@ -205,12 +203,29 @@ document.addEventListener('DOMContentLoaded', () => {
             correctlyFilledBlankChars.set(char, (correctlyFilledBlankChars.get(char) || 0) + 1);
             updateKeyboardState();
             updateHintVisibility();
-            const nextIdx = problemBlanks.findIndex(b => !b.classList.contains('correct'));
+            
+            // --- 수정된 부분 시작 ---
+            // 다음 빈칸을 찾는 로직 수정
+            // 현재 입력한 칸 다음부터 순환하며 아직 채워지지 않은 칸을 찾음
+            let nextIdx = -1;
+            const totalBlanks = problemBlanks.length;
+            for (let i = 1; i <= totalBlanks; i++) {
+                const checkIndex = (activeBlankIndex + i) % totalBlanks;
+                if (!problemBlanks[checkIndex].classList.contains('correct')) {
+                    nextIdx = checkIndex;
+                    break; // 다음 빈칸을 찾았으므로 탐색 중단
+                }
+            }
+
             if (nextIdx !== -1) {
+                // 다음 빈칸이 있으면 포커스 이동
                 setActiveBlank(nextIdx);
             } else {
+                // 모든 빈칸이 채워졌으면 성공 처리
                 checkPuzzleCompletion();
             }
+            // --- 수정된 부분 끝 ---
+
         } else {
             blank.classList.add('incorrect');
             lives--;
