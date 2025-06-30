@@ -7,22 +7,66 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <div class="lives-display">
-            <!-- Hearts will be inserted here by JavaScript -->
-        </div>
-        <div class="source-display">
-            <!-- Source information will be inserted here by JavaScript -->
-        </div>
-        <div class="problem-area">
-            <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
-        </div>
-        <div class="keyboard-area">
-            <!-- Virtual keyboard will be inserted here by JavaScript -->
+    <!-- Category Selection Screen -->
+    <div id="category-selection-screen" class="screen">
+        <div class="category-container">
+            <h1>Word Puzzle</h1>
+            <p class="subtitle">카테고리를 선택하여 퀴즈를 시작하세요!</p>
+            <div class="category-grid">
+                <div class="category-card" data-category="movies">
+                    <span class="card-icon">🎬</span>
+                    <span class="card-text">Movies</span>
+                </div>
+                <div class="category-card" data-category="songs">
+                    <span class="card-icon">🎵</span>
+                    <span class="card-text">Songs</span>
+                </div>
+                <div class="category-card" data-category="books">
+                    <span class="card-icon">📚</span>
+                    <span class="card-text">Books</span>
+                </div>
+                <div class="category-card" data-category="quotes">
+                    <span class="card-icon">💬</span>
+                    <span class="card-text">Quotes</span>
+                </div>
+                <div class="category-card" data-category="daily_travel_phrases">
+                    <span class="card-icon">✈️</span>
+                    <span class="card-text">Travel</span>
+                </div>
+                <div class="category-card" data-category="all">
+                    <span class="card-icon">✨</span>
+                    <span class="card-text">Random Mix</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Success Modal  -->
+    <!-- Game Screen (Wrapper) -->
+    <div id="game-screen" class="screen" style="display: none;">
+        <!-- Game Container (Actual Layout) -->
+        <div class="game-container">
+            <!-- MODIFIED: 홈 버튼을 라이프바 위로 이동 -->
+            <button id="home-btn" title="Go to Home">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </button>
+            <div class="lives-display">
+                <!-- Hearts will be inserted here by JavaScript -->
+            </div>
+            <div class="source-display">
+                <!-- Source information will be inserted here by JavaScript -->
+            </div>
+            <div class="problem-area">
+                <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
+            </div>
+            <div class="keyboard-area">
+                <!-- Virtual keyboard will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (변경 없음) -->
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <h2>성공! 🎉</h2>
@@ -38,7 +82,6 @@
         </div>
     </div>
 
-    <!-- Game Over Modal (TRANSLATED) -->
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
             <h2>Game Over 💔</h2>

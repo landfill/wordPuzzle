@@ -3,6 +3,11 @@ import CONTENT_DATABASE from './content-database.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
+    const categorySelectionScreen = document.getElementById('category-selection-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const categoryCards = document.querySelectorAll('.category-card');
+    const homeBtn = document.getElementById('home-btn');
+
     const problemArea = document.querySelector('.problem-area');
     const keyboardArea = document.querySelector('.keyboard-area');
     const livesDisplay = document.querySelector('.lives-display');
@@ -24,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let charToHintNumber = new Map();
     let currentSentence = '';
     let isReading = false;
-    let browserVoices = []; // For fallback
+    let browserVoices = [];
+    let selectedCategory = 'all';
+    let isAudioContextUnlocked = false; // [추가] 모바일 오디오 재생을 위한 플래그
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -38,12 +45,38 @@ document.addEventListener('DOMContentLoaded', () => {
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
+    
+    function showCategoryScreen() {
+        gameScreen.style.display = 'none';
+        categorySelectionScreen.style.display = 'flex';
+        stopAllSounds();
+    }
+    
+    function showGameScreen() {
+        categorySelectionScreen.style.display = 'none';
+        gameScreen.style.display = 'flex';
+    }
 
-    // --- 3. TTS & Highlight Functions ---
+    function startGame(category) {
+        selectedCategory = category;
+        showGameScreen();
+        initializeGame();
+    }
+    
+    function stopAllSounds() {
+        const existingAudio = document.getElementById('tts-audio');
+        if (existingAudio) {
+            existingAudio.pause();
+            existingAudio.remove(); // DOM에서 완전히 제거
+        }
+        speechSynthesis.cancel();
+        
+        if (isReading) {
+            isReading = false;
+            listenBtn.classList.remove('disabled');
+        }
+    }
 
-    /**
-     * 기본 브라우저 TTS를 사용하는 백업(Fallback) 함수
-     */
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
         if ('speechSynthesis' in window && browserVoices.length > 0) {
@@ -52,23 +85,26 @@ document.addEventListener('DOMContentLoaded', () => {
             speechSynthesis.speak(utterance);
         }
     }
-
-    /**
-     * 메인 TTS 함수: AI 목소리를 먼저 시도하고, 실패하거나 스위치가 꺼져 있으면 기본 목소리로 전환
-     */
+    
     async function speakSentence() {
-        const existingAudio = document.getElementById('tts-audio');
-        if (isReading) {
-            if (existingAudio) {
-                existingAudio.pause();
+        // [수정 1] 모바일 오디오 잠금 해제 로직
+        if (!isAudioContextUnlocked) {
+            const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGliAv4/GgAgbG93LXBhc3SA/xxwAAA=");
+            try {
+                await silentAudio.play();
+                isAudioContextUnlocked = true;
+                console.log("AudioContext unlocked for mobile.");
+            } catch (e) {
+                console.error("AudioContext unlock failed", e);
             }
-            speechSynthesis.cancel();
-            return;
         }
+        
+        stopAllSounds();
 
         isReading = true;
         listenBtn.classList.add('disabled');
-        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' };
+        // [수정 2] 목소리를 main 브랜치와 동일한 남성 목소리로 변경
+        const voiceOptions = { languageCode: 'en-US', name: 'en-US-Wavenet-D' }; 
 
         try {
             const response = await fetch('/google-tts', {
@@ -76,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: currentSentence, voice: voiceOptions, pitch: 1.0, speakingRate: 1.0 }),
             });
-
+            
             if (response.status === 403) {
                 speakWithBrowserTTS();
                 isReading = false;
@@ -91,13 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             const { audioContent, timepoints } = data;
 
-            if (!audioContent || !timepoints || timepoints.length === 0) {
-                throw new Error("Invalid data (no audio or timepoints) received from TTS server.");
+            if (!audioContent || !timepoints) {
+                throw new Error("Invalid data (no audio or timepoints) received.");
             }
 
-            const wordTimepoints = timepoints
-                .filter(t => !isNaN(parseInt(t.markName, 10)))
-                .sort((a, b) => parseInt(a.markName, 10) - parseInt(b.markName, 10));
+            const wordTimepoints = timepoints;
 
             const audioBlob = new Blob([Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
@@ -105,24 +139,21 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.id = 'tts-audio';
             document.body.appendChild(audio);
 
-            // '다음에 하이라이트할 단어'의 인덱스를 추적하는 변수
-            let nextHighlightIndex = 0; 
-            
+            let nextHighlightIndex = 0;
             const timeUpdateHandler = () => {
                 const currentTime = audio.currentTime;
                 
-                // '따라잡기' 로직: 현재 시간까지 발음되었어야 할 모든 단어를 순차적으로 하이라이트
+                // [수정 3] 하이라이트 로직을 'if'가 아닌 'while' 루프로 복원
                 while (
                     nextHighlightIndex < wordTimepoints.length &&
                     currentTime >= wordTimepoints[nextHighlightIndex].timeSeconds
                 ) {
                     highlightModalWord(nextHighlightIndex);
-                    nextHighlightIndex++; // 다음 단어를 목표로 설정
+                    nextHighlightIndex++;
                 }
             };
 
             const cleanup = (isEnded = false) => {
-                // 재생이 정상적으로 끝나면, 마지막 단어를 확실히 하이라이트
                 if (isEnded && wordTimepoints.length > 0) {
                     highlightModalWord(wordTimepoints.length - 1);
                 }
@@ -133,24 +164,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     clearWordHighlights();
-                    if (audio) {
-                        audio.remove();
-                        URL.revokeObjectURL(audioUrl);
-                    }
+                    // 오디오 객체를 확실히 제거
+                    const el = document.getElementById('tts-audio');
+                    if (el) el.remove();
+                    URL.revokeObjectURL(audioUrl);
                 }, 500);
             };
 
             audio.addEventListener('timeupdate', timeUpdateHandler);
             audio.addEventListener('ended', () => cleanup(true));
             audio.addEventListener('pause', () => cleanup(false));
-
-            audio.play().catch(e => {
-                console.error("Audio playback failed:", e);
+            audio.addEventListener('error', (e) => {
+                console.error("Audio playback error:", e);
                 cleanup(false);
             });
 
+            await audio.play();
+
         } catch (error) {
-            console.error('Could not use Google TTS. Reason:', error.message);
+            console.error('TTS Process Failed:', error);
             alert(`AI 음성 재생에 실패했습니다. 기본 음성으로 대체합니다.`);
             speakWithBrowserTTS();
             isReading = false;
@@ -158,12 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- 4. Core Game Logic ---
-    
     function initializeGame() {
         lives = 5;
         updateLivesDisplay();
-        currentProblem = contentGenerator.generateRandomProblem();
+        // 카테고리에 맞는 문제 생성
+        currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
+        
+        if (!currentProblem) {
+            alert("선택한 카테고리의 문제를 모두 풀었거나 문제가 없습니다. 홈으로 돌아갑니다.");
+            showCategoryScreen();
+            return;
+        }
+
         currentSentence = currentProblem.sentence;
         
         activeBlankIndex = -1;
@@ -173,13 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.clear();
         charToHintNumber.clear();
         
-        if (isReading) {
-            const audio = document.getElementById('tts-audio');
-            if (audio) {
-                audio.pause();
-            }
-            speechSynthesis.cancel();
-        }
+        stopAllSounds();
 
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
@@ -204,27 +236,21 @@ document.addEventListener('DOMContentLoaded', () => {
             updateKeyboardState();
             updateHintVisibility();
             
-            // --- 수정된 부분 시작 ---
-            // 다음 빈칸을 찾는 로직 수정
-            // 현재 입력한 칸 다음부터 순환하며 아직 채워지지 않은 칸을 찾음
             let nextIdx = -1;
             const totalBlanks = problemBlanks.length;
             for (let i = 1; i <= totalBlanks; i++) {
                 const checkIndex = (activeBlankIndex + i) % totalBlanks;
                 if (!problemBlanks[checkIndex].classList.contains('correct')) {
                     nextIdx = checkIndex;
-                    break; // 다음 빈칸을 찾았으므로 탐색 중단
+                    break;
                 }
             }
 
             if (nextIdx !== -1) {
-                // 다음 빈칸이 있으면 포커스 이동
                 setActiveBlank(nextIdx);
             } else {
-                // 모든 빈칸이 채워졌으면 성공 처리
                 checkPuzzleCompletion();
             }
-            // --- 수정된 부분 끝 ---
 
         } else {
             blank.classList.add('incorrect');
@@ -245,8 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 5. UI Update & Helper Functions ---
-
     function showSuccessModal() {
         const { sentence, source, translation, category } = currentProblem;
         createHighlightableSentence(document.querySelector('.original-sentence'), sentence);
@@ -255,25 +279,36 @@ document.addEventListener('DOMContentLoaded', () => {
         successModal.style.display = 'flex';
     }
 
+    // [수정 4] 단어 분리 방식을 서버와 일치시키기 위한 최종 버전
     function createHighlightableSentence(container, sentence) {
         container.innerHTML = '';
-        sentence.split(/(\s+)/).forEach(word => {
-            if (word.trim().length > 0) {
+        
+        // 서버(google-tts.js)의 단어 분리 방식('split(' ')')과 완벽하게 일치시킵니다.
+        // 이렇게 하면 클라이언트와 서버가 단어를 세는 방식이 동일해져 인덱스가 꼬이지 않습니다.
+        const words = sentence.split(' '); 
+        
+        words.forEach((word, index) => {
+            // 서버 로직이 'A  B'를 ['A', '', 'B']로 만드는 경우에 대비해 빈 문자열(word)을 건너뜁니다.
+            if (word) { 
                 const span = document.createElement('span');
                 span.className = 'modal-word';
                 span.textContent = word;
                 container.appendChild(span);
-            } else {
-                container.appendChild(document.createTextNode(word));
+            }
+            
+            // 마지막 단어가 아니면서, 다음 단어가 빈 문자열이 아닐 때만 공백을 추가하여
+            // 문장 끝이나 연속된 공백 뒤에 불필요한 공백이 생기지 않도록 합니다.
+            if (index < words.length - 1 && words[index+1]) {
+                container.appendChild(document.createTextNode(' '));
             }
         });
     }
     
     function highlightModalWord(idx) {
         clearWordHighlights();
-        const wordEl = document.querySelectorAll('.modal-word')[idx];
-        if (wordEl) {
-            wordEl.classList.add('reading-highlight');
+        const wordElements = document.querySelectorAll('.modal-word');
+        if (wordElements[idx]) {
+            wordElements[idx].classList.add('reading-highlight');
         }
     }
 
@@ -365,12 +400,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateLivesDisplay() {
-        livesDisplay.innerHTML = ''; // 기존 내용을 비움
-        // 5개의 막대를 생성
+        livesDisplay.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const bar = document.createElement('div');
             bar.classList.add('life-bar');
-            // 현재 남은 생명(lives)보다 인덱스가 크거나 같으면 'lost' 클래스 추가
             if (i >= lives) {
                 bar.classList.add('lost');
             }
@@ -448,7 +481,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 6. Event Listeners & Initialization ---
+    // --- Event Listeners & Initialization ---
+
+    categoryCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const category = card.dataset.category;
+            startGame(category);
+        });
+    });
+
+    homeBtn.addEventListener('click', showCategoryScreen);
 
     newQuizBtn.addEventListener('click', () => {
         successModal.style.display = 'none';
@@ -463,7 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
     listenBtn.addEventListener('click', speakSentence);
 
     document.addEventListener('keydown', (e) => {
-        if (successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') return;
+        if (gameScreen.style.display === 'none' || successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') {
+            return;
+        }
         if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
             handleKeyPress(e.key);
         } else if (e.key === 'ArrowLeft') {
@@ -484,5 +528,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    initializeGame();
+    showCategoryScreen();
 });

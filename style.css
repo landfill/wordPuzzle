@@ -9,12 +9,96 @@ body {
     color: #333;
     font-weight: 600;
     box-sizing: border-box;
+    background: #f0f2f5;
 }
 
-/* --- 수정된 부분 --- */
+/* 화면 전환용 래퍼 */
+.screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#category-selection-screen {
+    flex-direction: column;
+}
+
+/* 카테고리 선택 화면 스타일 */
+.category-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    backdrop-filter: blur(12px);
+    
+    height: 680px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.category-container h1 {
+    font-size: 2.5em;
+    color: #2d3748;
+    margin: 0 0 10px;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: #4a5568;
+    margin-bottom: 30px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #fdfbfb, #ebedee);
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #4299e1;
+}
+
+.card-icon {
+    font-size: 2.5em;
+}
+
+.card-text {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* --- 게임 레이아웃 최종 수정 --- */
+
 .game-container {
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 15px 15px; 
+    /* MODIFIED: Padding adjusted for new layout */
+    padding: 15px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -22,33 +106,72 @@ body {
     max-width: 800px;
     backdrop-filter: blur(12px);
     box-sizing: border-box;
-    position: relative; 
+    /* REMOVED: position: relative; no longer needed for child positioning */
     display: flex;
     flex-direction: column;
-    /* 5줄 문제가 완전히 표시될 수 있도록 높이를 680px로 충분히 늘림 */
     height: 680px; 
 }
-/* --- 수정 끝 --- */
 
-h1 {
-    display: none;
+/* --- 홈 버튼과 라이프바 최종 스타일 --- */
+#home-btn {
+    /* REMOVED: Absolute positioning properties */
+    /* position: absolute; top: 15px; right: 15px; z-index: 10; */
+
+    /* MODIFIED: Placed in flex flow */
+    align-self: flex-end; /* Aligns button to the right in the column flex container */
+    margin-bottom: 10px;
+
+    /* Original styles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #4a5568;
+    padding: 0;
 }
 
+#home-btn:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
+    transform: translateY(-1px);
+}
+
+#home-btn:active {
+    transform: translateY(0);
+    background: #edf2f7;
+}
+
+#home-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+
 .lives-display {
-    position: absolute;
-    top: 15px; 
-    left: 15px;
-    margin: 0;
+    /* REMOVED: Absolute positioning properties */
+    /* position: absolute; top: 15px; left: 15px; right: 60px; height: 38px; */
+    
+    /* MODIFIED: Placed in flex flow */
+    width: 100%;
+    margin: 0 0 15px 0; /* Sets bottom margin */
+
+    /* Original styles */
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 2px;
-    height: 6px;
-    width: calc(100% - 30px); 
 }
 
 .life-bar {
     flex: 1;
-    height: 100%;
+    height: 6px;
     background-color: #e53e3e;
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
@@ -58,6 +181,7 @@ h1 {
     opacity: 0.2;
     background-color: #cbd5e0;
 }
+/* --- 최종 수정 끝 --- */
 
 .source-display {
     width: 100%;
@@ -94,6 +218,7 @@ h1 {
     min-height: 0;
 }
 
+/* 이하 CSS는 변경 없음 */
 .word-group {
     display: inline-flex; 
     align-items: center;
@@ -449,13 +574,25 @@ h1 {
     transform: translateY(0);
 }
 
-/* --- 수정된 부분 --- */
 @media (max-width: 768px) {
-    .game-container {
-        /* 모바일에서도 5줄 기준 높이를 650px로 충분히 설정 */
-        height: 650px; 
+    /* 모바일에서 카테고리 화면 높이 조정 */
+    .category-container {
+        height: 95vh;
+        max-height: 700px;
+        padding: 20px;
     }
-
+    
+    /* ADDED: Forces a 2-column layout on mobile to prevent scrolling */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .game-container {
+        height: 95vh;
+        max-height: 700px;
+    }
+    
     .source-display {
         min-height: 65px;
         font-size: 1.1em;
