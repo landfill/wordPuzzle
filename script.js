@@ -152,8 +152,65 @@ document.addEventListener('DOMContentLoaded', () => {
         if ('speechSynthesis' in window && browserVoices.length > 0) {
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
+            
+            // 브라우저 TTS에서도 기본적인 하이라이트 제공
+            const words = currentSentence.split(' ');
+            let currentWordIndex = 0;
+            
+            // 단어별 하이라이트를 위한 타이머 (대략적인 속도로 계산)
+            const wordsPerSecond = 2.5; // 평균 읽기 속도
+            const intervalTime = 1000 / wordsPerSecond;
+            
+            const highlightInterval = setInterval(() => {
+                if (currentWordIndex < words.length) {
+                    highlightModalWord(currentWordIndex);
+                    currentWordIndex++;
+                } else {
+                    clearInterval(highlightInterval);
+                }
+            }, intervalTime);
+            
+            utterance.onend = () => {
+                clearInterval(highlightInterval);
+                setTimeout(() => {
+                    clearWordHighlights();
+                }, 500);
+                isReading = false;
+                listenBtn.classList.remove('disabled');
+            };
+            
+            utterance.onerror = () => {
+                clearInterval(highlightInterval);
+                clearWordHighlights();
+                isReading = false;
+                listenBtn.classList.remove('disabled');
+            };
+            
             speechSynthesis.speak(utterance);
+        } else {
+            // TTS를 사용할 수 없는 경우에도 하이라이트만 제공
+            provideFallbackHighlight();
         }
+    }
+    
+    function provideFallbackHighlight() {
+        console.warn("No TTS available, providing highlight-only experience.");
+        const words = currentSentence.split(' ');
+        let currentWordIndex = 0;
+        
+        const highlightInterval = setInterval(() => {
+            if (currentWordIndex < words.length) {
+                highlightModalWord(currentWordIndex);
+                currentWordIndex++;
+            } else {
+                clearInterval(highlightInterval);
+                setTimeout(() => {
+                    clearWordHighlights();
+                    isReading = false;
+                    listenBtn.classList.remove('disabled');
+                }, 500);
+            }
+        }, 800); // 조금 더 천천히 하이라이트
     }
     
     async function speakSentence() {
@@ -184,9 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (response.status === 403) {
+                console.log('TTS API access denied, using browser TTS with highlight');
                 speakWithBrowserTTS();
-                isReading = false;
-                listenBtn.classList.remove('disabled');
+                // isReading과 버튼 상태는 speakWithBrowserTTS에서 처리됨
                 return;
             }
             if (!response.ok) {
@@ -253,10 +310,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('TTS Process Failed:', error);
-            alert(`AI 음성 재생에 실패했습니다. 기본 음성으로 대체합니다.`);
+            console.log('Falling back to browser TTS with highlight');
             speakWithBrowserTTS();
-            isReading = false;
-            listenBtn.classList.remove('disabled');
+            // isReading과 버튼 상태는 speakWithBrowserTTS에서 처리됨
         }
     }
     
