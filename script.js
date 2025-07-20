@@ -21,6 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const retryNewBtn = document.getElementById('retry-new-btn');
     const goHomeBtn = document.getElementById('go-home-btn');
 
+    // DOM 요소 확인
+    console.log('DOM Elements Check:', {
+        categoryCards: categoryCards.length,
+        homeBtn: !!homeBtn,
+        reviewBtn: !!reviewBtn,
+        nextProblemBtn: !!nextProblemBtn,
+        listenBtn: !!listenBtn,
+        retrySameBtn: !!retrySameBtn,
+        retryNewBtn: !!retryNewBtn,
+        goHomeBtn: !!goHomeBtn
+    });
+
     // --- 2. Game State & Configuration ---
     let lives = 5;
     let currentProblem;
@@ -114,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startGame(category) {
+        console.log('Starting game with category:', category);
         selectedCategory = category;
         changeGameState(GameState.PLAYING);
         initializeProgress();
@@ -272,11 +285,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         stopAllSounds();
 
+        console.log('Loading problem:', currentProblem);
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
-        if (keyboardArea.childElementCount === 0) {
+        
+        console.log('Creating keyboard, keyboardArea:', keyboardArea);
+        if (keyboardArea && keyboardArea.childElementCount === 0) {
             createKeyboard();
+            console.log('Keyboard created');
         }
+        
+        console.log('Creating hint controls');
         createHintControls();
         resetHints();
         updateKeyboardState();
@@ -516,10 +535,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyPress(key) {
-        if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) return;
+        console.log('Key pressed:', key, 'activeBlankIndex:', activeBlankIndex);
+        if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) {
+            console.log('No active blank or invalid index');
+            return;
+        }
 
         const blank = problemBlanks[activeBlankIndex];
         const char = blank.dataset.correctChar;
+        console.log('Checking key:', key, 'against correct char:', char);
 
         if (key.toLowerCase() === char) {
             blank.textContent = key.toUpperCase();
@@ -871,34 +895,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners & Initialization ---
 
+    // 이벤트 리스너 추가 (null 체크 포함)
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
+            console.log('Category selected:', category);
             startGame(category);
         });
     });
 
-    homeBtn.addEventListener('click', showCategoryScreen);
+    if (homeBtn) {
+        homeBtn.addEventListener('click', () => {
+            console.log('Home button clicked');
+            changeGameState(GameState.CATEGORY_SELECTION);
+        });
+    }
 
-    newQuizBtn.addEventListener('click', () => {
-        successModal.style.display = 'none';
-        initializeGame();
-    });
-
-    retrySameBtn.addEventListener('click', retrySameProblem);
+    if (retrySameBtn) {
+        retrySameBtn.addEventListener('click', () => {
+            console.log('Retry same button clicked');
+            retrySameProblem();
+        });
+    }
     
-    retryNewBtn.addEventListener('click', retryWithNewProblem);
+    if (retryNewBtn) {
+        retryNewBtn.addEventListener('click', () => {
+            console.log('Retry new button clicked');
+            retryWithNewProblem();
+        });
+    }
     
-    goHomeBtn.addEventListener('click', () => {
-        gameOverModal.style.display = 'none';
-        changeGameState(GameState.CATEGORY_SELECTION);
-    });
+    if (goHomeBtn) {
+        goHomeBtn.addEventListener('click', () => {
+            console.log('Go home button clicked');
+            gameOverModal.style.display = 'none';
+            changeGameState(GameState.CATEGORY_SELECTION);
+        });
+    }
 
-    reviewBtn.addEventListener('click', enterReviewMode);
+    if (reviewBtn) {
+        reviewBtn.addEventListener('click', () => {
+            console.log('Review button clicked');
+            enterReviewMode();
+        });
+    }
     
-    nextProblemBtn.addEventListener('click', proceedToNextProblem);
+    if (nextProblemBtn) {
+        nextProblemBtn.addEventListener('click', () => {
+            console.log('Next problem button clicked');
+            proceedToNextProblem();
+        });
+    }
 
-    listenBtn.addEventListener('click', speakSentence);
+    if (listenBtn) {
+        listenBtn.addEventListener('click', () => {
+            console.log('Listen button clicked');
+            speakSentence();
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
         if (gameScreen.style.display === 'none' || successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') {
