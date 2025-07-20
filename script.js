@@ -355,7 +355,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createHintControls();
         resetHints();
         updateKeyboardState();
-        updateHintVisibility();
     }
     
     function retrySameProblem() {
@@ -526,7 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
         correctlyFilledBlankChars.set(correctChar, (correctlyFilledBlankChars.get(correctChar) || 0) + 1);
         updateHintButtonState();
         updateKeyboardState();
-        updateHintVisibility();
         
         // 다음 빈칸으로 이동
         let nextIdx = -1;
@@ -634,7 +632,6 @@ document.addEventListener('DOMContentLoaded', () => {
             blank.classList.remove('active');
             correctlyFilledBlankChars.set(char, (correctlyFilledBlankChars.get(char) || 0) + 1);
             updateKeyboardState();
-            updateHintVisibility();
             
             // 정답 햅틱 피드백
             triggerHapticFeedback('light');
@@ -981,6 +978,9 @@ document.addEventListener('DOMContentLoaded', () => {
             el.classList.toggle('disabled', dis);
             el.style.pointerEvents = dis ? 'none' : 'auto';
         });
+        
+        // 키보드 상태 변경 시 힌트 번호 표시도 함께 업데이트
+        updateHintVisibility();
     }
     
     function updateHintVisibility() {
