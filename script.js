@@ -888,12 +888,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 새로운 활성 빈칸 설정
         activeBlankIndex = idx;
         if (problemBlanks[activeBlankIndex]) {
-            // 이미 채워진 빈칸인지 확인
-            if (problemBlanks[activeBlankIndex].classList.contains('correct')) {
-                console.log('Warning: Setting active blank on already filled blank:', idx);
+            // 이미 채워진 빈칸에는 active 클래스를 추가하지 않음
+            if (!problemBlanks[activeBlankIndex].classList.contains('correct')) {
+                problemBlanks[activeBlankIndex].classList.add('active');
+                console.log('Set active class on blank:', idx);
+            } else {
+                console.log('Skipped setting active class on already filled blank:', idx);
             }
-            
-            problemBlanks[activeBlankIndex].classList.add('active');
             document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
             problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank');
             

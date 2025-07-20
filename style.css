@@ -402,10 +402,10 @@ body {
 }
 
 .word-blank.correct {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    border-color: #38a169;
-    color: white;
-    animation: none;
+    background: linear-gradient(135deg, #48bb78, #38a169) !important;
+    border-color: #38a169 !important;
+    color: white !important;
+    animation: none !important;
 }
 
 .word-blank.incorrect {
