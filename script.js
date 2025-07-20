@@ -322,51 +322,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function showReviewModeUI() {
-        // 게임 헤더에 검토 모드 표시 추가
-        const gameHeader = document.querySelector('.game-header');
-        let reviewIndicator = document.querySelector('.review-mode-indicator');
+        // 힌트 컨트롤 영역을 검토 모드 컨트롤로 변경
+        const hintControls = document.querySelector('.hint-controls');
+        hintControls.innerHTML = '';
         
-        if (!reviewIndicator) {
-            reviewIndicator = document.createElement('div');
-            reviewIndicator.className = 'review-mode-indicator';
-            reviewIndicator.textContent = '검토 모드';
-            gameHeader.appendChild(reviewIndicator);
-        }
+        // 검토 모드 표시
+        const reviewIndicator = document.createElement('div');
+        reviewIndicator.className = 'review-mode-indicator';
+        reviewIndicator.textContent = '검토 모드';
         
-        // 다음 문제 버튼 표시
-        const gameFooter = document.querySelector('.game-footer');
-        let nextButton = document.querySelector('.next-problem-game-btn');
+        // 다음 문제 버튼
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next-problem-btn';
+        nextButton.textContent = '다음 문제';
+        nextButton.onclick = () => {
+            exitReviewMode();
+            advanceProgress();
+            if (currentProblemNumber <= totalProblemsInSession) {
+                initializeGame(false);
+            }
+        };
         
-        if (!nextButton) {
-            nextButton = document.createElement('button');
-            nextButton.className = 'next-problem-game-btn modal-btn primary';
-            nextButton.textContent = '다음 문제';
-            nextButton.onclick = () => {
-                exitReviewMode();
-                advanceProgress();
-                if (currentProblemNumber <= totalProblemsInSession) {
-                    initializeGame(false);
-                }
-            };
-            gameFooter.insertBefore(nextButton, gameFooter.firstChild);
-        }
-        
-        nextButton.style.display = 'block';
+        hintControls.appendChild(reviewIndicator);
+        hintControls.appendChild(nextButton);
     }
     
     function exitReviewMode() {
         isReviewMode = false;
         
-        // 검토 모드 UI 제거
-        const reviewIndicator = document.querySelector('.review-mode-indicator');
-        if (reviewIndicator) {
-            reviewIndicator.remove();
-        }
-        
-        const nextButton = document.querySelector('.next-problem-game-btn');
-        if (nextButton) {
-            nextButton.style.display = 'none';
-        }
+        // 힌트 컨트롤을 다시 생성
+        createHintControls();
+        resetHints();
     }
     
     function updateProgressIndicator() {
