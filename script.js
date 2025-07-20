@@ -411,7 +411,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hintButton && hintCounter) {
             hintCounter.textContent = `${hintsUsed}/${maxHints}`;
             
-            if (hintsUsed >= maxHints) {
+            // 힌트 버튼 비활성화 조건:
+            // 1. 최대 힌트 수에 도달했거나
+            // 2. 활성화된 빈칸이 없거나
+            // 3. 현재 활성화된 빈칸이 이미 채워져 있는 경우
+            const shouldDisable = hintsUsed >= maxHints || 
+                                 activeBlankIndex === -1 || 
+                                 !problemBlanks[activeBlankIndex] ||
+                                 problemBlanks[activeBlankIndex].classList.contains('correct');
+            
+            if (shouldDisable) {
                 hintButton.disabled = true;
                 hintButton.classList.add('disabled');
             } else {
@@ -424,18 +433,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function useHint() {
         if (hintsUsed >= maxHints || problemBlanks.length === 0) return;
         
-        // 아직 채워지지 않은 빈칸 찾기
-        const emptyBlanks = problemBlanks.filter(blank => !blank.classList.contains('correct'));
+        // 현재 활성화된 빈칸이 있는지 확인
+        if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) {
+            console.log('No active blank for hint');
+            return;
+        }
         
-        if (emptyBlanks.length === 0) return;
+        const activeBlank = problemBlanks[activeBlankIndex];
         
-        // 랜덤하게 하나의 빈칸 선택
-        const randomBlank = emptyBlanks[Math.floor(Math.random() * emptyBlanks.length)];
-        const correctChar = randomBlank.dataset.correctChar;
+        // 이미 채워진 빈칸인지 확인
+        if (activeBlank.classList.contains('correct')) {
+            console.log('Active blank is already filled');
+            return;
+        }
+        
+        const correctChar = activeBlank.dataset.correctChar;
         
         // 힌트로 정답 채우기
-        randomBlank.textContent = correctChar.toUpperCase();
-        randomBlank.classList.add('correct', 'hint-filled');
+        activeBlank.textContent = correctChar.toUpperCase();
+        activeBlank.classList.add('correct', 'hint-filled');
+        activeBlank.classList.remove('active');
         
         // 힌트 사용 횟수 증가
         hintsUsed++;
@@ -446,8 +463,23 @@ document.addEventListener('DOMContentLoaded', () => {
         updateKeyboardState();
         updateHintVisibility();
         
-        // 퍼즐 완성 확인
-        checkPuzzleCompletion();
+        // 다음 빈칸으로 이동
+        let nextIdx = -1;
+        const totalBlanks = problemBlanks.length;
+        for (let i = 1; i <= totalBlanks; i++) {
+            const checkIndex = (activeBlankIndex + i) % totalBlanks;
+            if (!problemBlanks[checkIndex].classList.contains('correct')) {
+                nextIdx = checkIndex;
+                break;
+            }
+        }
+
+        if (nextIdx !== -1) {
+            setActiveBlank(nextIdx);
+        } else {
+            // 모든 빈칸이 채워졌으면 퍼즐 완성 확인
+            checkPuzzleCompletion();
+        }
     }
     
     function resetHints() {
@@ -779,6 +811,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Auto-scroll to active blank
             scrollToActiveBlank();
+            
+            // 힌트 버튼 상태 업데이트
+            updateHintButtonState();
         }
     }
     
