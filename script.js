@@ -959,7 +959,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const c = s.dataset.char;
             const req = requiredBlankChars.get(c) || 0;
             const fill = correctlyFilledBlankChars.get(c) || 0;
-            s.style.visibility = fill >= req ? 'hidden' : 'visible';
+            
+            // 키보드가 비활성화된 문자는 힌트 번호도 숨김
+            const isKeyDisabled = usedCharsInProblem.has(c) || (req > 0 && fill >= req);
+            
+            s.style.visibility = isKeyDisabled ? 'hidden' : 'visible';
         });
     }
     

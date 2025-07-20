@@ -390,8 +390,8 @@ body {
 }
 
 .word-blank.active {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    border-color: #38a169;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    border-color: #3182ce;
     color: white;
     animation: pulse 1.5s infinite;
 }
