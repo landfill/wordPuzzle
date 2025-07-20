@@ -14,9 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sourceDisplay = document.querySelector('.source-display');
     const successModal = document.getElementById('success-modal');
     const gameOverModal = document.getElementById('game-over-modal');
-    const newQuizBtn = document.getElementById('new-quiz-btn');
+    const reviewBtn = document.getElementById('review-btn');
+    const nextProblemBtn = document.getElementById('next-problem-btn');
     const listenBtn = document.getElementById('listen-btn');
-    const retryBtn = document.getElementById('retry-btn');
+    const retrySameBtn = document.getElementById('retry-same-btn');
+    const retryNewBtn = document.getElementById('retry-new-btn');
+    const goHomeBtn = document.getElementById('go-home-btn');
 
     // --- 2. Game State & Configuration ---
     let lives = 5;
@@ -32,6 +35,59 @@ document.addEventListener('DOMContentLoaded', () => {
     let browserVoices = [];
     let selectedCategory = 'all';
     let isAudioContextUnlocked = false; // [추가] 모바일 오디오 재생을 위한 플래그
+    let initialViewportHeight = window.innerHeight; // 모바일 가상 키보드 감지용
+    let isReviewMode = false; // 검토 모드 상태
+    let currentProblemNumber = 1; // 현재 문제 번호
+    let totalProblemsInSession = 10; // 세션당 총 문제 수
+    let hintsUsed = 0; // 현재 문제에서 사용한 힌트 수
+    let maxHints = 3; // 문제당 최대 힌트 수
+    let currentScore = 0; // 현재 문제 점수
+    let baseScore = 100; // 기본 점수
+    let hintPenalty = 20; // 힌트당 감점
+
+    // 게임 상태 관리자
+    const GameState = {
+        CATEGORY_SELECTION: 'category_selection',
+        PLAYING: 'playing',
+        REVIEW: 'review',
+        GAME_OVER: 'game_over',
+        SUCCESS: 'success'
+    };
+    
+    let currentGameState = GameState.CATEGORY_SELECTION;
+    
+    function changeGameState(newState) {
+        const previousState = currentGameState;
+        currentGameState = newState;
+        
+        console.log(`Game state changed: ${previousState} -> ${newState}`);
+        
+        // 상태 변경에 따른 UI 업데이트
+        updateUIForState(newState);
+    }
+    
+    function updateUIForState(state) {
+        switch (state) {
+            case GameState.CATEGORY_SELECTION:
+                showCategoryScreen();
+                break;
+            case GameState.PLAYING:
+                showGameScreen();
+                if (isReviewMode) {
+                    exitReviewMode();
+                }
+                break;
+            case GameState.REVIEW:
+                // 검토 모드는 별도 함수에서 처리
+                break;
+            case GameState.GAME_OVER:
+                // 게임 오버 모달은 별도에서 표시
+                break;
+            case GameState.SUCCESS:
+                // 성공 모달은 별도에서 표시
+                break;
+        }
+    }
 
     const contentGenerator = new ContentGenerator();
     Object.keys(CONTENT_DATABASE).forEach(cat => {
@@ -59,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame(category) {
         selectedCategory = category;
-        showGameScreen();
+        changeGameState(GameState.PLAYING);
+        initializeProgress();
         initializeGame();
     }
     
@@ -190,19 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    function initializeGame() {
+    function initializeGame(keepCurrentProblem = false) {
         lives = 5;
         updateLivesDisplay();
-        // 카테고리에 맞는 문제 생성
-        currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
         
-        if (!currentProblem) {
-            alert("선택한 카테고리의 문제를 모두 풀었거나 문제가 없습니다. 홈으로 돌아갑니다.");
-            showCategoryScreen();
-            return;
+        // 같은 문제 재시도가 아닌 경우에만 새 문제 생성
+        if (!keepCurrentProblem) {
+            currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
+            
+            if (!currentProblem) {
+                alert("선택한 카테고리의 문제를 모두 풀었거나 문제가 없습니다. 홈으로 돌아갑니다.");
+                showCategoryScreen();
+                return;
+            }
+            currentSentence = currentProblem.sentence;
         }
-
-        currentSentence = currentProblem.sentence;
         
         activeBlankIndex = -1;
         problemBlanks = [];
@@ -218,8 +277,242 @@ document.addEventListener('DOMContentLoaded', () => {
         if (keyboardArea.childElementCount === 0) {
             createKeyboard();
         }
+        createHintControls();
+        resetHints();
         updateKeyboardState();
         updateHintVisibility();
+    }
+    
+    function retrySameProblem() {
+        gameOverModal.style.display = 'none';
+        initializeGame(true); // 같은 문제 유지
+    }
+    
+    function retryWithNewProblem() {
+        gameOverModal.style.display = 'none';
+        initializeGame(false); // 새 문제 생성
+    }
+    
+    function enterReviewMode() {
+        isReviewMode = true;
+        changeGameState(GameState.REVIEW);
+        successModal.style.display = 'none';
+        
+        // 검토 모드 UI 표시
+        showReviewModeUI();
+    }
+    
+    function showReviewModeUI() {
+        // 게임 헤더에 검토 모드 표시 추가
+        const gameHeader = document.querySelector('.game-header');
+        let reviewIndicator = document.querySelector('.review-mode-indicator');
+        
+        if (!reviewIndicator) {
+            reviewIndicator = document.createElement('div');
+            reviewIndicator.className = 'review-mode-indicator';
+            reviewIndicator.textContent = '검토 모드';
+            gameHeader.appendChild(reviewIndicator);
+        }
+        
+        // 다음 문제 버튼 표시
+        const gameFooter = document.querySelector('.game-footer');
+        let nextButton = document.querySelector('.next-problem-game-btn');
+        
+        if (!nextButton) {
+            nextButton = document.createElement('button');
+            nextButton.className = 'next-problem-game-btn modal-btn primary';
+            nextButton.textContent = '다음 문제';
+            nextButton.onclick = () => {
+                exitReviewMode();
+                advanceProgress();
+                if (currentProblemNumber <= totalProblemsInSession) {
+                    initializeGame(false);
+                }
+            };
+            gameFooter.insertBefore(nextButton, gameFooter.firstChild);
+        }
+        
+        nextButton.style.display = 'block';
+    }
+    
+    function exitReviewMode() {
+        isReviewMode = false;
+        
+        // 검토 모드 UI 제거
+        const reviewIndicator = document.querySelector('.review-mode-indicator');
+        if (reviewIndicator) {
+            reviewIndicator.remove();
+        }
+        
+        const nextButton = document.querySelector('.next-problem-game-btn');
+        if (nextButton) {
+            nextButton.style.display = 'none';
+        }
+    }
+    
+    function updateProgressIndicator() {
+        const progressIndicator = document.querySelector('.progress-indicator');
+        if (progressIndicator) {
+            progressIndicator.textContent = `${currentProblemNumber} / ${totalProblemsInSession}`;
+        }
+    }
+    
+    function initializeProgress() {
+        currentProblemNumber = 1;
+        updateProgressIndicator();
+    }
+    
+    function advanceProgress() {
+        if (currentProblemNumber < totalProblemsInSession) {
+            currentProblemNumber++;
+            updateProgressIndicator();
+        } else {
+            // 모든 문제 완료
+            showSessionCompleteModal();
+        }
+    }
+    
+    function showSessionCompleteModal() {
+        // 세션 완료 모달 표시 (향후 구현)
+        alert(`축하합니다! ${totalProblemsInSession}개 문제를 모두 완료했습니다!`);
+        showCategoryScreen();
+    }
+    
+    function createHintControls() {
+        const hintControls = document.querySelector('.hint-controls');
+        hintControls.innerHTML = '';
+        
+        const hintButton = document.createElement('button');
+        hintButton.id = 'hint-btn';
+        hintButton.className = 'hint-btn';
+        hintButton.innerHTML = '💡 힌트';
+        hintButton.onclick = useHint;
+        
+        const hintCounter = document.createElement('span');
+        hintCounter.id = 'hint-counter';
+        hintCounter.className = 'hint-counter';
+        hintCounter.textContent = `${hintsUsed}/${maxHints}`;
+        
+        hintControls.appendChild(hintButton);
+        hintControls.appendChild(hintCounter);
+        
+        updateHintButtonState();
+    }
+    
+    function updateHintButtonState() {
+        const hintButton = document.getElementById('hint-btn');
+        const hintCounter = document.getElementById('hint-counter');
+        
+        if (hintButton && hintCounter) {
+            hintCounter.textContent = `${hintsUsed}/${maxHints}`;
+            
+            if (hintsUsed >= maxHints) {
+                hintButton.disabled = true;
+                hintButton.classList.add('disabled');
+            } else {
+                hintButton.disabled = false;
+                hintButton.classList.remove('disabled');
+            }
+        }
+    }
+    
+    function useHint() {
+        if (hintsUsed >= maxHints || problemBlanks.length === 0) return;
+        
+        // 아직 채워지지 않은 빈칸 찾기
+        const emptyBlanks = problemBlanks.filter(blank => !blank.classList.contains('correct'));
+        
+        if (emptyBlanks.length === 0) return;
+        
+        // 랜덤하게 하나의 빈칸 선택
+        const randomBlank = emptyBlanks[Math.floor(Math.random() * emptyBlanks.length)];
+        const correctChar = randomBlank.dataset.correctChar;
+        
+        // 힌트로 정답 채우기
+        randomBlank.textContent = correctChar.toUpperCase();
+        randomBlank.classList.add('correct', 'hint-filled');
+        
+        // 힌트 사용 횟수 증가
+        hintsUsed++;
+        
+        // 상태 업데이트
+        correctlyFilledBlankChars.set(correctChar, (correctlyFilledBlankChars.get(correctChar) || 0) + 1);
+        updateHintButtonState();
+        updateKeyboardState();
+        updateHintVisibility();
+        
+        // 퍼즐 완성 확인
+        checkPuzzleCompletion();
+    }
+    
+    function resetHints() {
+        hintsUsed = 0;
+        updateHintButtonState();
+    }
+    
+    // 스와이프 제스처 처리
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    
+    function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }
+    
+    function handleTouchEnd(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipeGesture();
+    }
+    
+    function handleSwipeGesture() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        const minSwipeDistance = 50;
+        
+        // 수평 스와이프가 수직 스와이프보다 클 때만 처리
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX > 0) {
+                // 오른쪽 스와이프 - 다음 빈칸
+                navigateBlank(1);
+            } else {
+                // 왼쪽 스와이프 - 이전 빈칸
+                navigateBlank(-1);
+            }
+        }
+    }
+    
+    // 햅틱 피드백 함수
+    function triggerHapticFeedback(type = 'light') {
+        if ('vibrate' in navigator) {
+            switch (type) {
+                case 'light':
+                    navigator.vibrate(10);
+                    break;
+                case 'medium':
+                    navigator.vibrate(50);
+                    break;
+                case 'heavy':
+                    navigator.vibrate([100, 50, 100]);
+                    break;
+                case 'success':
+                    navigator.vibrate([50, 25, 50, 25, 100]);
+                    break;
+                case 'error':
+                    navigator.vibrate([100, 50, 100, 50, 200]);
+                    break;
+            }
+        }
+    }
+    
+    function proceedToNextProblem() {
+        successModal.style.display = 'none';
+        advanceProgress();
+        if (currentProblemNumber <= totalProblemsInSession) {
+            initializeGame(false);
+        }
     }
 
     function handleKeyPress(key) {
@@ -235,6 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
             correctlyFilledBlankChars.set(char, (correctlyFilledBlankChars.get(char) || 0) + 1);
             updateKeyboardState();
             updateHintVisibility();
+            
+            // 정답 햅틱 피드백
+            triggerHapticFeedback('light');
             
             let nextIdx = -1;
             const totalBlanks = problemBlanks.length;
@@ -256,9 +552,14 @@ document.addEventListener('DOMContentLoaded', () => {
             blank.classList.add('incorrect');
             lives--;
             updateLivesDisplay();
+            
+            // 오답 햅틱 피드백
+            triggerHapticFeedback('error');
+            
             setTimeout(() => {
                 blank.classList.remove('incorrect');
                 if (lives <= 0) {
+                    changeGameState(GameState.GAME_OVER);
                     gameOverModal.style.display = 'flex';
                 }
             }, 500);
@@ -267,16 +568,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkPuzzleCompletion() {
         if (problemBlanks.every(b => b.classList.contains('correct'))) {
+            // 성공 햅틱 피드백
+            triggerHapticFeedback('success');
             setTimeout(showSuccessModal, 500);
         }
     }
 
     function showSuccessModal() {
+        changeGameState(GameState.SUCCESS);
+        
         const { sentence, source, translation, category } = currentProblem;
         createHighlightableSentence(document.querySelector('.original-sentence'), sentence);
         document.querySelector('#success-modal .source').textContent = `출처: ${source} (${category})`;
         document.querySelector('.korean-translation').textContent = translation;
+        
+        // 점수 및 힌트 사용량 표시
+        updateSuccessModalScore();
+        
         successModal.style.display = 'flex';
+    }
+    
+    function calculateScore() {
+        currentScore = Math.max(0, baseScore - (hintsUsed * hintPenalty));
+        return currentScore;
+    }
+    
+    function updateSuccessModalScore() {
+        const score = calculateScore();
+        let scoreDisplay = document.querySelector('.score-display');
+        
+        if (!scoreDisplay) {
+            scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'score-display';
+            
+            const sentenceDisplay = document.querySelector('.sentence-display');
+            sentenceDisplay.appendChild(scoreDisplay);
+        }
+        
+        let scoreText = `점수: ${score}점`;
+        if (hintsUsed > 0) {
+            scoreText += ` (힌트 ${hintsUsed}개 사용, -${hintsUsed * hintPenalty}점)`;
+        }
+        
+        scoreDisplay.innerHTML = `
+            <div class="score-text">${scoreText}</div>
+            ${hintsUsed === 0 ? '<div class="perfect-bonus">🎉 완벽한 해결!</div>' : ''}
+        `;
     }
 
     // [수정 4] 단어 분리 방식을 서버와 일치시키기 위한 최종 버전
@@ -426,6 +763,41 @@ document.addEventListener('DOMContentLoaded', () => {
             problemBlanks[activeBlankIndex].classList.add('active');
             document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
             problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank');
+            
+            // 빈칸 선택 햅틱 피드백
+            triggerHapticFeedback('light');
+            
+            // Auto-scroll to active blank
+            scrollToActiveBlank();
+        }
+    }
+    
+    function scrollToActiveBlank() {
+        if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) {
+            const activeBlank = problemBlanks[activeBlankIndex];
+            const problemArea = document.querySelector('.problem-area');
+            
+            if (problemArea && activeBlank) {
+                // Check if the active blank is visible in the problem area
+                const problemRect = problemArea.getBoundingClientRect();
+                const blankRect = activeBlank.getBoundingClientRect();
+                
+                // Calculate if blank is outside visible area
+                const isAboveView = blankRect.top < problemRect.top;
+                const isBelowView = blankRect.bottom > problemRect.bottom;
+                
+                if (isAboveView || isBelowView) {
+                    // Scroll to center the active blank in the problem area
+                    const blankOffsetTop = activeBlank.offsetTop;
+                    const problemAreaHeight = problemArea.clientHeight;
+                    const scrollTop = blankOffsetTop - (problemAreaHeight / 2);
+                    
+                    problemArea.scrollTo({
+                        top: Math.max(0, scrollTop),
+                        behavior: 'smooth'
+                    });
+                }
+            }
         }
     }
     
@@ -480,6 +852,22 @@ document.addEventListener('DOMContentLoaded', () => {
             s.style.visibility = fill >= req ? 'hidden' : 'visible';
         });
     }
+    
+    // 모바일 가상 키보드 감지 및 레이아웃 조정
+    function handleMobileKeyboard() {
+        const currentHeight = window.innerHeight;
+        const heightDifference = initialViewportHeight - currentHeight;
+        const gameContainer = document.querySelector('.game-container');
+        
+        // 가상 키보드가 나타났을 때 (높이가 150px 이상 줄어들었을 때)
+        if (heightDifference > 150) {
+            gameContainer.style.height = `${currentHeight - 20}px`;
+            gameContainer.classList.add('mobile-keyboard-active');
+        } else {
+            gameContainer.style.height = '680px';
+            gameContainer.classList.remove('mobile-keyboard-active');
+        }
+    }
 
     // --- Event Listeners & Initialization ---
 
@@ -497,10 +885,18 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeGame();
     });
 
-    retryBtn.addEventListener('click', () => {
+    retrySameBtn.addEventListener('click', retrySameProblem);
+    
+    retryNewBtn.addEventListener('click', retryWithNewProblem);
+    
+    goHomeBtn.addEventListener('click', () => {
         gameOverModal.style.display = 'none';
-        initializeGame();
+        changeGameState(GameState.CATEGORY_SELECTION);
     });
+
+    reviewBtn.addEventListener('click', enterReviewMode);
+    
+    nextProblemBtn.addEventListener('click', proceedToNextProblem);
 
     listenBtn.addEventListener('click', speakSentence);
 
@@ -517,6 +913,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 모바일 가상 키보드 감지를 위한 이벤트 리스너
+    window.addEventListener('resize', handleMobileKeyboard);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            initialViewportHeight = window.innerHeight;
+            handleMobileKeyboard();
+        }, 500);
+    });
+
+    // 스와이프 제스처 이벤트 리스너
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
     if ('speechSynthesis' in window) {
         const loadBrowserVoices = () => {
             browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
@@ -528,5 +937,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    showCategoryScreen();
+    // 초기 상태 설정
+    changeGameState(GameState.CATEGORY_SELECTION);
 });
