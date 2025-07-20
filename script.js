@@ -857,19 +857,47 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function navigateBlank(dir) {
         if (problemBlanks.length === 0) return;
-        activeBlankIndex = (activeBlankIndex + dir + problemBlanks.length) % problemBlanks.length;
-        setActiveBlank(activeBlankIndex);
+        
+        let nextIdx = activeBlankIndex;
+        const totalBlanks = problemBlanks.length;
+        
+        // 다음 빈칸을 찾을 때까지 반복 (이미 채워진 빈칸은 건너뛰기)
+        for (let i = 0; i < totalBlanks; i++) {
+            nextIdx = (nextIdx + dir + totalBlanks) % totalBlanks;
+            
+            // 빈칸이 아직 채워지지 않았으면 선택
+            if (!problemBlanks[nextIdx].classList.contains('correct')) {
+                setActiveBlank(nextIdx);
+                return;
+            }
+        }
+        
+        // 모든 빈칸이 채워진 경우 현재 위치 유지
+        console.log('All blanks are filled');
     }
     
     function setActiveBlank(idx) {
+        console.log('setActiveBlank called with idx:', idx, 'current activeBlankIndex:', activeBlankIndex);
+        
+        // 이전 활성 빈칸의 active 클래스 제거
         if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) {
             problemBlanks[activeBlankIndex].classList.remove('active');
+            console.log('Removed active class from blank:', activeBlankIndex);
         }
+        
+        // 새로운 활성 빈칸 설정
         activeBlankIndex = idx;
         if (problemBlanks[activeBlankIndex]) {
+            // 이미 채워진 빈칸인지 확인
+            if (problemBlanks[activeBlankIndex].classList.contains('correct')) {
+                console.log('Warning: Setting active blank on already filled blank:', idx);
+            }
+            
             problemBlanks[activeBlankIndex].classList.add('active');
             document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
             problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank');
+            
+            console.log('Set active class on blank:', idx);
             
             // 빈칸 선택 햅틱 피드백
             triggerHapticFeedback('light');
