@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design document outlines the architectural changes needed to improve the Word Puzzle Game's user experience. The main focus is on restructuring the game layout to support scrollable content areas, fixed positioning for input controls, and enhanced game flow management. The design maintains backward compatibility while introducing new interaction patterns that improve usability across different devices and content lengths.
+This design document outlines the architectural changes needed to improve the Word Crack Game's user experience. The main focus is on restructuring the game layout to support scrollable content areas, fixed positioning for input controls, and enhanced game flow management. The design maintains backward compatibility while introducing new interaction patterns that improve usability across different devices and content lengths.
 
 ## Architecture
 

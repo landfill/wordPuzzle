@@ -1,11 +1,11 @@
 
 ---
 
-# 🌟 Word Puzzle Game
+# 🌟 Word Crack Game
 
 **" 좋아하는 영화, 노래, 명언의 일부가 되어보세요!"**
 
-Word Puzzle Game은 유명한 영화 대사, 노래 가사, 책 구절, 그리고 명언들 속 빈칸을 채우며 영어 실력과 타자 실력을 동시에 향상시킬 수 있는 인터랙티브 웹 게임입니다. 문장을 완성한 후에는 AI가 읽어주는 자연스러운 음성으로 전체 문장을 들으며 리스닝 훈련까지 경험할 수 있습니다.
+Word Crack Game은 유명한 영화 대사, 노래 가사, 책 구절, 그리고 명언들 속 빈칸을 채우며 영어 실력과 타자 실력을 동시에 향상시킬 수 있는 인터랙티브 웹 게임입니다. 문장을 완성한 후에는 AI가 읽어주는 자연스러운 음성으로 전체 문장을 들으며 리스닝 훈련까지 경험할 수 있습니다.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/df5a29fa-5527-4e6f-9f18-bdb6730beec9" width="260" alt="Category Selection Screen">

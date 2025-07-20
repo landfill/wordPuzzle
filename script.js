@@ -984,6 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateHintVisibility() {
+        // 고정된 문자의 힌트 번호 처리 (data-char 속성이 있는 경우)
         document.querySelectorAll('.hint-number[data-char]').forEach(s => {
             const c = s.dataset.char;
             const req = requiredBlankChars.get(c) || 0;
@@ -993,6 +994,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const isKeyDisabled = usedCharsInProblem.has(c) || (req > 0 && fill >= req);
             
             s.style.visibility = isKeyDisabled ? 'hidden' : 'visible';
+        });
+        
+        // 빈칸의 힌트 번호 처리
+        problemBlanks.forEach(blank => {
+            const hintElement = blank.nextElementSibling;
+            const correctChar = blank.dataset.correctChar;
+            
+            if (hintElement && hintElement.classList.contains('hint-number') && correctChar) {
+                const req = requiredBlankChars.get(correctChar) || 0;
+                const fill = correctlyFilledBlankChars.get(correctChar) || 0;
+                const isKeyDisabled = usedCharsInProblem.has(correctChar) || (req > 0 && fill >= req);
+                
+                hintElement.style.visibility = isKeyDisabled ? 'hidden' : 'visible';
+            }
         });
     }
     
