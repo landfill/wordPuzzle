@@ -387,6 +387,14 @@ document.addEventListener('DOMContentLoaded', () => {
         reviewIndicator.className = 'review-mode-indicator';
         reviewIndicator.textContent = '검토 모드';
         
+        // 결과 보기 버튼 (성공 팝업 다시 표시)
+        const showResultButton = document.createElement('button');
+        showResultButton.className = 'show-result-btn';
+        showResultButton.textContent = '결과 보기';
+        showResultButton.onclick = () => {
+            showSuccessModal();
+        };
+        
         // 다음 문제 버튼
         const nextButton = document.createElement('button');
         nextButton.className = 'next-problem-btn';
@@ -400,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         hintControls.appendChild(reviewIndicator);
+        hintControls.appendChild(showResultButton);
         hintControls.appendChild(nextButton);
     }
     

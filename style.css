@@ -237,6 +237,24 @@ body {
     box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
 }
 
+.show-result-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+}
+
+.show-result-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+}
+
 .life-bar {
     flex: 1;
     height: 6px;
@@ -425,9 +443,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 10px;
     min-height: 40px;
+    flex-wrap: wrap;
 }
 
 .hint-btn {
@@ -872,5 +891,14 @@ body {
     .next-problem-btn {
         font-size: 0.8em;
         padding: 6px 12px;
+    }
+    
+    .show-result-btn {
+        font-size: 0.8em;
+        padding: 6px 12px;
+    }
+    
+    .hint-controls {
+        gap: 6px;
     }
 }

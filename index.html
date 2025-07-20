@@ -1,116 +1,125 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Word Puzzle</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <!-- Category Selection Screen -->
     <div id="category-selection-screen" class="screen">
-        <div class="category-container">
-            <h1>Word Puzzle</h1>
-            <p class="subtitle">카테고리를 선택하여 퀴즈를 시작하세요!</p>
-            <div class="category-grid">
-                <div class="category-card" data-category="movies">
-                    <span class="card-icon">🎬</span>
-                    <span class="card-text">Movies</span>
-                </div>
-                <div class="category-card" data-category="songs">
-                    <span class="card-icon">🎵</span>
-                    <span class="card-text">Songs</span>
-                </div>
-                <div class="category-card" data-category="books">
-                    <span class="card-icon">📚</span>
-                    <span class="card-text">Books</span>
-                </div>
-                <div class="category-card" data-category="quotes">
-                    <span class="card-icon">💬</span>
-                    <span class="card-text">Quotes</span>
-                </div>
-                <div class="category-card" data-category="daily_travel_phrases">
-                    <span class="card-icon">✈️</span>
-                    <span class="card-text">Travel</span>
-                </div>
-                <div class="category-card" data-category="all">
-                    <span class="card-icon">✨</span>
-                    <span class="card-text">Random Mix</span>
-                </div>
-            </div>
+      <div class="category-container">
+        <h1>Word Puzzle</h1>
+        <p class="subtitle">카테고리를 선택하여 퀴즈를 시작하세요!</p>
+        <div class="category-grid">
+          <div class="category-card" data-category="movies">
+            <span class="card-icon">🎬</span>
+            <span class="card-text">Movies</span>
+          </div>
+          <div class="category-card" data-category="songs">
+            <span class="card-icon">🎵</span>
+            <span class="card-text">Songs</span>
+          </div>
+          <div class="category-card" data-category="books">
+            <span class="card-icon">📚</span>
+            <span class="card-text">Books</span>
+          </div>
+          <div class="category-card" data-category="quotes">
+            <span class="card-icon">💬</span>
+            <span class="card-text">Quotes</span>
+          </div>
+          <div class="category-card" data-category="daily_travel_phrases">
+            <span class="card-icon">✈️</span>
+            <span class="card-text">Travel</span>
+          </div>
+          <div class="category-card" data-category="all">
+            <span class="card-icon">✨</span>
+            <span class="card-text">Random Mix</span>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Game Screen (Wrapper) -->
-    <div id="game-screen" class="screen" style="display: none;">
-        <!-- Game Container (Three-tier Layout) -->
-        <div class="game-container">
-            <!-- Header Area (Fixed) -->
-            <div class="game-header">
-                <button id="home-btn" title="Go to Home">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                    </svg>
-                </button>
-                <div class="lives-display">
-                    <!-- Hearts will be inserted here by JavaScript -->
-                </div>
-                <div class="progress-indicator">
-                    <!-- Progress will be inserted here by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Content Area (Scrollable) -->
-            <div class="game-content">
-                <div class="source-display">
-                    <!-- Source information will be inserted here by JavaScript -->
-                </div>
-                <div class="problem-area">
-                    <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Footer Area (Fixed) -->
-            <div class="game-footer">
-                <div class="hint-controls">
-                    <!-- Hint controls will be inserted here by JavaScript -->
-                </div>
-                <div class="keyboard-area">
-                    <!-- Virtual keyboard will be inserted here by JavaScript -->
-                </div>
-            </div>
+    <div id="game-screen" class="screen" style="display: none">
+      <!-- Game Container (Three-tier Layout) -->
+      <div class="game-container">
+        <!-- Header Area (Fixed) -->
+        <div class="game-header">
+          <button id="home-btn" title="Go to Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </button>
+          <div class="lives-display">
+            <!-- Hearts will be inserted here by JavaScript -->
+          </div>
+          <div class="progress-indicator">
+            <!-- Progress will be inserted here by JavaScript -->
+          </div>
         </div>
+
+        <!-- Content Area (Scrollable) -->
+        <div class="game-content">
+          <div class="source-display">
+            <!-- Source information will be inserted here by JavaScript -->
+          </div>
+          <div class="problem-area">
+            <!-- Puzzle sentence with blanks will be inserted here by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Footer Area (Fixed) -->
+        <div class="game-footer">
+          <div class="hint-controls">
+            <!-- Hint controls will be inserted here by JavaScript -->
+          </div>
+          <div class="keyboard-area">
+            <!-- Virtual keyboard will be inserted here by JavaScript -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modals (변경 없음) -->
     <div id="success-modal" class="modal">
-        <div class="modal-content">
-            <h2>성공! 🎉</h2>
-            <div class="sentence-display">
-                <div class="original-sentence"></div>
-                <div class="source"></div>
-                <div class="korean-translation"></div>
-            </div>
-            <div class="modal-buttons">
-                <button id="review-btn" class="modal-btn secondary">검토하기</button>
-                <button id="next-problem-btn" class="modal-btn primary">다음 문제</button>
-                <button id="listen-btn" class="modal-btn tertiary">듣기</button>
-            </div>
+      <div class="modal-content">
+        <h2>성공! 🎉</h2>
+        <div class="sentence-display">
+          <div class="original-sentence"></div>
+          <div class="source"></div>
+          <div class="korean-translation"></div>
         </div>
+        <div class="modal-buttons">
+          <button id="review-btn" class="modal-btn secondary">검토하기</button>
+          <button id="next-problem-btn" class="modal-btn primary">
+            다음 문제
+          </button>
+          <button id="listen-btn" class="modal-btn tertiary">듣기</button>
+        </div>
+      </div>
     </div>
 
     <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2>Game Over 💔</h2>
-            <p>하트를 모두 사용했습니다. 포기하지 마세요!</p>
-            <div class="modal-buttons">
-                <button id="retry-same-btn" class="modal-btn primary">같은 문제 다시</button>
-                <button id="retry-new-btn" class="modal-btn secondary">새 문제</button>
-                <button id="go-home-btn" class="modal-btn tertiary">홈으로</button>
-            </div>
+      <div class="modal-content">
+        <h2>Game Over 💔</h2>
+        <p>하트를 모두 사용했습니다. 포기하지 마세요!</p>
+        <div class="modal-buttons">
+          <button id="retry-same-btn" class="modal-btn primary">
+            같은 문제 다시
+          </button>
+          <button id="retry-new-btn" class="modal-btn secondary">
+            새 문제
+          </button>
+          <button id="go-home-btn" class="modal-btn tertiary">홈으로</button>
         </div>
+      </div>
     </div>
 
     <script type="module" src="script.js"></script>
-</body>
+  </body>
 </html>
