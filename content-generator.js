@@ -63,8 +63,9 @@ class ContentGenerator {
      * 지정된 카테고리에서 랜덤 문제를 생성.
      * 한 번 출제된 문제는 해당 사이클에서 반복 출제되지 않습니다.
      * @param {string} category - 'movies', 'songs', or 'all'
+     * @param {Object} difficultyWeights - 난이도별 가중치 {easy: 60, medium: 30, hard: 10}
      */
-    generateRandomProblem(category = 'all') {
+    generateRandomProblem(category = 'all', difficultyWeights = {easy: 60, medium: 30, hard: 10}) {
         // 해당 카테고리의 풀이 없으면 새로 생성
         if (!this.pools[category]) {
             this._rebuildProblemPool(category);
@@ -85,8 +86,24 @@ class ContentGenerator {
             return null; // 문제가 없음을 알림
         }
 
-        // 덱의 맨 위에서 문제를 하나 뽑습니다.
-        const selectedProblem = pool.pop();
+        // 가중치 기반 난이도 선택
+        const selectedDifficulty = this._selectWeightedDifficulty(difficultyWeights);
+        
+        // 선택된 난이도에 맞는 문제 찾기
+        const availableProblems = pool.filter(problem => problem.difficulty === selectedDifficulty);
+        
+        let selectedProblem;
+        if (availableProblems.length > 0) {
+            // 해당 난이도 문제가 있으면 그 중에서 랜덤 선택
+            const randomIndex = Math.floor(Math.random() * availableProblems.length);
+            selectedProblem = availableProblems[randomIndex];
+            // 풀에서 제거
+            const poolIndex = pool.indexOf(selectedProblem);
+            pool.splice(poolIndex, 1);
+        } else {
+            // 해당 난이도 문제가 없으면 아무거나 선택 (폴백)
+            selectedProblem = pool.pop();
+        }
         
         // 자동으로 빈칸 생성
         const blanks = this._generateBlanks(selectedProblem.sentence, selectedProblem.difficulty);
@@ -144,6 +161,24 @@ class ContentGenerator {
         });
 
         return blanks.sort((a, b) => a.index - b.index);
+    }
+
+    /**
+     * 가중치 기반 난이도 선택
+     * @param {Object} weights - 난이도별 가중치
+     * @returns {string} 선택된 난이도
+     */
+    _selectWeightedDifficulty(weights) {
+        const total = weights.easy + weights.medium + weights.hard;
+        const random = Math.random() * total;
+        
+        if (random < weights.easy) {
+            return 'easy';
+        } else if (random < weights.easy + weights.medium) {
+            return 'medium';
+        } else {
+            return 'hard';
+        }
     }
 }
 

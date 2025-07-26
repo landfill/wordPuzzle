@@ -20,6 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const retrySameBtn = document.getElementById('retry-same-btn');
     const retryNewBtn = document.getElementById('retry-new-btn');
     const goHomeBtn = document.getElementById('go-home-btn');
+    
+    // 공유 기능 버튼들
+    const shareBtn = document.getElementById('share-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    
+    // 다크모드 토글 버튼들
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const darkModeToggleCategory = document.getElementById('dark-mode-toggle-category');
 
     // DOM 요소 확인
     console.log('DOM Elements Check:', {
@@ -322,7 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 같은 문제 재시도가 아닌 경우에만 새 문제 생성
         if (!keepCurrentProblem) {
-            currentProblem = contentGenerator.generateRandomProblem(selectedCategory);
+            // 가중치 적용: easy 60%, medium 30%, hard 10%
+            const difficultyWeights = {easy: 60, medium: 30, hard: 10};
+            currentProblem = contentGenerator.generateRandomProblem(selectedCategory, difficultyWeights);
             
             if (!currentProblem) {
                 alert("선택한 카테고리의 문제를 모두 풀었거나 문제가 없습니다. 홈으로 돌아갑니다.");
@@ -1124,6 +1135,245 @@ document.addEventListener('DOMContentLoaded', () => {
             loadBrowserVoices();
         }
     }
+
+    // === 공유 기능 ===
+    
+    // 학습 결과 데이터 포맷팅
+    function formatStudyResult(problem, isSuccess = true) {
+        const resultEmoji = isSuccess ? '✅' : '❌';
+        const resultText = isSuccess ? '정답' : '오답';
+        const date = new Date().toLocaleDateString('ko-KR');
+        
+        return `📚 Word Crack 학습 결과
+${resultEmoji} ${resultText}
+
+📝 문장: ${problem.sentence}
+🇰🇷 해석: ${problem.translation}
+📂 출처: ${problem.source} (${problem.category})
+📅 날짜: ${date}
+
+#WordCrack #영어학습 #문장암기`;
+    }
+
+    // Web Share API를 통한 공유
+    async function shareResult() {
+        if (!currentProblem) return;
+        
+        const shareData = {
+            title: 'Word Crack 학습 결과',
+            text: formatStudyResult(currentProblem, true),
+            url: window.location.href
+        };
+        
+        try {
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+                console.log('공유 성공');
+            } else {
+                // 폴백: 클립보드 복사
+                await copyToClipboard();
+            }
+        } catch (error) {
+            console.error('공유 실패:', error);
+            // 에러 시 폴백: 클립보드 복사
+            await copyToClipboard();
+        }
+    }
+
+    // 클립보드에 복사
+    async function copyToClipboard() {
+        if (!currentProblem) return;
+        
+        const textToCopy = formatStudyResult(currentProblem, true);
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            showToast('클립보드에 복사되었습니다! 📋');
+        } catch (error) {
+            console.error('클립보드 복사 실패:', error);
+            showToast('복사에 실패했습니다 😅');
+        }
+    }
+
+    // 스크린샷 저장 (canvas를 이용한 DOM 캡처)
+    async function saveScreenshot() {
+        try {
+            // html2canvas 라이브러리가 없으므로 간단한 대안으로 구현
+            const modal = document.getElementById('success-modal');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 간단한 텍스트 기반 이미지 생성
+            canvas.width = 400;
+            canvas.height = 300;
+            
+            // 배경
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 제목
+            ctx.fillStyle = '#2d3748';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Word Crack 🎉', canvas.width/2, 50);
+            
+            // 문장
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#4a5568';
+            ctx.fillText(currentProblem.sentence, canvas.width/2, 100);
+            
+            // 해석
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#718096';
+            ctx.fillText(currentProblem.translation, canvas.width/2, 130);
+            
+            // 출처
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#a0aec0';
+            ctx.fillText(`출처: ${currentProblem.source}`, canvas.width/2, 160);
+            
+            // 날짜
+            ctx.fillText(`날짜: ${new Date().toLocaleDateString('ko-KR')}`, canvas.width/2, 200);
+            
+            // 다운로드
+            const link = document.createElement('a');
+            link.download = `word-crack-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            showToast('스크린샷이 저장되었습니다! 📸');
+        } catch (error) {
+            console.error('스크린샷 저장 실패:', error);
+            showToast('스크린샷 저장에 실패했습니다 😅');
+        }
+    }
+
+    // 토스트 메시지 표시
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10000;
+            animation: fadeInOut 3s ease-in-out;
+        `;
+        
+        // 애니메이션 CSS 추가
+        if (!document.getElementById('toast-style')) {
+            const style = document.createElement('style');
+            style.id = 'toast-style';
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0%, 100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+                    10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // === 다크모드 기능 ===
+    
+    // 다크모드 상태 초기화
+    function initializeDarkMode() {
+        const savedTheme = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedTheme === 'true' || (savedTheme === null && prefersDark);
+        
+        if (isDarkMode) {
+            enableDarkMode();
+        }
+    }
+    
+    // 다크모드 활성화
+    function enableDarkMode() {
+        document.body.classList.add('dark-mode');
+        updateDarkModeIcons(true);
+        localStorage.setItem('darkMode', 'true');
+    }
+    
+    // 다크모드 비활성화
+    function disableDarkMode() {
+        document.body.classList.remove('dark-mode');
+        updateDarkModeIcons(false);
+        localStorage.setItem('darkMode', 'false');
+    }
+    
+    // 다크모드 토글
+    function toggleDarkMode() {
+        if (document.body.classList.contains('dark-mode')) {
+            disableDarkMode();
+        } else {
+            enableDarkMode();
+        }
+    }
+    
+    // 아이콘 업데이트
+    function updateDarkModeIcons(isDark) {
+        const toggles = [darkModeToggle, darkModeToggleCategory].filter(Boolean);
+        
+        toggles.forEach(toggle => {
+            const sunIcon = toggle.querySelector('.sun-icon');
+            const moonIcon = toggle.querySelector('.moon-icon');
+            
+            if (sunIcon && moonIcon) {
+                if (isDark) {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                } else {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // 공유 버튼 이벤트 리스너
+    if (shareBtn) {
+        shareBtn.addEventListener('click', shareResult);
+    }
+    
+    if (copyBtn) {
+        copyBtn.addEventListener('click', copyToClipboard);
+    }
+    
+    if (screenshotBtn) {
+        screenshotBtn.addEventListener('click', saveScreenshot);
+    }
+    
+    // 다크모드 토글 이벤트 리스너
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+    
+    if (darkModeToggleCategory) {
+        darkModeToggleCategory.addEventListener('click', toggleDarkMode);
+    }
+    
+    // 시스템 테마 변경 감지
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (localStorage.getItem('darkMode') === null) {
+            if (e.matches) {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+        }
+    });
+    
+    // 다크모드 초기화
+    initializeDarkMode();
     
     // 초기 상태 설정
     changeGameState(GameState.CATEGORY_SELECTION);

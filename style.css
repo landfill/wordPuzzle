@@ -775,6 +775,232 @@ body {
     transform: translateY(0);
 }
 
+/* 공유 섹션 스타일 */
+.share-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(74, 144, 226, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    border-radius: 8px;
+    color: #4a90e2;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.share-btn:hover {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: rgba(74, 144, 226, 0.5);
+    transform: translateY(-1px);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.share-btn svg {
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
+/* 다크모드 토글 버튼과 헤더 스타일 */
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.category-header h1 {
+    margin: 0;
+}
+
+.dark-mode-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #4a5568;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+#dark-mode-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #718096;
+}
+
+#dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+#dark-mode-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.dark-mode-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* 다크모드 스타일 */
+body.dark-mode {
+    background: #1a202c;
+    color: #e2e8f0;
+}
+
+.dark-mode .category-container,
+.dark-mode .game-container {
+    background-color: rgba(45, 55, 72, 0.95);
+    color: #e2e8f0;
+}
+
+.dark-mode .category-container h1,
+.dark-mode .category-container .subtitle {
+    color: #e2e8f0;
+}
+
+.dark-mode .category-card {
+    background: rgba(74, 85, 104, 0.6);
+    border: 2px solid rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .category-card:hover {
+    background: rgba(74, 85, 104, 0.8);
+    border-color: rgba(113, 128, 150, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .problem-area,
+.dark-mode .source-display,
+.dark-mode .hint-controls {
+    background: rgba(74, 85, 104, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .blank {
+    background: rgba(113, 128, 150, 0.2);
+    border-bottom: 2px solid #4a5568;
+    color: #e2e8f0;
+}
+
+.dark-mode .blank.active {
+    background: rgba(66, 153, 225, 0.3);
+    border-bottom-color: #4299e1;
+}
+
+.dark-mode .blank.correct {
+    background: rgba(72, 187, 120, 0.3);
+    border-bottom-color: #48bb78;
+}
+
+.dark-mode .blank.incorrect {
+    background: rgba(245, 101, 101, 0.3);
+    border-bottom-color: #f56565;
+}
+
+.dark-mode .key {
+    background: rgba(74, 85, 104, 0.6);
+    border: 1px solid rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .key:hover {
+    background: rgba(74, 85, 104, 0.8);
+    border-color: rgba(113, 128, 150, 0.6);
+}
+
+.dark-mode .key.disabled {
+    background: rgba(45, 55, 72, 0.5);
+    color: #4a5568;
+}
+
+.dark-mode .modal-content {
+    background: rgba(45, 55, 72, 0.98);
+    color: #e2e8f0;
+    border: 1px solid rgba(113, 128, 150, 0.3);
+}
+
+.dark-mode .modal-content h2 {
+    color: #e2e8f0;
+}
+
+.dark-mode .modal-btn.primary {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+.dark-mode .modal-btn.secondary {
+    background: rgba(74, 85, 104, 0.8);
+    color: #e2e8f0;
+}
+
+.dark-mode .modal-btn.tertiary {
+    background: rgba(113, 128, 150, 0.6);
+    color: #e2e8f0;
+}
+
+.dark-mode .share-btn {
+    background: rgba(66, 153, 225, 0.2);
+    border-color: rgba(66, 153, 225, 0.4);
+    color: #63b3ed;
+}
+
+.dark-mode .share-btn:hover {
+    background: rgba(66, 153, 225, 0.3);
+    border-color: rgba(66, 153, 225, 0.6);
+}
+
+.dark-mode .dark-mode-toggle,
+.dark-mode #dark-mode-toggle {
+    background: rgba(113, 128, 150, 0.2);
+    border-color: rgba(113, 128, 150, 0.3);
+    color: #a0aec0;
+}
+
+.dark-mode .dark-mode-toggle:hover,
+.dark-mode #dark-mode-toggle:hover {
+    background: rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
 /* 모바일 가상 키보드 활성화 상태 */
 .game-container.mobile-keyboard-active {
     max-height: none !important;
