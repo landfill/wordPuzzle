@@ -3,7 +3,7 @@ import CONTENT_DATABASE from './content-database.js';
 import DataManager from './data-manager.js';
 import AchievementSystem from './achievement-system.js';
 // Phase 3: 새로운 모듈들
-import { isFeatureEnabled } from './config.js';
+import { isFeatureEnabled, CONFIG } from './config.js';
 import { authManager } from './auth-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
