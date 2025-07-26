@@ -26,6 +26,9 @@ html {
     touch-action: manipulation;
     -ms-touch-action: manipulation;
     overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* 화면 전환용 래퍼 */
@@ -35,6 +38,8 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 #category-selection-screen {
@@ -127,6 +132,7 @@ html {
     height: 680px;
     overflow: hidden;
     margin: 0 auto;
+    position: relative;
 }
 
 /* Header Area (Fixed) */
@@ -186,6 +192,8 @@ html {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     z-index: 10;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* --- 헤더 영역 컴포넌트 스타일 --- */
@@ -554,6 +562,9 @@ html {
     box-sizing: border-box;
     border: 2px solid rgba(135, 206, 250, 0.3);
     flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .keyboard-row {
@@ -1094,24 +1105,45 @@ body.dark-mode {
 }
 
 @media (max-width: 768px) {
+    /* Prevent any horizontal overflow on mobile */
+    * {
+        box-sizing: border-box;
+        max-width: 100vw;
+    }
+    
+    html, body {
+        overflow-x: hidden;
+        width: 100vw;
+        max-width: 100vw;
+        padding: 0;
+        margin: 0;
+    }
+    
     /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
         height: 95vh;
         max-height: 700px;
-        padding: 20px;
-        width: 98vw;
+        padding: 15px;
+        width: 96vw;
+        max-width: 96vw;
+        margin: 0 auto;
+        box-sizing: border-box;
     }
     
     /* ADDED: Forces a 2-column layout on mobile to prevent scrolling */
     .category-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+        gap: 12px;
     }
     
     .game-container {
         height: 95vh;
         max-height: 700px;
-        width: 98vw;
+        width: 96vw;
+        max-width: 96vw;
+        margin: 0 auto;
+        box-sizing: border-box;
+        overflow: hidden;
     }
     
     .game-header {
@@ -1216,5 +1248,57 @@ body.dark-mode {
     
     .hint-controls {
         gap: 6px;
+    }
+    
+    /* Mobile keyboard area optimization */
+    .keyboard-area {
+        padding: 8px 3px;
+        gap: 4px;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    
+    .keyboard-row {
+        width: 100%;
+        max-width: 100%;
+        gap: 2px;
+        box-sizing: border-box;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+    
+    .key {
+        font-size: 0.9em;
+        max-width: 32px;
+        min-height: 32px;
+        flex: 1;
+        box-sizing: border-box;
+        min-width: 28px;
+    }
+    
+    /* Force all content to stay within viewport */
+    .game-header,
+    .game-content,
+    .game-footer {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    
+    .problem-area {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    
+    .word-group {
+        max-width: 100%;
+        box-sizing: border-box;
     }
 }
