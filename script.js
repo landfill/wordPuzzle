@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isReading = false;
     let browserVoices = [];
     let selectedCategory = 'all';
-    let isAudioContextUnlocked = false; // [추가] 모바일 오디오 재생을 위한 플래그
     let initialViewportHeight = window.innerHeight; // 모바일 가상 키보드 감지용
     let isReviewMode = false; // 검토 모드 상태
     let currentProblemNumber = 1; // 현재 문제 번호
@@ -223,18 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function speakSentence() {
-        // [수정 1] 모바일 오디오 잠금 해제 로직
-        if (!isAudioContextUnlocked) {
-            const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGliAv4/GgAgbG93LXBhc3SA/xxwAAA=");
-            try {
-                await silentAudio.play();
-                isAudioContextUnlocked = true;
-                console.log("AudioContext unlocked for mobile.");
-            } catch (e) {
-                console.error("AudioContext unlock failed", e);
-            }
-        }
-        
         stopAllSounds();
 
         isReading = true;
