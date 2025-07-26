@@ -485,6 +485,8 @@ html {
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
+    letter-spacing: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* 기존 박스형 스타일들 제거됨 - 언더바 스타일로 대체 */
@@ -1272,6 +1274,8 @@ body.dark-mode {
         border-radius: 3px;
         margin-left: auto;
         margin-right: auto;
+        letter-spacing: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .modal-buttons {
