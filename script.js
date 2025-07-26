@@ -35,12 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 다크모드 토글 버튼들
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const darkModeToggleCategory = document.getElementById('dark-mode-toggle-category');
-    const darkModeToggleDashboard = document.getElementById('dark-mode-toggle-dashboard');
     
     // Phase 2-B: 대시보드 관련 DOM 요소들
-    const dashboardScreen = document.getElementById('dashboard-screen');
+    const dashboardModal = document.getElementById('dashboard-modal');
     const dashboardBtn = document.getElementById('dashboard-btn');
-    const backToHomeBtn = document.getElementById('back-to-home-btn');
+    const closeDashboardBtn = document.getElementById('close-dashboard-btn');
     
     // Phase 3: 인증 및 글로벌 기능 DOM 요소들
     const authSection = document.getElementById('auth-section');
@@ -184,21 +183,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function showCategoryScreen() {
         gameScreen.style.display = 'none';
         categorySelectionScreen.style.display = 'flex';
-        dashboardScreen.style.display = 'none';
         stopAllSounds();
     }
     
     function showGameScreen() {
         categorySelectionScreen.style.display = 'none';
         gameScreen.style.display = 'flex';
-        dashboardScreen.style.display = 'none';
     }
     
-    function showDashboardScreen() {
-        categorySelectionScreen.style.display = 'none';
-        gameScreen.style.display = 'none';
-        dashboardScreen.style.display = 'flex';
+    function showDashboardModal() {
+        dashboardModal.style.display = 'flex';
         updateDashboardData();
+    }
+    
+    function hideDashboardModal() {
+        dashboardModal.style.display = 'none';
     }
 
     function startGame(category) {
@@ -1573,7 +1572,7 @@ ${problem.translation}
         
         if (saved) {
             // 저장 성공
-            saveSentenceBtn.textContent = '✅ 저장됨';
+            saveSentenceBtn.textContent = '✅ 수집됨';
             saveSentenceBtn.disabled = true;
             saveSentenceBtn.style.opacity = '0.7';
             
@@ -1586,7 +1585,7 @@ ${problem.translation}
             }, 100);
         } else {
             // 이미 저장된 문장
-            saveSentenceBtn.textContent = '이미 저장됨';
+            saveSentenceBtn.textContent = '이미 수집됨';
             saveSentenceBtn.disabled = true;
             saveSentenceBtn.style.opacity = '0.7';
         }
@@ -1602,7 +1601,7 @@ ${problem.translation}
             saveSentenceBtn.disabled = true;
             saveSentenceBtn.style.opacity = '0.7';
         } else {
-            saveSentenceBtn.textContent = '📚 문장 수집';
+            saveSentenceBtn.textContent = '수집하기';
             saveSentenceBtn.disabled = false;
             saveSentenceBtn.style.opacity = '1';
         }
@@ -1681,25 +1680,47 @@ ${problem.translation}
         document.getElementById('perfect-scores').textContent = stats.perfectScores;
     }
 
+    function getRarityScore(rarity) {
+        const rarityOrder = { 'legendary': 5, 'epic': 4, 'rare': 3, 'uncommon': 2, 'common': 1 };
+        return rarityOrder[rarity] || 1;
+    }
+
     function updateBadgesDisplay(userBadges) {
         const container = document.getElementById('badges-container');
         
         if (userBadges.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🏆</div>
-                    <p>아직 획득한 배지가 없습니다.<br>게임을 플레이하여 배지를 획득해보세요!</p>
-                </div>
-            `;
+            container.style.display = 'none';
+            // 배지 섹션 전체를 숨김
+            const badgeSection = container.closest('.dashboard-section');
+            if (badgeSection) {
+                badgeSection.style.display = 'none';
+            }
             return;
+        } else {
+            container.style.display = 'flex';
+            // 배지 섹션 표시
+            const badgeSection = container.closest('.dashboard-section');
+            if (badgeSection) {
+                badgeSection.style.display = 'block';
+            }
         }
 
-        // 배지를 희귀도와 획득 날짜순으로 정렬
-        const sortedBadges = userBadges.sort((a, b) => {
+        // 배지 유형별로 중복 제거 (가장 높은 희귀도만 표시)
+        const badgesByType = {};
+        userBadges.forEach(badge => {
+            const badgeKey = badge.icon; // 아이콘을 기준으로 배지 유형 구분
+            if (!badgesByType[badgeKey] || 
+                getRarityScore(badge.rarity) > getRarityScore(badgesByType[badgeKey].rarity)) {
+                badgesByType[badgeKey] = badge;
+            }
+        });
+
+        const uniqueBadges = Object.values(badgesByType);
+        
+        // 희귀도순으로 정렬
+        const sortedBadges = uniqueBadges.sort((a, b) => {
             const rarityOrder = { 'legendary': 5, 'epic': 4, 'rare': 3, 'uncommon': 2, 'common': 1 };
-            const rarityDiff = (rarityOrder[b.rarity] || 1) - (rarityOrder[a.rarity] || 1);
-            if (rarityDiff !== 0) return rarityDiff;
-            return new Date(b.earnedAt) - new Date(a.earnedAt);
+            return (rarityOrder[b.rarity] || 1) - (rarityOrder[a.rarity] || 1);
         });
 
         container.innerHTML = sortedBadges.map(badge => `
@@ -1732,8 +1753,25 @@ ${problem.translation}
             'all': 'Random Mix'
         };
 
-        container.innerHTML = Object.entries(categoryProgress)
-            .filter(([category, progress]) => category !== 'all' && progress.attempted > 0)
+        const filteredCategories = Object.entries(categoryProgress)
+            .filter(([category, progress]) => category !== 'all' && progress.completed > 0);
+        
+        if (filteredCategories.length === 0) {
+            container.style.display = 'none';
+            const categorySection = container.closest('.dashboard-section');
+            if (categorySection) {
+                categorySection.style.display = 'none';
+            }
+            return;
+        } else {
+            container.style.display = 'grid';
+            const categorySection = container.closest('.dashboard-section');
+            if (categorySection) {
+                categorySection.style.display = 'block';
+            }
+        }
+
+        container.innerHTML = filteredCategories
             .map(([category, progress]) => {
                 const completionRate = progress.attempted > 0 ? (progress.completed / progress.attempted * 100) : 0;
                 
@@ -1828,10 +1866,6 @@ ${problem.translation}
         darkModeToggleCategory.addEventListener('click', toggleDarkMode);
     }
     
-    if (darkModeToggleDashboard) {
-        darkModeToggleDashboard.addEventListener('click', toggleDarkMode);
-    }
-    
     // 시스템 테마 변경 감지
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         if (localStorage.getItem('darkMode') === null) {
@@ -1845,11 +1879,11 @@ ${problem.translation}
     
     // Phase 2-B: 대시보드 버튼 이벤트 리스너
     if (dashboardBtn) {
-        dashboardBtn.addEventListener('click', showDashboardScreen);
+        dashboardBtn.addEventListener('click', showDashboardModal);
     }
     
-    if (backToHomeBtn) {
-        backToHomeBtn.addEventListener('click', showCategoryScreen);
+    if (closeDashboardBtn) {
+        closeDashboardBtn.addEventListener('click', hideDashboardModal);
     }
 
     // Phase 3: 인증 관련 이벤트 리스너
@@ -1884,6 +1918,15 @@ ${problem.translation}
     
     if (retryLeaderboardBtn) {
         retryLeaderboardBtn.addEventListener('click', refreshLeaderboard);
+    }
+    
+    // Modal close handlers
+    if (dashboardModal) {
+        dashboardModal.addEventListener('click', (e) => {
+            if (e.target === dashboardModal) {
+                hideDashboardModal();
+            }
+        });
     }
     
     // Phase 3: 인증 관련 이벤트 리스너 설정

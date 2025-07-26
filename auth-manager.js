@@ -206,8 +206,19 @@ class AuthManager {
     }
     
     async login() {
+        // 초기화가 진행 중이면 대기
         if (!this.isInitialized) {
-            throw new Error('AuthManager가 초기화되지 않음');
+            console.log('⏳ AuthManager 초기화 대기 중...');
+            // 최대 5초간 초기화 완료 대기
+            let waitTime = 0;
+            while (!this.isInitialized && waitTime < 5000) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                waitTime += 100;
+            }
+            
+            if (!this.isInitialized) {
+                throw new Error('AuthManager 초기화 시간 초과');
+            }
         }
         
         if (!isFeatureEnabled('GOOGLE_AUTH')) {

@@ -1316,15 +1316,19 @@ body.dark-mode {
     }
 
     .modal-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
     }
 
     .modal-btn {
-        width: 100%;
-        max-width: 200px;
-        padding: 12px 20px;
+        flex: 1;
+        min-width: 0;
+        padding: 10px 8px;
+        font-size: 13px;
+        white-space: nowrap;
     }
     
     .review-mode-indicator {
@@ -1995,6 +1999,116 @@ body.dark-mode {
     transform: scale(1.1);
 }
 
+/* Dashboard Modal */
+.dashboard-modal-content {
+    width: 90vw;
+    max-width: 800px;
+    max-height: 85vh;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-modal-content .dashboard-content {
+    padding: 20px;
+    gap: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.dashboard-modal-content .dashboard-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-modal-content .dashboard-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dashboard-modal-content .dashboard-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.dashboard-modal-content .dashboard-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.dashboard-modal-content .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.dashboard-modal-content .stat-card {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.dashboard-modal-content .dashboard-section {
+    margin-bottom: 32px;
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+}
+
+.dashboard-modal-content .dashboard-section h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #333;
+    text-align: center;
+}
+
+.dashboard-modal-content .category-progress-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.dashboard-modal-content .badges-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.dashboard-modal-content .badge-item {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.dashboard-modal-content .badge-icon {
+    font-size: 24px;
+    margin: 0 auto;
+}
+
+.dashboard-modal-content .badge-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.dashboard-modal-content .badge-rarity {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
 /* 글로벌 리더보드 버튼 */
 .global-leaderboard-btn {
     display: flex;
@@ -2533,5 +2647,59 @@ body.dark-mode .score {
         margin-top: 0 !important;
         height: 50px !important;
         padding-top: 10px;
+    }
+    
+    /* Dashboard Modal Mobile */
+    .dashboard-modal-content {
+        width: 95vw;
+        max-height: 85vh;
+        border-radius: 20px;
+    }
+    
+    .dashboard-modal-content .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    
+    .dashboard-modal-content .stat-card {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .dashboard-modal-content .stat-icon {
+        display: none;
+    }
+    
+    .dashboard-modal-content .dashboard-content {
+        padding: 16px;
+        gap: 20px;
+        border-radius: 20px;
+    }
+    
+    .dashboard-modal-content .category-progress-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .dashboard-modal-content .badges-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+    
+    .dashboard-modal-content .badge-item {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .dashboard-modal-content .badge-icon {
+        font-size: 20px;
+    }
+    
+    .dashboard-modal-content .badge-name {
+        font-size: 10px;
+    }
+    
+    .dashboard-modal-content .badge-rarity {
+        font-size: 8px;
     }
 }
