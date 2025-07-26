@@ -1157,19 +1157,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 학습 결과 데이터 포맷팅
     function formatStudyResult(problem, isSuccess = true) {
-        const resultEmoji = isSuccess ? '✅' : '❌';
-        const resultText = isSuccess ? '정답' : '오답';
-        const date = new Date().toLocaleDateString('ko-KR');
+        const score = calculateScore();
+        const hintText = hintsUsed > 0 ? `(힌트 ${hintsUsed}개 사용)` : '(완벽 해결!)';
         
-        return `📚 Word Crack 학습 결과
-${resultEmoji} ${resultText}
+        return `🎯 Word Crack 학습완료
 
-📝 문장: ${problem.sentence}
-🇰🇷 해석: ${problem.translation}
-📂 출처: ${problem.source} (${problem.category})
-📅 날짜: ${date}
+"${problem.sentence}"
+${problem.translation}
 
-#WordCrack #영어학습 #문장암기`;
+📊 점수: ${score}점 ${hintText}
+📚 출처: ${problem.source}
+
+🌐 wordpuzzle.pages.dev`;
     }
 
     // Web Share API를 통한 공유
@@ -1212,56 +1211,119 @@ ${resultEmoji} ${resultText}
         }
     }
 
-    // 스크린샷 저장 (canvas를 이용한 DOM 캡처)
+    // 개선된 스크린샷 생성 및 공유
     async function saveScreenshot() {
         try {
-            // html2canvas 라이브러리가 없으므로 간단한 대안으로 구현
-            const modal = document.getElementById('success-modal');
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // 간단한 텍스트 기반 이미지 생성
-            canvas.width = 400;
-            canvas.height = 300;
+            // 고해상도 캔버스 설정
+            const scale = 2;
+            canvas.width = 600 * scale;
+            canvas.height = 400 * scale;
+            ctx.scale(scale, scale);
             
-            // 배경
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // 그라디언트 배경
+            const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 600, 400);
+            
+            // 반투명 오버레이
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, 0, 600, 400);
             
             // 제목
-            ctx.fillStyle = '#2d3748';
-            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('Word Crack 🎉', canvas.width/2, 50);
+            ctx.fillText('🎯 Word Crack', 300, 60);
             
-            // 문장
-            ctx.font = '18px Arial';
-            ctx.fillStyle = '#4a5568';
-            ctx.fillText(currentProblem.sentence, canvas.width/2, 100);
+            // 구분선
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(100, 80);
+            ctx.lineTo(500, 80);
+            ctx.stroke();
+            
+            // 문장 (긴 문장 줄바꿈 처리)
+            ctx.font = 'bold 20px Arial, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            const sentence = `"${currentProblem.sentence}"`;
+            const maxWidth = 480;
+            const words = sentence.split(' ');
+            let line = '';
+            let y = 130;
+            
+            for (let word of words) {
+                const testLine = line + word + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && line !== '') {
+                    ctx.fillText(line, 300, y);
+                    line = word + ' ';
+                    y += 30;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, 300, y);
             
             // 해석
-            ctx.font = '16px Arial';
-            ctx.fillStyle = '#718096';
-            ctx.fillText(currentProblem.translation, canvas.width/2, 130);
+            ctx.font = '16px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText(currentProblem.translation, 300, y + 40);
+            
+            // 점수 정보
+            const score = calculateScore();
+            const hintText = hintsUsed > 0 ? `힌트 ${hintsUsed}개 사용` : '완벽 해결!';
+            ctx.font = 'bold 18px Arial, sans-serif';
+            ctx.fillStyle = '#ffd700';
+            ctx.fillText(`📊 ${score}점 (${hintText})`, 300, y + 80);
             
             // 출처
-            ctx.font = '14px Arial';
-            ctx.fillStyle = '#a0aec0';
-            ctx.fillText(`출처: ${currentProblem.source}`, canvas.width/2, 160);
+            ctx.font = '14px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText(`📚 ${currentProblem.source}`, 300, y + 110);
             
-            // 날짜
-            ctx.fillText(`날짜: ${new Date().toLocaleDateString('ko-KR')}`, canvas.width/2, 200);
+            // 웹사이트
+            ctx.font = '12px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText('🌐 wordpuzzle.pages.dev', 300, y + 140);
             
-            // 다운로드
-            const link = document.createElement('a');
-            link.download = `word-crack-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            // 이미지를 Blob으로 변환하여 공유
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'word-crack-result.png', { type: 'image/png' });
+                
+                // Web Share API로 이미지 공유 시도
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            title: 'Word Crack 학습 결과',
+                            text: formatStudyResult(currentProblem, true),
+                            files: [file]
+                        });
+                        showToast('이미지가 공유되었습니다! 📸');
+                        return;
+                    } catch (error) {
+                        console.log('이미지 공유 실패, 다운로드로 대체');
+                    }
+                }
+                
+                // 공유가 불가능하면 다운로드
+                const link = document.createElement('a');
+                link.download = `word-crack-${Date.now()}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+                
+                showToast('이미지가 저장되었습니다! 📸');
+            }, 'image/png', 0.9);
             
-            showToast('스크린샷이 저장되었습니다! 📸');
         } catch (error) {
-            console.error('스크린샷 저장 실패:', error);
-            showToast('스크린샷 저장에 실패했습니다 😅');
+            console.error('스크린샷 생성 실패:', error);
+            showToast('이미지 생성에 실패했습니다 😅');
         }
     }
 
