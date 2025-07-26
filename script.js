@@ -2,6 +2,9 @@ import ContentGenerator from './content-generator.js';
 import CONTENT_DATABASE from './content-database.js';
 import DataManager from './data-manager.js';
 import AchievementSystem from './achievement-system.js';
+// Phase 3: 새로운 모듈들
+import { isFeatureEnabled } from './config.js';
+import { authManager } from './auth-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -38,6 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardScreen = document.getElementById('dashboard-screen');
     const dashboardBtn = document.getElementById('dashboard-btn');
     const backToHomeBtn = document.getElementById('back-to-home-btn');
+    
+    // Phase 3: 인증 및 글로벌 기능 DOM 요소들
+    const authSection = document.getElementById('auth-section');
+    const loginBtn = document.getElementById('login-btn');
+    const userProfile = document.getElementById('user-profile');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
+    const logoutBtn = document.getElementById('logout-btn');
+    const globalLeaderboardBtn = document.getElementById('global-leaderboard-btn');
 
     // DOM 요소 확인
     console.log('DOM Elements Check:', {
@@ -1785,9 +1797,136 @@ ${problem.translation}
         backToHomeBtn.addEventListener('click', showCategoryScreen);
     }
 
+    // Phase 3: 인증 관련 이벤트 리스너
+    if (loginBtn) {
+        loginBtn.addEventListener('click', handleLogin);
+    }
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    if (globalLeaderboardBtn) {
+        globalLeaderboardBtn.addEventListener('click', showGlobalLeaderboard);
+    }
+    
+    // Phase 3: 인증 관련 이벤트 리스너 설정
+    authManager.on('login', onUserLogin);
+    authManager.on('logout', onUserLogout);
+    authManager.on('error', onAuthError);
+    
     // 다크모드 초기화
     initializeDarkMode();
     
+    // Phase 3: Feature Flag 초기화
+    initializeFeatureFlags();
+    
     // 초기 상태 설정
     changeGameState(GameState.CATEGORY_SELECTION);
+    
+    // ========================================
+    // Phase 3: 인증 및 글로벌 기능 함수들
+    // ========================================
+    
+    // Feature Flags 초기화
+    function initializeFeatureFlags() {
+        // 인증 섹션 표시/숨김
+        if (authSection) {
+            authSection.style.display = isFeatureEnabled('GOOGLE_AUTH') ? 'flex' : 'none';
+        }
+        
+        // 글로벌 리더보드 버튼 표시/숨김
+        if (globalLeaderboardBtn) {
+            globalLeaderboardBtn.style.display = isFeatureEnabled('GLOBAL_LEADERBOARD') ? 'flex' : 'none';
+        }
+        
+        console.log('🚩 Feature Flags 초기화 완료');
+    }
+    
+    // 로그인 처리
+    async function handleLogin() {
+        try {
+            await authManager.login();
+        } catch (error) {
+            console.error('로그인 실패:', error);
+            alert('로그인에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+    
+    // 로그아웃 처리
+    async function handleLogout() {
+        try {
+            await authManager.logout();
+        } catch (error) {
+            console.error('로그아웃 실패:', error);
+        }
+    }
+    
+    // 사용자 로그인 성공 이벤트
+    function onUserLogin(user) {
+        console.log('✅ 사용자 로그인 성공:', user.display_name);
+        updateAuthUI(true, user);
+        
+        // TODO: 점수 업로드 활성화 등 추가 로직
+    }
+    
+    // 사용자 로그아웃 이벤트
+    function onUserLogout(user) {
+        console.log('👋 사용자 로그아웃:', user?.display_name);
+        updateAuthUI(false);
+        
+        // TODO: 점수 업로드 비활성화 등 추가 로직
+    }
+    
+    // 인증 오류 이벤트
+    function onAuthError(error) {
+        console.error('❌ 인증 오류:', error);
+        // 사용자에게 친화적인 오류 메시지 표시
+        // 심각한 오류가 아닌 경우 조용히 처리
+    }
+    
+    // 인증 UI 업데이트
+    function updateAuthUI(isLoggedIn, user = null) {
+        if (!loginBtn || !userProfile) return;
+        
+        if (isLoggedIn && user) {
+            // 로그인 상태 UI
+            loginBtn.style.display = 'none';
+            userProfile.style.display = 'flex';
+            
+            if (userAvatar && user.avatar_url) {
+                userAvatar.src = user.avatar_url;
+                userAvatar.style.display = 'block';
+            }
+            
+            if (userName) {
+                userName.textContent = user.display_name || 'User';
+            }
+        } else {
+            // 로그아웃 상태 UI
+            loginBtn.style.display = 'flex';
+            userProfile.style.display = 'none';
+            
+            if (userAvatar) {
+                userAvatar.src = '';
+            }
+            
+            if (userName) {
+                userName.textContent = '';
+            }
+        }
+    }
+    
+    // 글로벌 리더보드 표시
+    function showGlobalLeaderboard() {
+        if (!isFeatureEnabled('LEADERBOARD_UI')) {
+            console.log('🚫 리더보드 UI 기능이 비활성화됨');
+            return;
+        }
+        
+        // TODO: Phase 3-B에서 구현
+        console.log('🏆 글로벌 리더보드 표시 (미구현)');
+        alert('글로벌 리더보드 기능은 곧 추가됩니다!');
+    }
+    
 });

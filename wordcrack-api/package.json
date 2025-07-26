@@ -1,0 +1,16 @@
+{
+  "name": "wordcrack-api",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:dev": "wrangler deploy --env development",
+    "deploy:prod": "wrangler deploy --env production"
+  },
+  "keywords": ["cloudflare", "workers", "api", "word-crack"],
+  "author": "",
+  "license": "ISC",
+  "description": "Word Crack API - Cloudflare Workers backend for authentication and leaderboard"
+}

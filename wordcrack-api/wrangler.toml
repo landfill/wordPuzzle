@@ -1,0 +1,16 @@
+name = "wordcrack-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# 로컬 개발용 변수 (테스트용)
+[vars]
+ENVIRONMENT = "local"
+
+[env.production]
+name = "wordcrack-api"
+vars = { ENVIRONMENT = "production" }
+# 프로덕션 환경 변수는 Cloudflare Dashboard에서 secrets로 설정
+
+[env.development]
+name = "wordcrack-api-dev"
+vars = { ENVIRONMENT = "development" }
