@@ -197,13 +197,13 @@ body {
 .progress-indicator {
     display: flex;
     align-items: center;
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 600;
     color: #4a5568;
     background: #edf2f7;
-    border-radius: 20px;
-    padding: 8px 12px;
-    min-width: 80px;
+    border-radius: 16px;
+    padding: 6px 8px;
+    min-width: 50px;
     justify-content: center;
     flex-shrink: 0;
 }
@@ -926,9 +926,12 @@ body.dark-mode {
 }
 
 .dark-mode .problem-area,
-.dark-mode .source-display,
-.dark-mode .hint-controls {
+.dark-mode .source-display {
     background: rgba(74, 85, 104, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .hint-controls {
     color: #e2e8f0;
 }
 
@@ -1069,9 +1072,9 @@ body.dark-mode {
     }
     
     .progress-indicator {
-        font-size: 0.8em;
-        padding: 6px 10px;
-        min-width: 70px;
+        font-size: 0.7em;
+        padding: 4px 6px;
+        min-width: 40px;
     }
 
     .word-group {
