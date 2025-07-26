@@ -1112,6 +1112,36 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
+    // 모바일 확대 방지
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('gesturechange', function (e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('gestureend', function (e) {
+        e.preventDefault();
+    });
+    
+    // 더블탭 확대 방지
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+    
+    // 휠 확대 방지 (데스크톱에서 Ctrl+휠)
+    document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
     if ('speechSynthesis' in window) {
         const loadBrowserVoices = () => {
             browserVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
