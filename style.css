@@ -1215,6 +1215,7 @@ body.dark-mode {
 
     .word-display {
         font-size: 1.2em;
+        font-weight: 500;
         letter-spacing: 0.03em;
     }
 
@@ -1222,7 +1223,12 @@ body.dark-mode {
         width: 0.75em;
     }
 
+    .fixed-char {
+        font-weight: 500;
+    }
+
     .underbar-blank {
+        font-weight: 500;
         /* 터치 타겟 크기 확장 */
         position: relative;
     }
@@ -1239,6 +1245,7 @@ body.dark-mode {
 
     .hint-number-underbar {
         font-size: 0.7em;
+        font-weight: 500;
         padding: 1px 2px;
         min-width: 10px;
         min-height: 12px;
