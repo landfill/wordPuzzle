@@ -379,118 +379,112 @@ html {
     background: rgba(66, 153, 225, 0.7);
 }
 
-/* 이하 CSS는 변경 없음 */
-.word-group {
-    display: inline-flex; 
-    align-items: center;
+/* 언더바 스타일 단어 컨테이너 */
+.word-container {
+    display: inline-block;
+    margin: 4px 8px;
+    padding: 8px 12px;
     background: white;
     border-radius: 12px;
-    padding: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    gap: 2px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
+    position: relative;
 }
 
-.word-group:hover {
+.word-container:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.word-group.has-active-blank {
+.word-container.has-active-blank {
     border-color: #4299e1;
     box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
 }
 
-.char-slot {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    margin: 0; 
-}
-.fixed-char-text {
-    font-size: 1.2em;
+.word-display {
+    font-size: 1.4em;
     font-weight: 700;
     color: #2d3748;
     text-transform: uppercase;
-    min-height: 30px;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 15px;
-    letter-spacing: -0.5px;
+    align-items: baseline;
 }
 
-.word-blank {
-    width: 26px;
-    height: 26px;
-    border: 3px solid #cbd5e0;
-    border-radius: 8px;
-    text-align: center;
-    line-height: 20px;
-    cursor: pointer;
-    background: white;
-    font-size: 1.2em;
-    font-weight: 700;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
+.char-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 0.8em;
     position: relative;
 }
 
-.word-blank:hover {
-    border-color: #4299e1;
-    transform: scale(1.05);
+.fixed-char {
+    color: #2d3748;
+    width: 100%;
+    text-align: center;
+    position: relative;
 }
 
-.word-blank.active {
+.underbar-blank {
+    color: #4299e1;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    border-radius: 3px;
+    width: 100%;
+    text-align: center;
+    min-height: 1.2em;
+}
+
+.underbar-blank:hover {
+    background: rgba(66, 153, 225, 0.1);
+    transform: scale(1.1);
+}
+
+.underbar-blank.active {
     background: linear-gradient(135deg, #4299e1, #3182ce);
-    border-color: #3182ce;
     color: white;
     animation: pulse 1.5s infinite;
 }
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.word-blank.correct {
-    background: linear-gradient(135deg, #48bb78, #38a169) !important;
-    border-color: #38a169 !important;
-    color: white !important;
+.underbar-blank.correct {
+    color: #48bb78 !important;
+    background: rgba(72, 187, 120, 0.1) !important;
     animation: none !important;
 }
 
-.word-blank.incorrect {
-    background: linear-gradient(135deg, #f56565, #e53e3e);
-    border-color: #e53e3e;
-    color: white;
+.underbar-blank.incorrect {
+    color: #f56565;
+    background: rgba(245, 101, 101, 0.1);
     animation: shake 0.5s ease-in-out;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+.underbar-blank.hint-filled {
+    color: #ffd700 !important;
+    background: rgba(255, 215, 0, 0.1) !important;
 }
 
-.hint-number {
-    font-size: 0.7em;
+.hint-number-underbar {
+    display: block;
+    background: #edf2f7;
     color: #718096;
     font-weight: 600;
-    margin-top: 4px;
-    background: #edf2f7;
     border-radius: 8px;
-    padding: 2px 5px;
-    min-width: 14px;
+    padding: 2px 4px;
+    min-width: 12px;
     text-align: center;
     min-height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 0.8em;
     transition: all 0.3s ease;
+    margin-top: 8px;
+    box-sizing: border-box;
 }
+
+/* 기존 박스형 스타일들 제거됨 - 언더바 스타일로 대체 */
 
 /* --- 푸터 영역 컴포넌트 스타일 --- */
 .hint-controls {
@@ -985,25 +979,59 @@ body.dark-mode {
     color: #e2e8f0;
 }
 
-.dark-mode .blank {
-    background: rgba(113, 128, 150, 0.2);
-    border-bottom: 2px solid #4a5568;
+.dark-mode .word-container {
+    background: rgba(74, 85, 104, 0.6);
+    border-color: rgba(113, 128, 150, 0.3);
+}
+
+.dark-mode .word-container:hover {
+    background: rgba(74, 85, 104, 0.8);
+    border-color: rgba(113, 128, 150, 0.6);
+}
+
+.dark-mode .word-container.has-active-blank {
+    border-color: #4299e1;
+}
+
+.dark-mode .word-display {
     color: #e2e8f0;
 }
 
-.dark-mode .blank.active {
-    background: rgba(66, 153, 225, 0.3);
-    border-bottom-color: #4299e1;
+.dark-mode .fixed-char {
+    color: #e2e8f0;
 }
 
-.dark-mode .blank.correct {
-    background: rgba(72, 187, 120, 0.3);
-    border-bottom-color: #48bb78;
+.dark-mode .underbar-blank {
+    color: #63b3ed;
 }
 
-.dark-mode .blank.incorrect {
-    background: rgba(245, 101, 101, 0.3);
-    border-bottom-color: #f56565;
+.dark-mode .underbar-blank:hover {
+    background: rgba(99, 179, 237, 0.2);
+}
+
+.dark-mode .underbar-blank.active {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+}
+
+.dark-mode .underbar-blank.correct {
+    color: #68d391 !important;
+    background: rgba(104, 211, 145, 0.2) !important;
+}
+
+.dark-mode .underbar-blank.incorrect {
+    color: #fc8181;
+    background: rgba(252, 129, 129, 0.2);
+}
+
+.dark-mode .underbar-blank.hint-filled {
+    color: #f6e05e !important;
+    background: rgba(246, 224, 94, 0.2) !important;
+}
+
+.dark-mode .hint-number-underbar {
+    background: rgba(113, 128, 150, 0.3);
+    color: #a0aec0;
 }
 
 .dark-mode .key {
@@ -1180,43 +1208,41 @@ body.dark-mode {
         height: 32px;
     }
 
-    .word-group {
-        padding: 5px; 
-        gap: 1px;
+    .word-container {
+        margin: 3px 6px;
+        padding: 6px 8px;
     }
 
-    .fixed-char-text {
-        font-size: 1.0em; 
-        min-height: 26px; 
-        min-width: 12px;
+    .word-display {
+        font-size: 1.2em;
+        letter-spacing: 0.03em;
     }
 
-    .word-blank {
-        font-size: 1.0em; 
-        width: 28px;
-        height: 28px;
-        line-height: 22px;
-        border-width: 2px;
+    .char-column {
+        width: 0.75em;
+    }
+
+    .underbar-blank {
         /* 터치 타겟 크기 확장 */
         position: relative;
     }
     
-    .word-blank::before {
+    .underbar-blank::before {
         content: '';
         position: absolute;
-        top: -8px;
-        left: -8px;
-        right: -8px;
-        bottom: -8px;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
         /* 최소 44px 터치 타겟 보장 */
     }
 
-    .hint-number {
-        font-size: 0.6em;
-        padding: 1px 3px;
-        margin-top: 2px;
+    .hint-number-underbar {
+        font-size: 0.7em;
+        padding: 1px 2px;
         min-width: 10px;
         min-height: 12px;
+        margin-top: 6px;
     }
 
     .modal-buttons {

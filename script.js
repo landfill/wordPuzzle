@@ -783,49 +783,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let charIndex = 0;
         let blankCounter = 0;
+        
         words.forEach(word => {
-            const group = document.createElement('div');
-            group.className = 'word-group';
+            const wordContainer = document.createElement('div');
+            wordContainer.className = 'word-container';
+            
+            // 단어 전체를 위한 텍스트 표시 영역
+            const wordDisplay = document.createElement('div');
+            wordDisplay.className = 'word-display';
+            
             for (let i = 0; i < word.length; i++) {
                 const char = word[i];
                 const curIdx = charIndex + i;
-                const slot = document.createElement('div');
-                slot.className = 'char-slot';
                 const bInfo = problem.blanks.find(b => b.index === curIdx);
+                
+                // 각 글자를 위한 컬럼 컨테이너
+                const charColumn = document.createElement('div');
+                charColumn.className = 'char-column';
+                
+                // 힌트 번호를 위한 컨테이너
+                const hintSpan = document.createElement('div');
+                hintSpan.className = 'hint-number-underbar';
+                
                 if (bInfo) {
-                    const bSpan = document.createElement('div');
-                    bSpan.className = 'word-blank';
-                    bSpan.dataset.correctChar = bInfo.char.toLowerCase();
-                    bSpan.dataset.blankIndex = blankCounter++;
-                    bSpan.onclick = () => setActiveBlank(parseInt(bSpan.dataset.blankIndex));
-                    const hSpan = document.createElement('div');
-                    hSpan.className = 'hint-number';
-                    hSpan.textContent = bInfo.hintNum;
-                    slot.append(bSpan, hSpan);
-                    problemBlanks.push(bSpan);
+                    // 빈칸인 경우 언더바로 표시
+                    const blankSpan = document.createElement('div');
+                    blankSpan.className = 'underbar-blank';
+                    blankSpan.textContent = '_';
+                    blankSpan.dataset.correctChar = bInfo.char.toLowerCase();
+                    blankSpan.dataset.blankIndex = blankCounter++;
+                    blankSpan.onclick = () => setActiveBlank(parseInt(blankSpan.dataset.blankIndex));
+                    
+                    charColumn.appendChild(blankSpan);
+                    problemBlanks.push(blankSpan);
+                    
+                    // 힌트 번호 설정
+                    hintSpan.textContent = bInfo.hintNum;
                 } else {
-                    const cSpan = document.createElement('div');
-                    const hSpan = document.createElement('div');
-                    hSpan.className = 'hint-number';
-                    cSpan.className = 'fixed-char-text';
+                    // 고정 글자인 경우
+                    const charSpan = document.createElement('div');
+                    charSpan.className = 'fixed-char';
                     if (char.match(/[a-zA-Z]/)) {
-                        cSpan.textContent = char.toUpperCase();
+                        charSpan.textContent = char.toUpperCase();
                         const lc = char.toLowerCase();
                         if (charToHintNumber.has(lc)) {
-                            hSpan.textContent = charToHintNumber.get(lc);
-                            hSpan.dataset.char = lc;
+                            // 힌트 번호가 있는 고정 글자
+                            hintSpan.textContent = charToHintNumber.get(lc);
+                            hintSpan.dataset.char = lc;
                         } else {
-                            hSpan.style.visibility = 'hidden';
+                            // 힌트 번호가 없는 글자는 빈 공간
+                            hintSpan.style.visibility = 'hidden';
                         }
                     } else {
-                        cSpan.textContent = char;
-                        hSpan.style.visibility = 'hidden';
+                        charSpan.textContent = char;
+                        hintSpan.style.visibility = 'hidden';
                     }
-                    slot.append(cSpan, hSpan);
+                    charColumn.appendChild(charSpan);
                 }
-                group.appendChild(slot);
+                
+                // 힌트 번호를 컬럼에 추가
+                charColumn.appendChild(hintSpan);
+                
+                // 컬럼을 단어 디스플레이에 추가
+                wordDisplay.appendChild(charColumn);
             }
-            problemArea.appendChild(group);
+            
+            wordContainer.appendChild(wordDisplay);
+            problemArea.appendChild(wordContainer);
+            
             charIndex += word.length + 1;
         });
 
@@ -890,8 +915,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.log('Skipped setting active class on already filled blank:', idx);
             }
-            document.querySelectorAll('.word-group.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
-            problemBlanks[activeBlankIndex].closest('.word-group')?.classList.add('has-active-blank');
+            document.querySelectorAll('.word-container.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
+            problemBlanks[activeBlankIndex].closest('.word-container')?.classList.add('has-active-blank');
             
             console.log('Set active class on blank:', idx);
             
