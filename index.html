@@ -286,6 +286,76 @@
       </div>
     </div>
 
+    <!-- Phase 3: 글로벌 리더보드 모달 -->
+    <div id="global-leaderboard-modal" class="modal" style="display: none;">
+      <div class="modal-content leaderboard-modal-content">
+        <div class="modal-header">
+          <h2>🏆 Global Leaderboard</h2>
+          <button id="close-leaderboard-btn" class="close-btn" title="닫기">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="leaderboard-filters">
+          <select id="category-filter" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="movies">Movies</option>
+            <option value="songs">Songs</option>
+            <option value="books">Books</option>
+            <option value="quotes">Quotes</option>
+          </select>
+          
+          <select id="timeframe-filter" class="filter-select">
+            <option value="all">All Time</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+        
+        <div class="leaderboard-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Players:</span>
+            <span id="total-players" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total Games:</span>
+            <span id="total-games" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Average Score:</span>
+            <span id="average-score" class="stat-value">0</span>
+          </div>
+        </div>
+        
+        <div class="leaderboard-content">
+          <div id="leaderboard-loading" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading leaderboard...</p>
+          </div>
+          
+          <div id="leaderboard-list" class="leaderboard-list">
+            <!-- 리더보드 항목들이 동적으로 추가됩니다 -->
+          </div>
+          
+          <div id="leaderboard-error" class="error-message" style="display: none;">
+            <p>Failed to load leaderboard. Please try again.</p>
+            <button id="retry-leaderboard-btn" class="retry-btn">Retry</button>
+          </div>
+        </div>
+        
+        <div class="modal-buttons">
+          <button id="refresh-leaderboard-btn" class="modal-btn secondary">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Phase 3: 새로운 모듈들 추가 -->
     <script type="module" src="config.js"></script>
     <script type="module" src="auth-manager.js"></script>

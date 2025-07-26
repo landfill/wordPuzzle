@@ -50,6 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const userName = document.getElementById('user-name');
     const logoutBtn = document.getElementById('logout-btn');
     const globalLeaderboardBtn = document.getElementById('global-leaderboard-btn');
+    
+    // 리더보드 모달 관련 DOM 요소들
+    const globalLeaderboardModal = document.getElementById('global-leaderboard-modal');
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    const categoryFilter = document.getElementById('category-filter');
+    const timeframeFilter = document.getElementById('timeframe-filter');
+    const totalPlayersSpan = document.getElementById('total-players');
+    const totalGamesSpan = document.getElementById('total-games');
+    const averageScoreSpan = document.getElementById('average-score');
+    const leaderboardLoading = document.getElementById('leaderboard-loading');
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const leaderboardError = document.getElementById('leaderboard-error');
+    const refreshLeaderboardBtn = document.getElementById('refresh-leaderboard-btn');
+    const retryLeaderboardBtn = document.getElementById('retry-leaderboard-btn');
 
     // DOM 요소 확인
     console.log('DOM Elements Check:', {
@@ -756,6 +770,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const newBadges = achievementSystem.checkNewBadges();
         if (newBadges.length > 0) {
             showBadgeNotifications(newBadges);
+        }
+        
+        // Phase 3: 글로벌 점수 업로드
+        if (isFeatureEnabled('SCORE_UPLOAD') && authManager.isLoggedIn()) {
+            uploadScoreToGlobal({
+                category: selectedCategory,
+                score: score,
+                hintsUsed: hintsUsed,
+                perfectScore: hintsUsed === 0 && lives === 5,
+                playTime: playTime,
+                sentence: sentence
+            });
         }
         
         // Phase 2: 저장 버튼 상태 업데이트
@@ -1810,6 +1836,27 @@ ${problem.translation}
         globalLeaderboardBtn.addEventListener('click', showGlobalLeaderboard);
     }
     
+    // 리더보드 모달 이벤트 리스너들
+    if (closeLeaderboardBtn) {
+        closeLeaderboardBtn.addEventListener('click', hideGlobalLeaderboard);
+    }
+    
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', onLeaderboardFilterChange);
+    }
+    
+    if (timeframeFilter) {
+        timeframeFilter.addEventListener('change', onLeaderboardFilterChange);
+    }
+    
+    if (refreshLeaderboardBtn) {
+        refreshLeaderboardBtn.addEventListener('click', refreshLeaderboard);
+    }
+    
+    if (retryLeaderboardBtn) {
+        retryLeaderboardBtn.addEventListener('click', refreshLeaderboard);
+    }
+    
     // Phase 3: 인증 관련 이벤트 리스너 설정
     authManager.on('login', onUserLogin);
     authManager.on('logout', onUserLogout);
@@ -1867,7 +1914,10 @@ ${problem.translation}
         console.log('✅ 사용자 로그인 성공:', user.display_name);
         updateAuthUI(true, user);
         
-        // TODO: 점수 업로드 활성화 등 추가 로직
+        // 실패한 업로드 재시도
+        if (isFeatureEnabled('SCORE_UPLOAD')) {
+            setTimeout(() => retryFailedUploads(), 1000);
+        }
     }
     
     // 사용자 로그아웃 이벤트
@@ -1921,12 +1971,312 @@ ${problem.translation}
     function showGlobalLeaderboard() {
         if (!isFeatureEnabled('LEADERBOARD_UI')) {
             console.log('🚫 리더보드 UI 기능이 비활성화됨');
+            alert('리더보드 기능이 아직 활성화되지 않았습니다.');
             return;
         }
         
-        // TODO: Phase 3-B에서 구현
-        console.log('🏆 글로벌 리더보드 표시 (미구현)');
-        alert('글로벌 리더보드 기능은 곧 추가됩니다!');
+        if (globalLeaderboardModal) {
+            globalLeaderboardModal.style.display = 'flex';
+            loadLeaderboardData();
+        }
+    }
+    
+    // 글로벌 리더보드 숨김
+    function hideGlobalLeaderboard() {
+        if (globalLeaderboardModal) {
+            globalLeaderboardModal.style.display = 'none';
+        }
+    }
+    
+    // 리더보드 필터 변경 처리
+    function onLeaderboardFilterChange() {
+        loadLeaderboardData();
+    }
+    
+    // 리더보드 새로고침
+    function refreshLeaderboard() {
+        loadLeaderboardData();
+    }
+    
+    // 리더보드 데이터 로드
+    async function loadLeaderboardData() {
+        try {
+            showLeaderboardLoading(true);
+            
+            const category = categoryFilter?.value || 'all';
+            const timeframe = timeframeFilter?.value || 'all';
+            
+            let url = `${CONFIG.API_BASE_URL}/api/leaderboard`;
+            if (category !== 'all') {
+                url += `/${category}`;
+            }
+            
+            const params = new URLSearchParams();
+            if (timeframe !== 'all') {
+                params.append('timeframe', timeframe);
+            }
+            
+            if (params.toString()) {
+                url += `?${params.toString()}`;
+            }
+            
+            console.log('🏆 리더보드 데이터 로드:', url);
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`리더보드 로드 실패: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayLeaderboardData(data);
+                showLeaderboardError(false);
+            } else {
+                throw new Error(data.error || '리더보드 데이터 로드 실패');
+            }
+            
+        } catch (error) {
+            console.error('❌ 리더보드 로드 실패:', error);
+            showLeaderboardError(true);
+        } finally {
+            showLeaderboardLoading(false);
+        }
+    }
+    
+    // 리더보드 데이터 표시
+    function displayLeaderboardData(data) {
+        // 통계 업데이트
+        if (totalPlayersSpan) totalPlayersSpan.textContent = data.stats?.totalPlayers || 0;
+        if (totalGamesSpan) totalGamesSpan.textContent = data.stats?.totalGames || 0;
+        if (averageScoreSpan) averageScoreSpan.textContent = Math.round(data.stats?.averageScore || 0);
+        
+        // 리더보드 리스트 업데이트
+        if (leaderboardList) {
+            leaderboardList.innerHTML = '';
+            
+            if (data.leaderboard && data.leaderboard.length > 0) {
+                data.leaderboard.forEach((player, index) => {
+                    const item = createLeaderboardItem(player, index + 1);
+                    leaderboardList.appendChild(item);
+                });
+            } else {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.innerHTML = `
+                    <p style="text-align: center; color: #6b7280; padding: 40px;">
+                        🏆 아직 등록된 점수가 없습니다.<br>
+                        첫 번째 도전자가 되어보세요!
+                    </p>
+                `;
+                leaderboardList.appendChild(emptyMessage);
+            }
+        }
+    }
+    
+    // 리더보드 아이템 생성
+    function createLeaderboardItem(player, rank) {
+        const item = document.createElement('div');
+        item.className = 'leaderboard-item';
+        
+        // 현재 사용자인지 확인
+        const currentUser = authManager.getUser();
+        if (currentUser && player.user_id === currentUser.id) {
+            item.classList.add('current-user');
+        }
+        
+        const rankClass = rank <= 3 ? 'rank top-3' : 'rank';
+        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+        
+        item.innerHTML = `
+            <div class="${rankClass}">
+                ${rankEmoji || rank}
+            </div>
+            <img class="player-avatar" src="${player.avatar_url || '/default-avatar.png'}" 
+                 alt="${player.display_name}" 
+                 onerror="this.src='/default-avatar.png'">
+            <div class="player-info">
+                <div class="player-name">${player.display_name || 'Anonymous'}</div>
+                <div class="player-details">
+                    ${player.category ? `${player.category.toUpperCase()} • ` : ''}
+                    ${player.hints_used || 0} hints • 
+                    ${player.perfect_score ? 'Perfect!' : `${player.play_time}s`}
+                </div>
+            </div>
+            <div class="score">${player.score}</div>
+        `;
+        
+        return item;
+    }
+    
+    // 로딩 상태 표시/숨김
+    function showLeaderboardLoading(show) {
+        if (leaderboardLoading) {
+            leaderboardLoading.style.display = show ? 'flex' : 'none';
+        }
+        if (leaderboardList) {
+            leaderboardList.style.display = show ? 'none' : 'block';
+        }
+    }
+    
+    // 에러 상태 표시/숨김
+    function showLeaderboardError(show) {
+        if (leaderboardError) {
+            leaderboardError.style.display = show ? 'block' : 'none';
+        }
+        if (leaderboardList) {
+            leaderboardList.style.display = show ? 'none' : 'block';
+        }
+    }
+    
+    // 글로벌 점수 업로드
+    async function uploadScoreToGlobal(scoreData) {
+        try {
+            console.log('📤 글로벌 점수 업로드 시작:', scoreData);
+            
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/scores`, {
+                method: 'POST',
+                headers: authManager.getAuthHeaders(),
+                body: JSON.stringify(scoreData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`점수 업로드 실패: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ 점수 업로드 성공:', result);
+                
+                // 업로드 성공 시 사용자에게 알림 (옵션)
+                if (isFeatureEnabled('DEBUG_MODE')) {
+                    showScoreUploadNotification(result);
+                }
+            } else {
+                throw new Error(result.error || '점수 업로드 실패');
+            }
+            
+        } catch (error) {
+            console.error('❌ 점수 업로드 실패:', error);
+            
+            // 실패 시 로컬에 저장하여 나중에 재시도
+            saveFailedUpload(scoreData);
+        }
+    }
+    
+    // 업로드 실패한 점수 로컬 저장
+    function saveFailedUpload(scoreData) {
+        try {
+            const failedUploads = JSON.parse(localStorage.getItem('wordcrack_failed_uploads') || '[]');
+            failedUploads.push({
+                ...scoreData,
+                timestamp: Date.now(),
+                retryCount: 0
+            });
+            
+            // 최대 10개까지만 저장
+            if (failedUploads.length > 10) {
+                failedUploads.shift();
+            }
+            
+            localStorage.setItem('wordcrack_failed_uploads', JSON.stringify(failedUploads));
+            console.log('💾 실패한 업로드 로컬 저장 완료');
+            
+        } catch (error) {
+            console.error('로컬 저장 실패:', error);
+        }
+    }
+    
+    // 실패한 업로드 재시도
+    async function retryFailedUploads() {
+        if (!authManager.isLoggedIn()) return;
+        
+        try {
+            const failedUploads = JSON.parse(localStorage.getItem('wordcrack_failed_uploads') || '[]');
+            if (failedUploads.length === 0) return;
+            
+            console.log(`🔄 실패한 업로드 ${failedUploads.length}개 재시도 중...`);
+            
+            const successful = [];
+            const stillFailed = [];
+            
+            for (const upload of failedUploads) {
+                if (upload.retryCount >= CONFIG.GAME.SCORE_UPLOAD_RETRY) {
+                    // 최대 재시도 횟수 초과
+                    continue;
+                }
+                
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/api/scores`, {
+                        method: 'POST',
+                        headers: authManager.getAuthHeaders(),
+                        body: JSON.stringify({
+                            category: upload.category,
+                            score: upload.score,
+                            hintsUsed: upload.hintsUsed,
+                            perfectScore: upload.perfectScore,
+                            playTime: upload.playTime,
+                            sentence: upload.sentence
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        successful.push(upload);
+                        console.log('✅ 재시도 성공:', upload.category, upload.score);
+                    } else {
+                        upload.retryCount++;
+                        stillFailed.push(upload);
+                    }
+                    
+                } catch (error) {
+                    upload.retryCount++;
+                    stillFailed.push(upload);
+                }
+            }
+            
+            // 업데이트된 실패 목록 저장
+            localStorage.setItem('wordcrack_failed_uploads', JSON.stringify(stillFailed));
+            
+            if (successful.length > 0) {
+                console.log(`✅ ${successful.length}개 점수 재업로드 성공`);
+            }
+            
+        } catch (error) {
+            console.error('재시도 중 오류:', error);
+        }
+    }
+    
+    // 점수 업로드 성공 알림 (옵션)
+    function showScoreUploadNotification(result) {
+        // 개발 모드에서만 표시되는 간단한 알림
+        const notification = document.createElement('div');
+        notification.textContent = `점수 업로드 완료! 순위: ${result.rank || 'N/A'}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // 페이드 인
+        setTimeout(() => notification.style.opacity = '1', 100);
+        
+        // 3초 후 제거
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
     
 });
