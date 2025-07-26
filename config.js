@@ -3,10 +3,10 @@
 
 export const FEATURES = {
     // Phase 3 글로벌 경쟁 기능
-    GLOBAL_LEADERBOARD: false,  // 글로벌 리더보드 표시
-    GOOGLE_AUTH: false,         // 구글 로그인 기능
-    SCORE_UPLOAD: false,        // 점수 자동 업로드
-    LEADERBOARD_UI: false,      // 리더보드 화면/모달
+    GLOBAL_LEADERBOARD: true,   // 글로벌 리더보드 표시
+    GOOGLE_AUTH: true,          // 구글 로그인 기능
+    SCORE_UPLOAD: true,         // 점수 자동 업로드
+    LEADERBOARD_UI: true,       // 리더보드 화면/모달
     
     // 개발/디버그 기능
     DEBUG_MODE: false,          // 디버그 로그 출력

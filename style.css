@@ -1192,6 +1192,18 @@ body.dark-mode {
         padding: 0;
         margin: 0;
     }
+
+    /* 모바일에서 상단 버튼 위치 조정 */
+    .category-header {
+        margin-top: 0 !important;
+        height: 50px !important;
+        padding-top: 10px;
+    }
+    
+    .header-buttons {
+        top: 10px !important;
+        right: 10px !important;
+    }
     
     /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
@@ -2508,4 +2520,18 @@ body.dark-mode .score {
     margin-top: -20px !important;
     height: 40px !important;
     position: relative !important;
+}
+
+/* 모바일 다크모드에서도 동일한 위치 적용 */
+@media (max-width: 768px) {
+    .dark-mode .header-buttons {
+        top: 10px !important;
+        right: 10px !important;
+    }
+    
+    .dark-mode .category-header {
+        margin-top: 0 !important;
+        height: 50px !important;
+        padding-top: 10px;
+    }
 }
