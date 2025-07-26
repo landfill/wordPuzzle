@@ -43,7 +43,9 @@ class AuthManager {
             
         } catch (error) {
             console.error('❌ AuthManager 초기화 실패:', error);
+            console.log('💡 Google Auth는 비활성화됩니다. 나머지 기능은 정상 작동합니다.');
             this.clearAuth();
+            // 초기화 실패해도 계속 진행 (Google Auth 없이도 게임은 가능)
         }
     }
     
@@ -59,12 +61,34 @@ class AuthManager {
             // Google API 스크립트 동적 로드
             const script = document.createElement('script');
             script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            
             script.onload = () => {
-                this.setupGoogleAuth();
-                resolve();
+                // 로드 후 잠시 대기하여 API 초기화 완료 대기
+                setTimeout(() => {
+                    if (window.google && window.google.accounts) {
+                        this.setupGoogleAuth();
+                        resolve();
+                    } else {
+                        reject(new Error('Google API 초기화 실패'));
+                    }
+                }, 100);
             };
-            script.onerror = () => reject(new Error('Google API 로드 실패'));
+            
+            script.onerror = (error) => {
+                console.error('Google API 스크립트 로드 실패:', error);
+                reject(new Error('Google API 로드 실패 - 네트워크 확인 필요'));
+            };
+            
             document.head.appendChild(script);
+            
+            // 타임아웃 설정 (10초)
+            setTimeout(() => {
+                if (!this.isInitialized) {
+                    reject(new Error('Google API 로드 타임아웃'));
+                }
+            }, 10000);
         });
     }
     
