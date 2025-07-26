@@ -1,6 +1,7 @@
 import ContentGenerator from './content-generator.js';
 import CONTENT_DATABASE from './content-database.js';
 import DataManager from './data-manager.js';
+import AchievementSystem from './achievement-system.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -31,6 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 다크모드 토글 버튼들
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const darkModeToggleCategory = document.getElementById('dark-mode-toggle-category');
+    const darkModeToggleDashboard = document.getElementById('dark-mode-toggle-dashboard');
+    
+    // Phase 2-B: 대시보드 관련 DOM 요소들
+    const dashboardScreen = document.getElementById('dashboard-screen');
+    const dashboardBtn = document.getElementById('dashboard-btn');
+    const backToHomeBtn = document.getElementById('back-to-home-btn');
 
     // DOM 요소 확인
     console.log('DOM Elements Check:', {
@@ -120,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Phase 2: 데이터 매니저 초기화
     const dataManager = new DataManager();
+    const achievementSystem = new AchievementSystem(dataManager);
     let gameStartTime = null; // 게임 시작 시간 추적
 
     const keyboardLayout = [
@@ -131,12 +139,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function showCategoryScreen() {
         gameScreen.style.display = 'none';
         categorySelectionScreen.style.display = 'flex';
+        dashboardScreen.style.display = 'none';
         stopAllSounds();
     }
     
     function showGameScreen() {
         categorySelectionScreen.style.display = 'none';
         gameScreen.style.display = 'flex';
+        dashboardScreen.style.display = 'none';
+    }
+    
+    function showDashboardScreen() {
+        categorySelectionScreen.style.display = 'none';
+        gameScreen.style.display = 'none';
+        dashboardScreen.style.display = 'flex';
+        updateDashboardData();
     }
 
     function startGame(category) {
@@ -722,6 +739,12 @@ document.addEventListener('DOMContentLoaded', () => {
             problemData: currentProblem,
             playTime: playTime
         });
+        
+        // Phase 2-B: 새 배지 확인 및 알림
+        const newBadges = achievementSystem.checkNewBadges();
+        if (newBadges.length > 0) {
+            showBadgeNotifications(newBadges);
+        }
         
         // Phase 2: 저장 버튼 상태 업데이트
         updateSaveSentenceButton();
@@ -1515,14 +1538,200 @@ ${problem.translation}
         const isSaved = dataManager.isSentenceSaved(currentProblem.sentence);
         
         if (isSaved) {
-            saveSentenceBtn.textContent = '✅ 저장됨';
+            saveSentenceBtn.textContent = '✅ 수집됨';
             saveSentenceBtn.disabled = true;
             saveSentenceBtn.style.opacity = '0.7';
         } else {
-            saveSentenceBtn.textContent = '💾 저장하기';
+            saveSentenceBtn.textContent = '📚 문장 수집';
             saveSentenceBtn.disabled = false;
             saveSentenceBtn.style.opacity = '1';
         }
+    }
+
+    // Phase 2-B: 배지 알림 표시 함수
+    function showBadgeNotifications(badges) {
+        badges.forEach((badge, index) => {
+            setTimeout(() => {
+                showSingleBadgeNotification(badge);
+            }, index * 1500); // 각 배지를 1.5초 간격으로 표시
+        });
+    }
+
+    function showSingleBadgeNotification(badge) {
+        // 기존 알림이 있다면 제거
+        const existingNotification = document.querySelector('.badge-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // 배지 알림 요소 생성
+        const notification = document.createElement('div');
+        notification.className = 'badge-notification';
+        notification.innerHTML = `
+            <div class="badge-notification-content">
+                <div class="badge-icon">${badge.icon}</div>
+                <div class="badge-info">
+                    <h3>새 배지 획득!</h3>
+                    <h4>${badge.name}</h4>
+                    <p>${badge.description}</p>
+                    <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
+                </div>
+            </div>
+        `;
+
+        // body에 추가
+        document.body.appendChild(notification);
+
+        // 애니메이션 및 자동 제거
+        setTimeout(() => notification.classList.add('show'), 100);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+
+        // 클릭하면 즉시 제거
+        notification.addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        });
+    }
+
+    // Phase 2-B: 대시보드 데이터 업데이트 함수들
+    function updateDashboardData() {
+        const userData = dataManager.getUserData();
+        if (!userData) return;
+
+        // 통계 업데이트
+        updateStats(userData.stats);
+        
+        // 배지 업데이트
+        updateBadgesDisplay(userData.badges);
+        
+        // 카테고리 진행률 업데이트
+        updateCategoryProgress(userData.categoryProgress);
+        
+        // 저장된 문장 업데이트
+        updateSavedSentences(userData.savedSentences);
+    }
+
+    function updateStats(stats) {
+        document.getElementById('total-completed').textContent = stats.totalProblemsCompleted;
+        document.getElementById('total-score').textContent = stats.totalScore.toLocaleString();
+        document.getElementById('longest-streak').textContent = stats.longestStreak;
+        document.getElementById('perfect-scores').textContent = stats.perfectScores;
+    }
+
+    function updateBadgesDisplay(userBadges) {
+        const container = document.getElementById('badges-container');
+        
+        if (userBadges.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏆</div>
+                    <p>아직 획득한 배지가 없습니다.<br>게임을 플레이하여 배지를 획득해보세요!</p>
+                </div>
+            `;
+            return;
+        }
+
+        // 배지를 희귀도와 획득 날짜순으로 정렬
+        const sortedBadges = userBadges.sort((a, b) => {
+            const rarityOrder = { 'legendary': 5, 'epic': 4, 'rare': 3, 'uncommon': 2, 'common': 1 };
+            const rarityDiff = (rarityOrder[b.rarity] || 1) - (rarityOrder[a.rarity] || 1);
+            if (rarityDiff !== 0) return rarityDiff;
+            return new Date(b.earnedAt) - new Date(a.earnedAt);
+        });
+
+        container.innerHTML = sortedBadges.map(badge => `
+            <div class="badge-item" title="${badge.description}">
+                <div class="badge-icon">${badge.icon}</div>
+                <div class="badge-name">${badge.name}</div>
+                <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
+            </div>
+        `).join('');
+    }
+
+    function updateCategoryProgress(categoryProgress) {
+        const container = document.getElementById('category-progress-grid');
+        
+        const categoryIcons = {
+            'movies': '🎬',
+            'songs': '🎵', 
+            'books': '📚',
+            'quotes': '💬',
+            'daily_travel_phrases': '✈️',
+            'all': '✨'
+        };
+
+        const categoryNames = {
+            'movies': 'Movies',
+            'songs': 'Songs',
+            'books': 'Books', 
+            'quotes': 'Quotes',
+            'daily_travel_phrases': 'Travel',
+            'all': 'Random Mix'
+        };
+
+        container.innerHTML = Object.entries(categoryProgress)
+            .filter(([category, progress]) => category !== 'all' && progress.attempted > 0)
+            .map(([category, progress]) => {
+                const completionRate = progress.attempted > 0 ? (progress.completed / progress.attempted * 100) : 0;
+                
+                return `
+                    <div class="category-progress-item">
+                        <div class="category-progress-header">
+                            <div class="category-icon">${categoryIcons[category]}</div>
+                            <div class="category-name">${categoryNames[category]}</div>
+                        </div>
+                        <div class="category-stats">
+                            <span>완료: ${progress.completed}/${progress.attempted}</span>
+                            <span>최고점: ${progress.bestScore}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${completionRate}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+    }
+
+    function updateSavedSentences(savedSentences) {
+        const container = document.getElementById('saved-sentences-container');
+        
+        if (savedSentences.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">💾</div>
+                    <p>저장된 문장이 없습니다.<br>게임에서 마음에 드는 문장을 저장해보세요!</p>
+                </div>
+            `;
+            return;
+        }
+
+        // 최근 저장된 순으로 정렬
+        const sortedSentences = savedSentences.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        container.innerHTML = sortedSentences.map(sentence => {
+            const date = new Date(sentence.timestamp).toLocaleDateString('ko-KR');
+            const categoryIcons = {
+                'movies': '🎬',
+                'songs': '🎵', 
+                'books': '📚',
+                'quotes': '💬',
+                'daily_travel_phrases': '✈️'
+            };
+            
+            return `
+                <div class="saved-sentence-item">
+                    <div class="saved-sentence-text">${sentence.sentence}</div>
+                    <div class="saved-sentence-translation">${sentence.translation}</div>
+                    <div class="saved-sentence-meta">
+                        <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
+                        <span>${date}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     // 공유 버튼 이벤트 리스너
@@ -1538,7 +1747,7 @@ ${problem.translation}
         screenshotBtn.addEventListener('click', saveScreenshot);
     }
     
-    // Phase 2: 저장하기 버튼 이벤트 리스너
+    // Phase 2: 문장 수집 버튼 이벤트 리스너
     if (saveSentenceBtn) {
         saveSentenceBtn.addEventListener('click', saveSentence);
     }
@@ -1552,6 +1761,10 @@ ${problem.translation}
         darkModeToggleCategory.addEventListener('click', toggleDarkMode);
     }
     
+    if (darkModeToggleDashboard) {
+        darkModeToggleDashboard.addEventListener('click', toggleDarkMode);
+    }
+    
     // 시스템 테마 변경 감지
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         if (localStorage.getItem('darkMode') === null) {
@@ -1563,6 +1776,15 @@ ${problem.translation}
         }
     });
     
+    // Phase 2-B: 대시보드 버튼 이벤트 리스너
+    if (dashboardBtn) {
+        dashboardBtn.addEventListener('click', showDashboardScreen);
+    }
+    
+    if (backToHomeBtn) {
+        backToHomeBtn.addEventListener('click', showCategoryScreen);
+    }
+
     // 다크모드 초기화
     initializeDarkMode();
     
