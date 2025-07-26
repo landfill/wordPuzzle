@@ -60,26 +60,33 @@
       <div class="game-container">
         <!-- Header Area (Fixed) -->
         <div class="game-header">
-          <button id="home-btn" title="Go to Home">
-            <svg viewBox="0 0 24 24">
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-            </svg>
-          </button>
-          <div class="lives-display">
-            <!-- Hearts will be inserted here by JavaScript -->
+          <div class="header-left">
+            <button id="home-btn" title="Go to Home">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+              </svg>
+            </button>
+            <div class="lives-display">
+              <!-- Hearts will be inserted here by JavaScript -->
+            </div>
           </div>
-          <div class="progress-indicator">
-            <!-- Progress will be inserted here by JavaScript -->
+          <div class="header-center">
+            <h1 class="game-title">Word Crack</h1>
           </div>
-          <button id="dark-mode-toggle" title="다크모드 토글">
-            <svg viewBox="0 0 24 24" class="sun-icon">
-              <path d="M12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm0-10c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
-              <path d="M12 2l.35 3.5L15.5 4l-1.15 3.35L18 6.5l-3.5.85L15.5 11l-3.35-1.15L11 13.5l-.85-3.5L7 11l1.15-3.35L5 6.5l3.5-.85L7.5 2l3.35 1.15L12 2z"/>
-            </svg>
-            <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          </button>
+          <div class="header-right">
+            <div class="progress-indicator">
+              <!-- Progress will be inserted here by JavaScript -->
+            </div>
+            <button id="dark-mode-toggle" title="다크모드 토글">
+              <svg viewBox="0 0 24 24" class="sun-icon">
+                <path d="M12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm0-10c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
+                <path d="M12 2l.35 3.5L15.5 4l-1.15 3.35L18 6.5l-3.5.85L15.5 11l-3.35-1.15L11 13.5l-.85-3.5L7 11l1.15-3.35L5 6.5l3.5-.85L7.5 2l3.35 1.15L12 2z"/>
+              </svg>
+              <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Content Area (Scrollable) -->

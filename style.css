@@ -129,6 +129,32 @@ body {
     z-index: 10;
 }
 
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.header-center {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.game-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0;
+    text-align: center;
+}
+
 /* Content Area (Scrollable) */
 .game-content {
     display: flex;
@@ -189,8 +215,6 @@ body {
     display: flex;
     align-items: center;
     gap: 2px;
-    flex: 1;
-    margin: 0 15px;
     height: 38px;
 }
 
@@ -200,12 +224,15 @@ body {
     font-size: 0.8em;
     font-weight: 600;
     color: #4a5568;
-    background: #edf2f7;
-    border-radius: 16px;
-    padding: 6px 8px;
-    min-width: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-width: 45px;
+    height: 36px;
     justify-content: center;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .review-mode-indicator {
@@ -1020,6 +1047,16 @@ body.dark-mode {
     color: #e2e8f0;
 }
 
+.dark-mode .game-title {
+    color: #e2e8f0;
+}
+
+.dark-mode .progress-indicator {
+    background: rgba(113, 128, 150, 0.2);
+    border-color: rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
 /* 모바일 가상 키보드 활성화 상태 */
 .game-container.mobile-keyboard-active {
     max-height: none !important;
@@ -1057,6 +1094,15 @@ body.dark-mode {
         padding: 10px 10px 8px 10px;
     }
     
+    .game-title {
+        font-size: 1.1em;
+    }
+    
+    .header-left,
+    .header-right {
+        gap: 8px;
+    }
+    
     .game-content {
         padding: 10px;
         gap: 10px;
@@ -1073,8 +1119,9 @@ body.dark-mode {
     
     .progress-indicator {
         font-size: 0.7em;
-        padding: 4px 6px;
-        min-width: 40px;
+        padding: 4px 8px;
+        min-width: 35px;
+        height: 32px;
     }
 
     .word-group {
