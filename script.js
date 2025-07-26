@@ -1760,13 +1760,20 @@ ${problem.translation}
             };
             
             return `
-                <div class="saved-sentence-item">
-                    <div class="saved-sentence-text">${sentence.sentence}</div>
-                    <div class="saved-sentence-translation">${sentence.translation}</div>
-                    <div class="saved-sentence-meta">
-                        <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
-                        <span>${date}</span>
+                <div class="saved-sentence-item" data-sentence-id="${sentence.timestamp}">
+                    <div class="saved-sentence-content">
+                        <div class="saved-sentence-text">${sentence.sentence}</div>
+                        <div class="saved-sentence-translation">${sentence.translation}</div>
+                        <div class="saved-sentence-meta">
+                            <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
+                            <span>${date}</span>
+                        </div>
                     </div>
+                    <button class="delete-sentence-btn" onclick="deleteSavedSentence('${sentence.timestamp}')" title="문장 삭제">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
                 </div>
             `;
         }).join('');
@@ -2278,5 +2285,21 @@ ${problem.translation}
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
+    
+    // 저장된 문장 삭제 함수 (전역 함수로 만들기 위해 window에 등록)
+    window.deleteSavedSentence = function(timestamp) {
+        if (confirm('이 문장을 삭제하시겠습니까?')) {
+            const savedSentences = dataManager.getSavedSentences();
+            const updatedSentences = savedSentences.filter(sentence => sentence.timestamp !== timestamp);
+            
+            // 로컬 스토리지 업데이트
+            localStorage.setItem('wordcrack_saved_sentences', JSON.stringify(updatedSentences));
+            
+            // UI 업데이트
+            updateSavedSentences(updatedSentences);
+            
+            console.log('✅ 문장 삭제 완료:', timestamp);
+        }
+    };
     
 });

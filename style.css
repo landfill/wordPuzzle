@@ -1726,6 +1726,38 @@ body.dark-mode {
     border-radius: 12px;
     padding: 16px;
     border-left: 4px solid #667eea;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.saved-sentence-content {
+    flex: 1;
+}
+
+.delete-sentence-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(239, 68, 68, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.delete-sentence-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.1);
+}
+
+.delete-sentence-btn:active {
+    transform: scale(0.95);
 }
 
 .saved-sentence-text {
@@ -1838,28 +1870,26 @@ body.dark-mode {
 .login-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #3c4043;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 75%, #EA4335 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
 }
 
 .login-btn:hover {
-    background: #f8f9fa;
-    border-color: #bdc1c6;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4);
 }
 
 .login-btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
 }
 
 /* 사용자 프로필 */
@@ -1939,14 +1969,13 @@ body.dark-mode {
 
 /* 다크모드 대응 */
 body.dark-mode .login-btn {
-    background: #2d3748;
-    border-color: #4a5568;
-    color: #e2e8f0;
+    background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 75%, #EA4335 100%);
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
 }
 
 body.dark-mode .login-btn:hover {
-    background: #374151;
-    border-color: #6b7280;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.5);
 }
 
 body.dark-mode .user-profile {
@@ -1966,6 +1995,93 @@ body.dark-mode .logout-btn:hover {
     background: rgba(239, 68, 68, 0.3);
 }
 
+/* 대시보드 다크모드 대응 */
+body.dark-mode .dashboard-container {
+    background: #1a202c;
+}
+
+body.dark-mode .dashboard-section {
+    background: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dashboard-section h2 {
+    color: #e2e8f0;
+}
+
+body.dark-mode .stat-card {
+    background: #374151;
+    border-color: #4a5568;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .stat-card h3 {
+    color: #a0aec0;
+}
+
+body.dark-mode .stat-value {
+    color: #e2e8f0;
+}
+
+body.dark-mode .badge-item {
+    background: #374151;
+    border-color: #4a5568;
+}
+
+body.dark-mode .badge-item h4 {
+    color: #e2e8f0;
+}
+
+body.dark-mode .badge-item p {
+    color: #a0aec0;
+}
+
+body.dark-mode .category-progress-item {
+    background: #374151;
+    border-color: #4a5568;
+}
+
+body.dark-mode .category-progress-item h4 {
+    color: #e2e8f0;
+}
+
+body.dark-mode .category-progress-item p {
+    color: #a0aec0;
+}
+
+body.dark-mode .progress-bar {
+    background: #4a5568;
+}
+
+body.dark-mode .saved-sentence-item {
+    background: #374151;
+    border-color: #667eea;
+    border-left-color: #667eea;
+}
+
+body.dark-mode .saved-sentence-text {
+    color: #e2e8f0;
+}
+
+body.dark-mode .saved-sentence-translation {
+    color: #a0aec0;
+}
+
+body.dark-mode .saved-sentence-meta {
+    color: #6b7280;
+}
+
+body.dark-mode .delete-sentence-btn {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+body.dark-mode .delete-sentence-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
 /* 모바일 대응 */
 @media (max-width: 768px) {
     .auth-section {
@@ -1973,9 +2089,8 @@ body.dark-mode .logout-btn:hover {
     }
     
     .login-btn {
-        padding: 6px 10px;
-        font-size: 13px;
-        gap: 4px;
+        width: 36px;
+        height: 36px;
     }
     
     .user-profile {
