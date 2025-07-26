@@ -10,6 +10,13 @@ body {
     font-weight: 600;
     box-sizing: border-box;
     background: #f0f2f5;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* 화면 전환용 래퍼 */
@@ -476,14 +483,19 @@ body {
 }
 
 .hint-counter {
-    font-size: 0.8em;
+    font-size: 0.9em;
     font-weight: 600;
     color: #4a5568;
     background: #edf2f7;
-    border-radius: 12px;
-    padding: 4px 8px;
-    min-width: 30px;
+    border-radius: 20px;
+    padding: 8px 12px;
+    min-width: 40px;
     text-align: center;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .word-blank.hint-filled {
@@ -832,7 +844,7 @@ body {
 .dark-mode-toggle {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
+    border-radius: 8px;
     width: 40px;
     height: 40px;
     display: flex;
@@ -851,7 +863,7 @@ body {
 #dark-mode-toggle {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    border-radius: 8px;
     width: 36px;
     height: 36px;
     display: flex;
@@ -899,6 +911,10 @@ body.dark-mode {
 .dark-mode .category-card {
     background: rgba(74, 85, 104, 0.6);
     border: 2px solid rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .category-card .card-text {
     color: #e2e8f0;
 }
 
