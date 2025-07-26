@@ -56,6 +56,76 @@ const CONTENT_DATABASE = {
             { sentence: "Better out than in!", translation: "안에 있는 것보다 밖이 낫지!", difficulty: 'medium' },
             { sentence: "Ogres are like onions.", translation: "오거는 양파 같아.", difficulty: 'medium' },
             { sentence: "What are you doing in my swamp?", translation: "내 늪에서 뭐 하는 거야?", difficulty: 'hard' }
+        ],
+        'Star Wars': [
+            { sentence: "May the Force be with you.", translation: "포스가 함께 하기를.", difficulty: 'easy' },
+            { sentence: "I have a bad feeling about this.", translation: "안 좋은 예감이 들어.", difficulty: 'easy' },
+            { sentence: "Help me, Obi-Wan Kenobi.", translation: "도와주세요, 오비완 케노비.", difficulty: 'easy' },
+            { sentence: "That's no moon.", translation: "저건 달이 아니야.", difficulty: 'easy' },
+            { sentence: "I find your lack of faith disturbing.", translation: "네 믿음 부족이 불쾌하다.", difficulty: 'easy' }
+        ],
+        'Jurassic Park': [
+            { sentence: "Life finds a way.", translation: "생명은 길을 찾는다.", difficulty: 'easy' },
+            { sentence: "Clever girl.", translation: "영리한 녀석이군.", difficulty: 'easy' },
+            { sentence: "Welcome to Jurassic Park.", translation: "쥬라기 공원에 오신 걸 환영합니다.", difficulty: 'easy' },
+            { sentence: "Hold on to your butts.", translation: "꽉 잡아.", difficulty: 'easy' },
+            { sentence: "Spared no expense.", translation: "비용을 아끼지 않았어.", difficulty: 'easy' }
+        ],
+        'Titanic': [
+            { sentence: "I'm the king of the world!", translation: "나는 세상의 왕이다!", difficulty: 'easy' },
+            { sentence: "Draw me like one of your French girls.", translation: "프랑스 소녀들처럼 그려줘.", difficulty: 'easy' },
+            { sentence: "I'll never let go, Jack.", translation: "절대 놓지 않을게, 잭.", difficulty: 'easy' },
+            { sentence: "Women and children first.", translation: "여성과 아이들 먼저.", difficulty: 'easy' },
+            { sentence: "Iceberg, right ahead!", translation: "빙산, 바로 앞!", difficulty: 'easy' }
+        ],
+        'Forrest Gump': [
+            { sentence: "Life is like a box of chocolates.", translation: "인생은 초콜릿 상자 같아.", difficulty: 'easy' },
+            { sentence: "Run, Forrest, run!", translation: "뛰어, 포레스트, 뛰어!", difficulty: 'easy' },
+            { sentence: "Stupid is as stupid does.", translation: "바보는 바보짓을 한다.", difficulty: 'easy' },
+            { sentence: "My mama always said.", translation: "우리 엄마가 항상 말했어.", difficulty: 'easy' },
+            { sentence: "That's all I have to say about that.", translation: "그것에 대해 할 말은 그게 다야.", difficulty: 'easy' }
+        ],
+        'E.T.': [
+            { sentence: "E.T. phone home.", translation: "E.T. 집에 전화해.", difficulty: 'easy' },
+            { sentence: "E.T. stay.", translation: "E.T. 있어.", difficulty: 'easy' },
+            { sentence: "I'll be right here.", translation: "난 여기 있을게.", difficulty: 'easy' },
+            { sentence: "You could be happy here.", translation: "여기서 행복할 수 있어.", difficulty: 'easy' },
+            { sentence: "He's fine.", translation: "그는 괜찮아.", difficulty: 'easy' }
+        ],
+        'The Wizard of Oz': [
+            { sentence: "There's no place like home.", translation: "집만한 곳은 없어.", difficulty: 'easy' },
+            { sentence: "Follow the yellow brick road.", translation: "노란 벽돌길을 따라가.", difficulty: 'easy' },
+            { sentence: "We're not in Kansas anymore.", translation: "여긴 캔자스가 아니야.", difficulty: 'easy' },
+            { sentence: "Pay no attention to that man.", translation: "저 남자는 무시해.", difficulty: 'easy' },
+            { sentence: "If I only had a brain.", translation: "뇌만 있다면.", difficulty: 'easy' }
+        ],
+        'Terminator': [
+            { sentence: "I'll be back.", translation: "돌아올게.", difficulty: 'easy' },
+            { sentence: "Come with me if you want to live.", translation: "살고 싶으면 따라와.", difficulty: 'easy' },
+            { sentence: "Hasta la vista, baby.", translation: "안녕히, 자기야.", difficulty: 'easy' },
+            { sentence: "No problemo.", translation: "문제없어.", difficulty: 'easy' },
+            { sentence: "I need your clothes.", translation: "옷이 필요해.", difficulty: 'easy' }
+        ],
+        'Rocky': [
+            { sentence: "Yo, Adrian!", translation: "요, 에이드리언!", difficulty: 'easy' },
+            { sentence: "I'm gonna fly now.", translation: "이제 날 거야.", difficulty: 'easy' },
+            { sentence: "Going the distance.", translation: "끝까지 가는 거야.", difficulty: 'easy' },
+            { sentence: "It ain't about how hard you hit.", translation: "얼마나 세게 치느냐가 아니야.", difficulty: 'easy' },
+            { sentence: "Win!", translation: "이겨!", difficulty: 'easy' }
+        ],
+        'Home Alone': [
+            { sentence: "Keep the change, ya filthy animal.", translation: "잔돈은 가져, 더러운 놈아.", difficulty: 'easy' },
+            { sentence: "I made my family disappear.", translation: "내 가족을 사라지게 만들었어.", difficulty: 'easy' },
+            { sentence: "This is my house.", translation: "여긴 내 집이야.", difficulty: 'easy' },
+            { sentence: "Buzz, your girlfriend. Woof!", translation: "버즈, 네 여자친구. 워프!", difficulty: 'easy' },
+            { sentence: "Look what you did, you little jerk!", translation: "네가 뭘 했는지 봐, 이 작은 바보야!", difficulty: 'easy' }
+        ],
+        'Jaws': [
+            { sentence: "You're gonna need a bigger boat.", translation: "더 큰 배가 필요할 거야.", difficulty: 'easy' },
+            { sentence: "Smile, you son of a gun.", translation: "웃어, 이 자식아.", difficulty: 'easy' },
+            { sentence: "We're gonna catch this shark.", translation: "이 상어를 잡을 거야.", difficulty: 'easy' },
+            { sentence: "Here's Johnny!", translation: "여기 조니야!", difficulty: 'easy' },
+            { sentence: "Shark!", translation: "상어!", difficulty: 'easy' }
         ]
     },
     books: {
@@ -69,7 +139,77 @@ const CONTENT_DATABASE = {
             { sentence: "Not all those who wander are lost.", translation: "방황하는 모든 이가 길을 잃은 것은 아니다.", difficulty: 'hard' },
             { sentence: "You shall not pass!", translation: "지나갈 수 없다!", difficulty: 'medium' },
             { sentence: "My precious.", translation: "내 소중한 것.", difficulty: 'easy' }
-        ]
+        ],
+        'Pride and Prejudice': [
+            { sentence: "It is a truth universally acknowledged.", translation: "보편적으로 인정되는 진실이다.", difficulty: 'easy' },
+            { sentence: "First impressions are not always right.", translation: "첫인상이 항상 옳지는 않아.", difficulty: 'easy' },
+            { sentence: "My good opinion once lost is lost forever.", translation: "한번 잃은 좋은 인상은 영원히 잃는다.", difficulty: 'easy' },
+            { sentence: "I am perfectly happy as I am.", translation: "나는 지금 그대로 완전히 행복해.", difficulty: 'easy' },
+            { sentence: "You must allow me to tell you.", translation: "말할 수 있게 허락해 주세요.", difficulty: 'easy' }
+        ],
+        'Romeo and Juliet': [
+            { sentence: "Romeo, Romeo! Wherefore art thou Romeo?", translation: "로미오, 로미오! 로미오는 어디 있나요?", difficulty: 'easy' },
+            { sentence: "A rose by any other name would smell sweet.", translation: "다른 이름의 장미도 향기롭다.", difficulty: 'easy' },
+            { sentence: "Love is a many splendored thing.", translation: "사랑은 많은 영광스러운 것이다.", difficulty: 'easy' },
+            { sentence: "Two households, both alike in dignity.", translation: "두 집안, 둘 다 품위에서 비슷하다.", difficulty: 'easy' },
+            { sentence: "For never was a story of more woe.", translation: "이보다 더 슬픈 이야기는 없었다.", difficulty: 'easy' }
+        ],
+        'Alice in Wonderland': [
+            { sentence: "We're all mad here.", translation: "여기서는 모두 미쳤어.", difficulty: 'easy' },
+            { sentence: "Curiouser and curiouser!", translation: "점점 더 이상해!", difficulty: 'easy' },
+            { sentence: "I'm late! I'm late!", translation: "늦었어! 늦었어!", difficulty: 'easy' },
+            { sentence: "Have I gone mad?", translation: "내가 미쳤나?", difficulty: 'easy' },
+            { sentence: "Take more tea.", translation: "차를 더 마셔.", difficulty: 'easy' }
+        ],
+        'The Great Gatsby': [
+            { sentence: "So we beat on, boats against the current.", translation: "그래서 우리는 물살을 거슬러 나아간다.", difficulty: 'easy' },
+            { sentence: "I hope she'll be a fool.", translation: "그녀가 바보였으면 좋겠어.", difficulty: 'easy' },
+            { sentence: "Can't repeat the past?", translation: "과거를 반복할 수 없다고?", difficulty: 'easy' },
+            { sentence: "I like large parties.", translation: "큰 파티를 좋아해.", difficulty: 'easy' },
+            { sentence: "It was a rich cream color.", translation: "그것은 진한 크림색이었다.", difficulty: 'easy' }
+        ],
+        'To Kill a Mockingbird': [
+            { sentence: "You never really understand a person.", translation: "사람을 진정으로 이해할 수는 없어.", difficulty: 'easy' },
+            { sentence: "Mockingbirds don't do one thing.", translation: "앵무새는 아무것도 하지 않아.", difficulty: 'easy' },
+            { sentence: "Atticus, he was real nice.", translation: "애티커스, 그는 정말 좋았어.", difficulty: 'easy' },
+            { sentence: "Hey, Boo.", translation: "안녕, 부.", difficulty: 'easy' },
+            { sentence: "Summer was coming to an end.", translation: "여름이 끝나가고 있었다.", difficulty: 'easy' }
+        ],
+        'The Catcher in the Rye': [
+            { sentence: "If you really want to hear about it.", translation: "정말로 그것에 대해 듣고 싶다면.", difficulty: 'easy' },
+            { sentence: "People never notice anything.", translation: "사람들은 아무것도 알아차리지 못해.", difficulty: 'easy' },
+            { sentence: "I'm the most terrific liar.", translation: "나는 최고의 거짓말쟁이야.", difficulty: 'easy' },
+            { sentence: "Don't ever tell anybody anything.", translation: "누구에게도 아무것도 말하지 마.", difficulty: 'easy' },
+            { sentence: "I felt like praying or something.", translation: "기도하고 싶은 기분이었어.", difficulty: 'easy' }
+        ],
+        'Jane Eyre': [
+            { sentence: "I am no bird.", translation: "나는 새가 아니야.", difficulty: 'easy' },
+            { sentence: "Reader, I married him.", translation: "독자여, 나는 그와 결혼했다.", difficulty: 'easy' },
+            { sentence: "Do you think I am an automaton?", translation: "내가 자동기계라고 생각해?", difficulty: 'easy' },
+            { sentence: "I care for myself.", translation: "나는 나 자신을 돌봐.", difficulty: 'easy' },
+            { sentence: "I have lived a full life here.", translation: "여기서 충만한 삶을 살았어.", difficulty: 'easy' }
+        ],
+        'Wuthering Heights': [
+            { sentence: "I cannot live without my life!", translation: "내 삶 없이는 살 수 없어!", difficulty: 'easy' },
+            { sentence: "Whatever our souls are made of.", translation: "우리 영혼이 무엇으로 만들어졌든.", difficulty: 'easy' },
+            { sentence: "I am Heathcliff!", translation: "나는 히스클리프야!", difficulty: 'easy' },
+            { sentence: "Be with me always.", translation: "항상 나와 함께 있어.", difficulty: 'easy' },
+            { sentence: "I cannot express it.", translation: "표현할 수 없어.", difficulty: 'easy' }
+        ],
+        'Little Women': [
+            { sentence: "I want to do something splendid.", translation: "멋진 일을 하고 싶어.", difficulty: 'easy' },
+            { sentence: "I'll try and be what he loves.", translation: "그가 사랑하는 사람이 되려고 노력할게.", difficulty: 'easy' },
+            { sentence: "I am not afraid of storms.", translation: "폭풍이 무섭지 않아.", difficulty: 'easy' },
+            { sentence: "Love alone is a beautiful thing.", translation: "사랑만으로도 아름다운 거야.", difficulty: 'easy' },
+            { sentence: "I'd rather take coffee than compliments.", translation: "칭찬보다는 커피를 마시고 싶어.", difficulty: 'easy' }
+        ],
+        'Anne of Green Gables': [
+            { sentence: "Tomorrow is always fresh.", translation: "내일은 항상 새로워.", difficulty: 'easy' },
+            { sentence: "I'm so glad I live in a world.", translation: "이런 세상에 살아서 기뻐.", difficulty: 'easy' },
+            { sentence: "Kindred spirits are not so scarce.", translation: "마음이 통하는 사람은 드물지 않아.", difficulty: 'easy' },
+            { sentence: "It's been my experience.", translation: "내 경험으로는.", difficulty: 'easy' },
+            { sentence: "I love bright red geraniums.", translation: "밝은 빨간 제라늄을 좋아해.", difficulty: 'easy' }
+        ]        
     },
     quotes: {
         'Motivational': [
@@ -133,7 +273,54 @@ const CONTENT_DATABASE = {
             { sentence: "A dream is a wish.", translation: "꿈은 소원이다.", difficulty: 'medium' },
             { sentence: "Part of your world.", translation: "당신 세상의 일부.", difficulty: 'easy' },
             { sentence: "Tale as old as time.", translation: "시간만큼 오래된 이야기.", difficulty: 'hard' },
-            { sentence: "You ain't never had a friend.", translation: "나 같은 친구는 한 번도 없었을 거야.", difficulty: 'medium' }
+            { sentence: "You ain't never had a friend.", translation: "나 같은 친구는 한 번도 없었을 거야.", difficulty: 'medium' },
+            { sentence: "When you wish upon a star.", translation: "별에게 소원을 빌 때.", difficulty: 'easy' },
+            { sentence: "Bibbidi bobbidi boo.", translation: "비비디 바비디 부.", difficulty: 'easy' },
+            { sentence: "Have courage and be kind.", translation: "용기를 갖고 친절하게.", difficulty: 'easy' },
+            { sentence: "Dreams come true.", translation: "꿈이 이루어져.", difficulty: 'easy' },
+            { sentence: "Magic mirror on the wall.", translation: "벽에 걸린 마법 거울.", difficulty: 'easy' },
+            { sentence: "Heigh ho, heigh ho.", translation: "하이호, 하이호.", difficulty: 'easy' },
+            { sentence: "Some day my prince will come.", translation: "언젠가 내 왕자가 올 거야.", difficulty: 'easy' },
+            { sentence: "Whistle while you work.", translation: "일하면서 휘파람을 불어.", difficulty: 'easy' },
+            { sentence: "I'm wishing for the one I love.", translation: "내가 사랑하는 사람을 위해 소원을 빌어.", difficulty: 'easy' },
+            { sentence: "Look for the bare necessities.", translation: "꼭 필요한 것들을 찾아봐.", difficulty: 'easy' },
+            { sentence: "Try the grey stuff, it's delicious.", translation: "회색 것을 먹어봐, 맛있어.", difficulty: 'easy' },
+            { sentence: "I've got a dream.", translation: "나에게는 꿈이 있어.", difficulty: 'easy' },
+            { sentence: "Mother knows best.", translation: "엄마가 가장 잘 알아.", difficulty: 'easy' },
+            { sentence: "I see the light.", translation: "빛이 보여.", difficulty: 'easy' },
+            { sentence: "At last I see the light.", translation: "마침내 빛이 보여.", difficulty: 'easy' },
+            { sentence: "We know the way.", translation: "우리는 길을 알아.", difficulty: 'easy' },
+            { sentence: "How far I'll go.", translation: "얼마나 멀리 갈지.", difficulty: 'easy' },
+            { sentence: "The ocean chose you.", translation: "바다가 너를 선택했어.", difficulty: 'easy' },
+            { sentence: "You're welcome.", translation: "천만에.", difficulty: 'easy' },
+            { sentence: "What can I say except you're welcome.", translation: "천만에라고 말하는 것 외에 뭘 할까.", difficulty: 'easy' },
+            { sentence: "True love's kiss.", translation: "진정한 사랑의 키스.", difficulty: 'easy' },
+            { sentence: "Love is an open door.", translation: "사랑은 열린 문이야.", difficulty: 'easy' },
+            { sentence: "Some people are worth melting for.", translation: "어떤 사람들은 녹을 가치가 있어.", difficulty: 'easy' },
+            { sentence: "In summer I'll be happy.", translation: "여름에는 행복할 거야.", difficulty: 'easy' },
+            { sentence: "Do you want to build a snowman?", translation: "눈사람 만들래?", difficulty: 'easy' },
+            { sentence: "The sky is awake.", translation: "하늘이 깨어났어.", difficulty: 'easy' },
+            { sentence: "I'm Anna by the way.", translation: "그런데 나는 안나야.", difficulty: 'easy' },
+            { sentence: "Oh yes, the past can hurt.", translation: "오 그래, 과거는 아플 수 있어.", difficulty: 'easy' },
+            { sentence: "Can you feel the love tonight.", translation: "오늘 밤 사랑을 느낄 수 있어.", difficulty: 'easy' },
+            { sentence: "It means no worries.", translation: "걱정 없다는 뜻이야.", difficulty: 'easy' },
+            { sentence: "Remember who you are.", translation: "네가 누구인지 기억해.", difficulty: 'easy' },
+            { sentence: "The stars are calling me.", translation: "별들이 나를 부르고 있어.", difficulty: 'easy' },
+            { sentence: "Adventure is out there.", translation: "모험이 저기 있어.", difficulty: 'easy' },
+            { sentence: "Thanks for the adventure.", translation: "모험을 주셔서 감사해요.", difficulty: 'easy' },
+            { sentence: "You are my greatest adventure.", translation: "당신이 내 최고의 모험이에요.", difficulty: 'easy' },
+            { sentence: "If you can dream it, you can do it.", translation: "꿈꿀 수 있다면, 할 수 있어.", difficulty: 'easy' },
+            { sentence: "All it takes is faith and trust.", translation: "필요한 건 믿음과 신뢰뿐이야.", difficulty: 'easy' },
+            { sentence: "Think happy thoughts.", translation: "행복한 생각을 해.", difficulty: 'easy' },
+            { sentence: "Second star to the right.", translation: "오른쪽 두 번째 별.", difficulty: 'easy' },
+            { sentence: "I can show you the world.", translation: "세상을 보여줄 수 있어.", difficulty: 'easy' },
+            { sentence: "Shining, shimmering, splendid.", translation: "빛나고, 반짝이고, 화려해.", difficulty: 'easy' },
+            { sentence: "A diamond in the rough.", translation: "거친 곳의 다이아몬드.", difficulty: 'easy' },
+            { sentence: "Prince Ali, fabulous he.", translation: "알리 왕자, 그는 멋져.", difficulty: 'easy' },
+            { sentence: "Friend like me.", translation: "나 같은 친구.", difficulty: 'easy' },
+            { sentence: "Ten thousand years.", translation: "만 년이야.", difficulty: 'easy' },
+            { sentence: "Phenomenal cosmic powers.", translation: "경이로운 우주의 힘.", difficulty: 'easy' },
+            { sentence: "Beauty and the Beast.", translation: "미녀와 야수.", difficulty: 'easy' }                        
         ],
         'Pop': [
             { sentence: "Hello, is it me you're looking for?", translation: "안녕, 당신이 찾고 있는 게 나야?", difficulty: 'medium' },
@@ -229,7 +416,73 @@ const CONTENT_DATABASE = {
             { sentence: "How long will you stay?", translation: "얼마나 머무실 건가요?", difficulty: 'medium' },
             { sentence: "I'm here for tourism.", translation: "관광하러 왔습니다.", difficulty: 'medium' },
             { sentence: "Please show your passport.", translation: "여권을 보여주세요.", difficulty: 'hard' }
-        ]
+        ],
+        'Shopping': [
+            { sentence: "How much does this cost?", translation: "이게 얼마예요?", difficulty: 'easy' },
+            { sentence: "Can I try this on?", translation: "이거 입어봐도 돼요?", difficulty: 'easy' },
+            { sentence: "Do you have this in small?", translation: "이거 작은 사이즈 있어요?", difficulty: 'easy' },
+            { sentence: "I'm just looking.", translation: "그냥 구경만 하고 있어요.", difficulty: 'easy' },
+            { sentence: "Where is the fitting room?", translation: "탈의실이 어디예요?", difficulty: 'easy' },
+            { sentence: "I'll take this one.", translation: "이걸로 할게요.", difficulty: 'easy' },
+            { sentence: "Do you accept credit cards?", translation: "신용카드 받나요?", difficulty: 'easy' },
+            { sentence: "Can I get a receipt?", translation: "영수증 받을 수 있나요?", difficulty: 'easy' },
+            { sentence: "Is there a discount?", translation: "할인 있나요?", difficulty: 'easy' },
+            { sentence: "What time do you close?", translation: "몇 시에 문 닫아요?", difficulty: 'easy' },
+            { sentence: "Do you have other colors?", translation: "다른 색깔 있어요?", difficulty: 'easy' },
+            { sentence: "This is too expensive.", translation: "이거 너무 비싸요.", difficulty: 'easy' },
+            { sentence: "Can you wrap this up?", translation: "포장해 주시겠어요?", difficulty: 'easy' },
+            { sentence: "I'm looking for a gift.", translation: "선물을 찾고 있어요.", difficulty: 'easy' },
+            { sentence: "What's on sale today?", translation: "오늘 뭐가 세일해요?", difficulty: 'easy' },
+            { sentence: "Can I return this?", translation: "이거 반품할 수 있나요?", difficulty: 'easy' },
+            { sentence: "Do you have a bigger size?", translation: "더 큰 사이즈 있어요?", difficulty: 'easy' },
+            { sentence: "I need a bag.", translation: "쇼핑백 필요해요.", difficulty: 'easy' },
+            { sentence: "Where can I pay?", translation: "어디서 계산해요?", difficulty: 'easy' },
+            { sentence: "Thank you for your help.", translation: "도와주셔서 감사해요.", difficulty: 'easy' }
+        ],
+        'Transportation': [
+            { sentence: "Where is the bus stop?", translation: "버스 정류장이 어디예요?", difficulty: 'easy' },
+            { sentence: "How much is the fare?", translation: "요금이 얼마예요?", difficulty: 'easy' },
+            { sentence: "Does this bus go downtown?", translation: "이 버스 시내 가나요?", difficulty: 'easy' },
+            { sentence: "When does the next train come?", translation: "다음 기차 언제 와요?", difficulty: 'easy' },
+            { sentence: "I'd like a round trip ticket.", translation: "왕복표 주세요.", difficulty: 'easy' },
+            { sentence: "Which platform is it?", translation: "몇 번 플랫폼이에요?", difficulty: 'easy' },
+            { sentence: "Can you call me a taxi?", translation: "택시 불러주시겠어요?", difficulty: 'easy' },
+            { sentence: "How long does it take?", translation: "얼마나 걸려요?", difficulty: 'easy' },
+            { sentence: "Is this seat taken?", translation: "이 자리 누가 앉아요?", difficulty: 'easy' },
+            { sentence: "Excuse me, this is my stop.", translation: "죄송해요, 여기서 내려요.", difficulty: 'easy' },
+            { sentence: "Where can I buy tickets?", translation: "어디서 표 사요?", difficulty: 'easy' },
+            { sentence: "Is there a subway map?", translation: "지하철 노선도 있어요?", difficulty: 'easy' },
+            { sentence: "What time is the last train?", translation: "막차가 몇 시예요?", difficulty: 'easy' },
+            { sentence: "Can you help me with directions?", translation: "길 좀 알려주시겠어요?", difficulty: 'easy' },
+            { sentence: "I'm going to the airport.", translation: "공항에 가요.", difficulty: 'easy' },
+            { sentence: "How often do buses run?", translation: "버스가 얼마나 자주 와요?", difficulty: 'easy' },
+            { sentence: "Do I need to transfer?", translation: "갈아타야 해요?", difficulty: 'easy' },
+            { sentence: "Can you slow down please?", translation: "천천히 가주시겠어요?", difficulty: 'easy' },
+            { sentence: "Stop here, please.", translation: "여기서 세워주세요.", difficulty: 'easy' },
+            { sentence: "Keep the change.", translation: "잔돈은 가지세요.", difficulty: 'easy' }
+        ],
+        'Hotel & Accommodation': [
+            { sentence: "I have a reservation.", translation: "예약했어요.", difficulty: 'easy' },
+            { sentence: "Can I see the room first?", translation: "방 먼저 볼 수 있나요?", difficulty: 'easy' },
+            { sentence: "What time is breakfast?", translation: "아침식사가 몇 시예요?", difficulty: 'easy' },
+            { sentence: "Can I have an extra towel?", translation: "수건 하나 더 주시겠어요?", difficulty: 'easy' },
+            { sentence: "The air conditioning doesn't work.", translation: "에어컨이 안 돼요.", difficulty: 'easy' },
+            { sentence: "Can you wake me at seven?", translation: "7시에 깨워주시겠어요?", difficulty: 'easy' },
+            { sentence: "Where is the elevator?", translation: "엘리베이터가 어디예요?", difficulty: 'easy' },
+            { sentence: "Is there a gym in the hotel?", translation: "호텔에 헬스장 있어요?", difficulty: 'easy' },
+            { sentence: "Can I store my luggage here?", translation: "여기 짐 맡길 수 있나요?", difficulty: 'easy' },
+            { sentence: "What's the Wi-Fi password?", translation: "와이파이 비밀번호가 뭐예요?", difficulty: 'easy' },
+            { sentence: "Is breakfast included?", translation: "아침식사 포함이에요?", difficulty: 'easy' },
+            { sentence: "Can I have a late checkout?", translation: "늦게 체크아웃할 수 있나요?", difficulty: 'easy' },
+            { sentence: "The TV doesn't work.", translation: "TV가 안 돼요.", difficulty: 'easy' },
+            { sentence: "Can I get room service?", translation: "룸서비스 시킬 수 있나요?", difficulty: 'easy' },
+            { sentence: "Where can I park my car?", translation: "차를 어디에 주차해요?", difficulty: 'easy' },
+            { sentence: "Is there a swimming pool?", translation: "수영장 있어요?", difficulty: 'easy' },
+            { sentence: "Can you recommend a restaurant?", translation: "식당 추천해 주시겠어요?", difficulty: 'easy' },
+            { sentence: "I lost my room key.", translation: "방 열쇠를 잃어버렸어요.", difficulty: 'easy' },
+            { sentence: "Can I change rooms?", translation: "방 바꿀 수 있나요?", difficulty: 'easy' },
+            { sentence: "Thank you for your service.", translation: "서비스 감사합니다.", difficulty: 'easy' }
+        ]        
     }
 };
 
