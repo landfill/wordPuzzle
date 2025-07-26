@@ -577,7 +577,7 @@ html {
     border-radius: 6px;
     cursor: pointer;
     font-size: 1em;
-    font-weight: 600;
+    font-weight: 500;
     user-select: none;
     transition: all 0.1s ease;
     flex: 1;
@@ -624,23 +624,28 @@ html {
 }
 
 .blank-nav-btn {
-    background: linear-gradient(135deg, #8998e8, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 20px;
+    background: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     font-size: 1.1em;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: all 0.1s ease;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
     flex: 1;
     min-width: 0;
     max-width: 50px;
     padding: 8px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .blank-nav-btn:hover {
+    background: #f7fafc;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal {
@@ -1051,6 +1056,17 @@ body.dark-mode {
 .dark-mode .key.disabled {
     background: rgba(45, 55, 72, 0.5);
     color: #4a5568;
+}
+
+.dark-mode .blank-nav-btn {
+    background: rgba(74, 85, 104, 0.6);
+    border: 1px solid rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
+.dark-mode .blank-nav-btn:hover {
+    background: rgba(74, 85, 104, 0.8);
+    border-color: rgba(113, 128, 150, 0.6);
 }
 
 .dark-mode .modal-content {
