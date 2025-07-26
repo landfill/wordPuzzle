@@ -47,7 +47,7 @@ html {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
-    max-width: 800px;
+    max-width: min(800px, calc(100vw - 20px));
     backdrop-filter: blur(12px);
     
     height: 680px;
@@ -116,7 +116,7 @@ html {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
-    max-width: 800px;
+    max-width: min(800px, calc(100vw - 20px));
     backdrop-filter: blur(12px);
     box-sizing: border-box;
     display: grid;
@@ -1090,11 +1090,17 @@ body.dark-mode {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+    
     /* 모바일에서 카테고리 화면 높이 조정 */
     .category-container {
         height: 95vh;
         max-height: 700px;
         padding: 20px;
+        width: calc(100% - 10px);
+        max-width: calc(100vw - 10px);
     }
     
     /* ADDED: Forces a 2-column layout on mobile to prevent scrolling */
@@ -1106,6 +1112,9 @@ body.dark-mode {
     .game-container {
         height: 95vh;
         max-height: 700px;
+        width: calc(100% - 20px);
+        max-width: calc(100vw - 20px);
+        margin: 0 auto;
     }
     
     .game-header {
