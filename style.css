@@ -1057,6 +1057,16 @@ body.dark-mode {
     color: #e2e8f0;
 }
 
+.dark-mode .game-header {
+    background: rgba(45, 55, 72, 0.8);
+    border-bottom-color: rgba(113, 128, 150, 0.3);
+}
+
+.dark-mode .game-footer {
+    background: rgba(45, 55, 72, 0.8);
+    border-top-color: rgba(113, 128, 150, 0.3);
+}
+
 /* 모바일 가상 키보드 활성화 상태 */
 .game-container.mobile-keyboard-active {
     max-height: none !important;
