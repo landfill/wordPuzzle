@@ -1,5 +1,6 @@
 import ContentGenerator from './content-generator.js';
 import CONTENT_DATABASE from './content-database.js';
+import DataManager from './data-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reviewBtn = document.getElementById('review-btn');
     const nextProblemBtn = document.getElementById('next-problem-btn');
     const listenBtn = document.getElementById('listen-btn');
+    const saveSentenceBtn = document.getElementById('save-sentence-btn'); // Phase 2
     const retrySameBtn = document.getElementById('retry-same-btn');
     const retryNewBtn = document.getElementById('retry-new-btn');
     const goHomeBtn = document.getElementById('go-home-btn');
@@ -116,6 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Phase 2: 데이터 매니저 초기화
+    const dataManager = new DataManager();
+    let gameStartTime = null; // 게임 시작 시간 추적
+
     const keyboardLayout = [
         ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
@@ -136,6 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame(category) {
         console.log('Starting game with category:', category);
         selectedCategory = category;
+        
+        // Phase 2: 게임 시작 데이터 기록
+        dataManager.recordGameStart(category);
+        gameStartTime = Date.now();
+        
         changeGameState(GameState.PLAYING);
         initializeProgress();
         initializeGame();
@@ -661,6 +672,18 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 blank.classList.remove('incorrect');
                 if (lives <= 0) {
+                    // Phase 2: 게임 실패 데이터 기록
+                    const playTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
+                    
+                    dataManager.recordGameCompletion({
+                        category: selectedCategory,
+                        score: 0,
+                        hintsUsed: hintsUsed,
+                        isSuccess: false,
+                        problemData: currentProblem,
+                        playTime: playTime
+                    });
+                    
                     changeGameState(GameState.GAME_OVER);
                     gameOverModal.style.display = 'flex';
                 }
@@ -686,6 +709,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 점수 및 힌트 사용량 표시
         updateSuccessModalScore();
+        
+        // Phase 2: 게임 완료 데이터 기록
+        const playTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
+        const score = calculateScore();
+        
+        dataManager.recordGameCompletion({
+            category: selectedCategory,
+            score: score,
+            hintsUsed: hintsUsed,
+            isSuccess: true,
+            problemData: currentProblem,
+            playTime: playTime
+        });
+        
+        // Phase 2: 저장 버튼 상태 업데이트
+        updateSaveSentenceButton();
         
         successModal.style.display = 'flex';
     }
@@ -1443,6 +1482,49 @@ ${problem.translation}
         });
     }
     
+    // Phase 2: 문장 저장 기능
+    function saveSentence() {
+        if (!currentProblem) return;
+        
+        const saved = dataManager.saveSentence(currentProblem);
+        
+        if (saved) {
+            // 저장 성공
+            saveSentenceBtn.textContent = '✅ 저장됨';
+            saveSentenceBtn.disabled = true;
+            saveSentenceBtn.style.opacity = '0.7';
+            
+            // 성공 피드백 (선택적)
+            triggerHapticFeedback('light');
+            
+            // 3초 후 메시지 표시
+            setTimeout(() => {
+                console.log('문장이 저장되었습니다!');
+            }, 100);
+        } else {
+            // 이미 저장된 문장
+            saveSentenceBtn.textContent = '이미 저장됨';
+            saveSentenceBtn.disabled = true;
+            saveSentenceBtn.style.opacity = '0.7';
+        }
+    }
+    
+    function updateSaveSentenceButton() {
+        if (!currentProblem || !saveSentenceBtn) return;
+        
+        const isSaved = dataManager.isSentenceSaved(currentProblem.sentence);
+        
+        if (isSaved) {
+            saveSentenceBtn.textContent = '✅ 저장됨';
+            saveSentenceBtn.disabled = true;
+            saveSentenceBtn.style.opacity = '0.7';
+        } else {
+            saveSentenceBtn.textContent = '💾 저장하기';
+            saveSentenceBtn.disabled = false;
+            saveSentenceBtn.style.opacity = '1';
+        }
+    }
+
     // 공유 버튼 이벤트 리스너
     if (shareBtn) {
         shareBtn.addEventListener('click', shareResult);
@@ -1454,6 +1536,11 @@ ${problem.translation}
     
     if (screenshotBtn) {
         screenshotBtn.addEventListener('click', saveScreenshot);
+    }
+    
+    // Phase 2: 저장하기 버튼 이벤트 리스너
+    if (saveSentenceBtn) {
+        saveSentenceBtn.addEventListener('click', saveSentence);
     }
     
     // 다크모드 토글 이벤트 리스너

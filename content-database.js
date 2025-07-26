@@ -110,8 +110,7 @@ const CONTENT_DATABASE = {
             { sentence: "Yo, Adrian!", translation: "요, 에이드리언!", difficulty: 'easy' },
             { sentence: "I'm gonna fly now.", translation: "이제 날 거야.", difficulty: 'easy' },
             { sentence: "Going the distance.", translation: "끝까지 가는 거야.", difficulty: 'easy' },
-            { sentence: "It ain't about how hard you hit.", translation: "얼마나 세게 치느냐가 아니야.", difficulty: 'easy' },
-            { sentence: "Win!", translation: "이겨!", difficulty: 'easy' }
+            { sentence: "It ain't about how hard you hit.", translation: "얼마나 세게 치느냐가 아니야.", difficulty: 'easy' }
         ],
         'Home Alone': [
             { sentence: "Keep the change, ya filthy animal.", translation: "잔돈은 가져, 더러운 놈아.", difficulty: 'easy' },
@@ -124,8 +123,7 @@ const CONTENT_DATABASE = {
             { sentence: "You're gonna need a bigger boat.", translation: "더 큰 배가 필요할 거야.", difficulty: 'easy' },
             { sentence: "Smile, you son of a gun.", translation: "웃어, 이 자식아.", difficulty: 'easy' },
             { sentence: "We're gonna catch this shark.", translation: "이 상어를 잡을 거야.", difficulty: 'easy' },
-            { sentence: "Here's Johnny!", translation: "여기 조니야!", difficulty: 'easy' },
-            { sentence: "Shark!", translation: "상어!", difficulty: 'easy' }
+            { sentence: "Here's Johnny!", translation: "여기 조니야!", difficulty: 'easy' }
         ]
     },
     books: {
