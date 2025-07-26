@@ -231,6 +231,26 @@ class DataManager {
         });
     }
 
+    // timestamp로 저장된 문장 삭제
+    removeSavedSentenceByTimestamp(timestamp) {
+        return this.updateUserData(data => {
+            const index = data.savedSentences.findIndex(saved => saved.timestamp === timestamp);
+            if (index !== -1) {
+                data.savedSentences.splice(index, 1);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // 저장된 문장 목록 전체 업데이트
+    updateSavedSentences(newSentences) {
+        return this.updateUserData(data => {
+            data.savedSentences = newSentences;
+            return true;
+        });
+    }
+
     // 문장이 이미 저장되어 있는지 확인
     isSentenceSaved(sentence) {
         const userData = this.getUserData();

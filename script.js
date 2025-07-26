@@ -90,6 +90,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let isReading = false;
     let browserVoices = [];
     let selectedCategory = 'all';
+    
+    // 카테고리 표시명 매핑
+    const categoryDisplayNames = {
+        'movies': 'Movies',
+        'songs': 'Songs', 
+        'books': 'Books',
+        'quotes': 'Quotes',
+        'daily_travel_phrases': 'Travel',
+        'all': 'Random Mix'
+    };
+    
+    // 게임 제목을 카테고리에 맞게 업데이트하는 함수
+    function updateGameTitle(category) {
+        const gameTitle = document.querySelector('.game-title');
+        if (gameTitle) {
+            const displayName = categoryDisplayNames[category] || 'Word Crack';
+            gameTitle.textContent = displayName;
+        }
+    }
     let initialViewportHeight = window.innerHeight; // 모바일 가상 키보드 감지용
     let isReviewMode = false; // 검토 모드 상태
     let currentProblemNumber = 1; // 현재 문제 번호
@@ -185,6 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame(category) {
         console.log('Starting game with category:', category);
         selectedCategory = category;
+        
+        // 게임 제목을 카테고리에 맞게 업데이트
+        updateGameTitle(category);
         
         // Phase 2: 게임 시작 데이터 기록
         dataManager.recordGameStart(category);
@@ -960,7 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateSourceDisplay(p) {
-        sourceDisplay.textContent = `${p.source} (${p.category})`;
+        sourceDisplay.textContent = p.source;
     }
     
     function updateLivesDisplay() {
@@ -1722,8 +1744,8 @@ ${problem.translation}
                             <div class="category-name">${categoryNames[category]}</div>
                         </div>
                         <div class="category-stats">
-                            <span>완료: ${progress.completed}/${progress.attempted}</span>
-                            <span>최고점: ${progress.bestScore}</span>
+                            <span>해결: ${progress.completed}건</span>
+                            <span></span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${completionRate}%"></div>
@@ -2288,17 +2310,16 @@ ${problem.translation}
     
     // 저장된 문장 삭제 함수 (전역 함수로 만들기 위해 window에 등록)
     window.deleteSavedSentence = function(timestamp) {
-        if (confirm('이 문장을 삭제하시겠습니까?')) {
-            const savedSentences = dataManager.getSavedSentences();
-            const updatedSentences = savedSentences.filter(sentence => sentence.timestamp !== timestamp);
-            
-            // 로컬 스토리지 업데이트
-            localStorage.setItem('wordcrack_saved_sentences', JSON.stringify(updatedSentences));
-            
+        // DataManager를 통해 삭제 (로컬스토리지도 자동 갱신됨)
+        const success = dataManager.removeSavedSentenceByTimestamp(timestamp);
+        
+        if (success) {
             // UI 업데이트
+            const updatedSentences = dataManager.getSavedSentences();
             updateSavedSentences(updatedSentences);
-            
             console.log('✅ 문장 삭제 완료:', timestamp);
+        } else {
+            console.error('❌ 문장 삭제 실패:', timestamp);
         }
     };
     

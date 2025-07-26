@@ -14,7 +14,6 @@
     <div id="category-selection-screen" class="screen">
       <div class="category-container">
         <div class="category-header">
-          <h1>Word Crack</h1>
           <div class="header-buttons">
             <!-- Phase 3: 글로벌 리더보드 버튼 (Feature Flag로 제어) -->
             <button id="global-leaderboard-btn" class="global-leaderboard-btn" title="Global Leaderboard" style="display: none;">
@@ -31,12 +30,7 @@
             <div id="auth-section" class="auth-section" style="display: none;">
               <!-- 로그인 전 상태 -->
               <button id="login-btn" class="login-btn" title="Google 로그인">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M21.8,12c0-0.7-0.1-1.4-0.2-2H12v4h5.5c-0.2,1.2-1,2.3-2.1,3v2.5h3.4C20.3,17.8,21.8,15.1,21.8,12z" fill="#4285F4"/>
-                  <path d="M12,22c2.9,0,5.3-1,7.1-2.6l-3.4-2.5c-1,0.7-2.2,1.1-3.7,1.1c-2.8,0-5.2-1.9-6.1-4.5H2.2v2.6C4,19.1,7.7,22,12,22z" fill="#34A853"/>
-                  <path d="M5.9,13.5c-0.2-0.7-0.4-1.4-0.4-2.5s0.1-1.8,0.4-2.5V5.9H2.2C1.4,7.7,1,9.8,1,12s0.4,4.3,1.2,6.1L5.9,13.5z" fill="#FBBC05"/>
-                  <path d="M12,4.8c1.6,0,3,0.6,4.1,1.7l3.1-3.1C17.3,1.7,14.9,1,12,1C7.7,1,4,3.9,2.2,8.1l3.7,2.6C6.8,7.7,9.2,4.8,12,4.8z" fill="#EA4335"/>
-                </svg>
+                <span class="google-icon">G</span>
               </button>
               <!-- 로그인 후 상태 -->
               <div id="user-profile" class="user-profile" style="display: none;">
@@ -59,6 +53,7 @@
           </button>
           </div>
         </div>
+        <h1 class="main-title">Word Crack</h1>
         <p class="subtitle">카테고리를 선택하여 퀴즈를 시작하세요!</p>
         <div class="category-grid">
           <div class="category-card" data-category="movies">
@@ -114,8 +109,7 @@
             </div>
             <button id="dark-mode-toggle" title="다크모드 토글">
               <svg viewBox="0 0 24 24" class="sun-icon">
-                <path d="M12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm0-10c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
-                <path d="M12 2l.35 3.5L15.5 4l-1.15 3.35L18 6.5l-3.5.85L15.5 11l-3.35-1.15L11 13.5l-.85-3.5L7 11l1.15-3.35L5 6.5l3.5-.85L7.5 2l3.35 1.15L12 2z"/>
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
               </svg>
               <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>

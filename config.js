@@ -19,6 +19,7 @@ export const CONFIG = {
     API_BASE_URL: 'https://wordcrack-api.letthelightsurroundyou.workers.dev',
     
     // 구글 OAuth
+    // Note: OAuth Client ID는 공개되어도 안전합니다. 실제 보안은 백엔드 토큰 검증과 도메인 제한으로 처리됩니다.
     GOOGLE_CLIENT_ID: '540419254124-4olc827vud509n2mbpsm6e9ac1or4dha.apps.googleusercontent.com',
     
     // 로컬 스토리지 키

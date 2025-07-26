@@ -201,8 +201,8 @@ html {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     background: transparent;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
@@ -235,7 +235,7 @@ html {
     display: flex;
     align-items: center;
     gap: 2px;
-    height: 38px;
+    height: 36px;
 }
 
 .progress-indicator {
@@ -884,58 +884,64 @@ html {
 
 /* 다크모드 토글 버튼과 헤더 스타일 */
 .category-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    position: relative;
     width: 100%;
-    margin-bottom: 10px;
+    height: 40px;
+    margin-bottom: 20px;
+    margin-top: -20px;
+    flex-shrink: 0;
 }
 
-.category-header h1 {
-    margin: 0;
+.main-title {
+    margin: 0 0 20px 0;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 0;
 }
 
 .dark-mode-toggle {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    width: 40px;
-    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    color: #333;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #4a5568;
 }
 
 .dark-mode-toggle:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 #dark-mode-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    width: 36px;
-    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    color: #333;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #718096;
 }
 
 #dark-mode-toggle:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 #dark-mode-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
 }
 
@@ -1117,6 +1123,25 @@ body.dark-mode {
 .dark-mode #dark-mode-toggle:hover {
     background: rgba(113, 128, 150, 0.3);
     color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* Dark mode button border updates */
+.dark-mode .global-leaderboard-btn,
+.dark-mode .dashboard-btn,
+.dark-mode .login-btn {
+    background: rgba(113, 128, 150, 0.2);
+    border: 2px solid rgba(113, 128, 150, 0.4);
+    color: #a0aec0;
+}
+
+
+
+.dark-mode .dark-mode-toggle,
+.dark-mode #dark-mode-toggle {
+    background: rgba(113, 128, 150, 0.2);
+    border: 2px solid rgba(113, 128, 150, 0.4);
+    color: #a0aec0;
 }
 
 .dark-mode .game-title {
@@ -1520,16 +1545,18 @@ body.dark-mode {
 }
 
 .back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
 }
 
 .back-btn:hover {
@@ -1537,26 +1564,36 @@ body.dark-mode {
 }
 
 .dashboard-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .dashboard-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.dashboard-btn:active {
+    transform: translateY(0);
 }
 
 .header-buttons {
     display: flex;
     align-items: center;
     gap: 12px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
 }
 
 .dashboard-content {
@@ -1663,7 +1700,7 @@ body.dark-mode {
 
 .category-progress-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
@@ -1850,7 +1887,7 @@ body.dark-mode {
     }
 
     .category-progress-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 }
@@ -1871,20 +1908,25 @@ body.dark-mode {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 75%, #EA4335 100%);
-    border: none;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    color: white;
+    color: #333;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+}
+
+.google-icon {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Arial', sans-serif;
 }
 
 .login-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4);
 }
 
 .login-btn:active {
@@ -1946,20 +1988,19 @@ body.dark-mode {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    color: white;
+    color: #333;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .global-leaderboard-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .global-leaderboard-btn:active {
@@ -1968,14 +2009,13 @@ body.dark-mode {
 }
 
 /* 다크모드 대응 */
-body.dark-mode .login-btn {
-    background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 75%, #EA4335 100%);
-    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
-}
 
-body.dark-mode .login-btn:hover {
+.dark-mode .global-leaderboard-btn:hover,
+.dark-mode .dashboard-btn:hover,
+.dark-mode .login-btn:hover {
+    background: rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.5);
 }
 
 body.dark-mode .user-profile {
@@ -2455,4 +2495,17 @@ body.dark-mode .score {
     .score {
         font-size: 16px;
     }
+}
+
+/* 다크모드에서 메인화면 아이콘 위치 고정 */
+.dark-mode .header-buttons {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+}
+
+.dark-mode .category-header {
+    margin-top: -20px !important;
+    height: 40px !important;
+    position: relative !important;
 }
