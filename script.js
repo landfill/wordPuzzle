@@ -1951,6 +1951,18 @@ ${problem.translation}
     authManager.on('logout', onUserLogout);
     authManager.on('error', onAuthError);
     
+    // 페이지 로드 시 기존 로그인 상태 확인
+    setTimeout(() => {
+        if (authManager.isLoggedIn()) {
+            const user = authManager.getUser();
+            console.log('📋 페이지 로드 시 기존 로그인 상태 감지:', user);
+            updateAuthUI(true, user);
+        } else {
+            console.log('📋 페이지 로드 시 로그아웃 상태');
+            updateAuthUI(false);
+        }
+    }, 1000); // AuthManager 초기화 완료 대기
+    
     // 다크모드 초기화
     initializeDarkMode();
     
@@ -2130,22 +2142,51 @@ ${problem.translation}
     
     // 인증 UI 업데이트
     function updateAuthUI(isLoggedIn, user = null) {
-        if (!loginBtn || !userProfile) return;
+        console.log('🎨 updateAuthUI 호출:', { isLoggedIn, user });
+        console.log('🔍 DOM 요소 확인:', { 
+            loginBtn: !!loginBtn, 
+            userProfile: !!userProfile, 
+            userAvatar: !!userAvatar, 
+            userName: !!userName 
+        });
+        
+        if (!loginBtn || !userProfile) {
+            console.error('❌ 필수 DOM 요소를 찾을 수 없음');
+            return;
+        }
         
         if (isLoggedIn && user) {
+            console.log('✅ 로그인 상태 UI 적용 중...');
             // 로그인 상태 UI
             loginBtn.style.display = 'none';
             userProfile.style.display = 'flex';
             
             if (userAvatar && (user.avatar_url || user.avatar)) {
-                userAvatar.src = user.avatar_url || user.avatar;
+                const avatarUrl = user.avatar_url || user.avatar;
+                console.log('🖼️ 아바타 설정:', avatarUrl);
+                userAvatar.src = avatarUrl;
                 userAvatar.style.display = 'block';
+                
+                // 이미지 로드 에러 처리
+                userAvatar.onerror = () => {
+                    console.error('❌ 아바타 이미지 로드 실패:', avatarUrl);
+                    userAvatar.style.display = 'none';
+                };
+                
+                userAvatar.onload = () => {
+                    console.log('✅ 아바타 이미지 로드 성공');
+                };
+            } else {
+                console.warn('⚠️ 아바타 정보 없음:', { userAvatar: !!userAvatar, avatar: user.avatar_url || user.avatar });
             }
             
             if (userName) {
-                userName.textContent = user.display_name || 'User';
+                const displayName = user.display_name || 'User';
+                console.log('👤 사용자명 설정:', displayName);
+                userName.textContent = displayName;
             }
         } else {
+            console.log('🚪 로그아웃 상태 UI 적용 중...');
             // 로그아웃 상태 UI
             loginBtn.style.display = 'flex';
             userProfile.style.display = 'none';
