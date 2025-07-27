@@ -1953,17 +1953,24 @@ body.dark-mode {
     box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
 }
 
+/* 인증 섹션 */
+.auth-section {
+    display: flex;
+    align-items: center;
+    height: 40px; /* 주변 버튼들과 동일한 높이 */
+}
+
 /* 사용자 프로필 */
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 6px;
+    padding: 6px 10px;
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     backdrop-filter: blur(10px);
-    min-height: 40px; /* G 로그인 버튼과 동일한 높이 */
+    height: 40px; /* 주변 버튼들과 동일한 높이 */
     box-sizing: border-box;
 }
 
@@ -2489,10 +2496,14 @@ body.dark-mode .delete-sentence-btn:hover {
         height: 36px;
     }
     
+    .auth-section {
+        height: 36px; /* 모바일에서 조금 더 작게 */
+    }
+    
     .user-profile {
-        gap: 6px;
-        padding: 8px 10px;
-        min-height: 40px; /* 모바일에서도 G 로그인 버튼과 동일한 높이 유지 */
+        gap: 4px;
+        padding: 4px 8px;
+        height: 36px; /* 모바일에서 조금 더 작게 */
     }
     
     .user-avatar {
