@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'books': 'Books',
         'quotes': 'Quotes',
         'daily_travel_phrases': 'Travel',
-        'all': 'Random Mix'
+        'all': 'Random'
     };
     
     // 게임 제목을 카테고리에 맞게 업데이트하는 함수
@@ -1755,7 +1755,7 @@ ${problem.translation}
             'books': 'Books', 
             'quotes': 'Quotes',
             'daily_travel_phrases': 'Travel',
-            'all': 'Random Mix'
+            'all': 'Random'
         };
 
         const filteredCategories = Object.entries(categoryProgress)
