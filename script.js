@@ -1323,7 +1323,6 @@ ${problem.translation}
                 await copyToClipboard();
             }
         } catch (error) {
-            console.error('공유 실패:', error);
             // 에러 시 폴백: 클립보드 복사
             await copyToClipboard();
         }
@@ -1339,7 +1338,6 @@ ${problem.translation}
             await navigator.clipboard.writeText(textToCopy);
             showToast('클립보드에 복사되었습니다! 📋');
         } catch (error) {
-            console.error('클립보드 복사 실패:', error);
             showToast('복사에 실패했습니다 😅');
         }
     }
@@ -1455,7 +1453,6 @@ ${problem.translation}
             }, 'image/png', 0.9);
             
         } catch (error) {
-            console.error('스크린샷 생성 실패:', error);
             showToast('이미지 생성에 실패했습니다 😅');
         }
     }
@@ -1802,7 +1799,6 @@ ${problem.translation}
         const container = document.getElementById('saved-sentences-container');
         
         if (!container) {
-            console.error('❌ saved-sentences-container 요소를 찾을 수 없음!');
             return;
         }
         
@@ -1955,10 +1951,8 @@ ${problem.translation}
     setTimeout(() => {
         if (authManager.isLoggedIn()) {
             const user = authManager.getUser();
-            console.log('📋 페이지 로드 시 기존 로그인 상태 감지:', user);
             updateAuthUI(true, user);
         } else {
-            console.log('📋 페이지 로드 시 로그아웃 상태');
             updateAuthUI(false);
         }
     }, 1000); // AuthManager 초기화 완료 대기
@@ -1988,7 +1982,6 @@ ${problem.translation}
             globalLeaderboardBtn.style.display = isFeatureEnabled('GLOBAL_LEADERBOARD') ? 'flex' : 'none';
         }
         
-        console.log('🚩 Feature Flags 초기화 완료');
     }
     
     // 로그인 처리
@@ -1996,7 +1989,6 @@ ${problem.translation}
         try {
             await authManager.login();
         } catch (error) {
-            console.error('로그인 에러:', error);
             
             // 웹뷰 환경 에러 처리
             if (error.message.includes('웹뷰')) {
@@ -2110,13 +2102,11 @@ ${problem.translation}
         try {
             await authManager.logout();
         } catch (error) {
-            console.error('로그아웃 실패:', error);
         }
     }
     
     // 사용자 로그인 성공 이벤트
     function onUserLogin(user) {
-        console.log('✅ 사용자 로그인 성공:', user.display_name);
         updateAuthUI(true, user);
         
         // 실패한 업로드 재시도
@@ -2127,7 +2117,6 @@ ${problem.translation}
     
     // 사용자 로그아웃 이벤트
     function onUserLogout(user) {
-        console.log('👋 사용자 로그아웃:', user?.display_name);
         updateAuthUI(false);
         
         // TODO: 점수 업로드 비활성화 등 추가 로직
@@ -2135,53 +2124,38 @@ ${problem.translation}
     
     // 인증 오류 이벤트
     function onAuthError(error) {
-        console.error('❌ 인증 오류:', error);
         // 사용자에게 친화적인 오류 메시지 표시
         // 심각한 오류가 아닌 경우 조용히 처리
     }
     
     // 인증 UI 업데이트
     function updateAuthUI(isLoggedIn, user = null) {
-        console.log('🎨 updateAuthUI 호출:', { isLoggedIn, user });
-        console.log('🔍 DOM 요소 확인:', { 
-            loginBtn: !!loginBtn, 
-            userProfile: !!userProfile, 
-            userAvatar: !!userAvatar, 
-            userName: !!userName 
-        });
         
         if (!loginBtn || !userProfile) {
-            console.error('❌ 필수 DOM 요소를 찾을 수 없음');
             return;
         }
         
         if (isLoggedIn && user) {
-            console.log('✅ 로그인 상태 UI 적용 중...');
             // 로그인 상태 UI
             loginBtn.style.display = 'none';
             userProfile.style.display = 'flex';
             
             if (userAvatar && (user.avatar_url || user.avatar)) {
                 const avatarUrl = user.avatar_url || user.avatar;
-                console.log('🖼️ 아바타 설정:', avatarUrl);
                 userAvatar.src = avatarUrl;
                 userAvatar.style.display = 'block';
                 
                 // 이미지 로드 에러 처리
                 userAvatar.onerror = () => {
-                    console.error('❌ 아바타 이미지 로드 실패:', avatarUrl);
                     userAvatar.style.display = 'none';
                 };
                 
                 userAvatar.onload = () => {
-                    console.log('✅ 아바타 이미지 로드 성공');
                 };
             } else {
-                console.warn('⚠️ 아바타 정보 없음:', { userAvatar: !!userAvatar, avatar: user.avatar_url || user.avatar });
             }
             
             if (userName && user.display_name) {
-                console.log('👤 사용자명 설정:', user.display_name);
                 userName.textContent = user.display_name;
             } else if (userName) {
                 // display_name이 없으면 사용자명 숨김
@@ -2189,7 +2163,6 @@ ${problem.translation}
                 userName.style.display = 'none';
             }
         } else {
-            console.log('🚪 로그아웃 상태 UI 적용 중...');
             // 로그아웃 상태 UI
             loginBtn.style.display = 'flex';
             userProfile.style.display = 'none';
@@ -2207,7 +2180,6 @@ ${problem.translation}
     // 글로벌 리더보드 표시
     function showGlobalLeaderboard() {
         if (!isFeatureEnabled('LEADERBOARD_UI')) {
-            console.log('🚫 리더보드 UI 기능이 비활성화됨');
             alert('리더보드 기능이 아직 활성화되지 않았습니다.');
             return;
         }
@@ -2257,7 +2229,6 @@ ${problem.translation}
                 url += `?${params.toString()}`;
             }
             
-            console.log('🏆 리더보드 데이터 로드:', url);
             
             const response = await fetch(url);
             
@@ -2275,7 +2246,6 @@ ${problem.translation}
             }
             
         } catch (error) {
-            console.error('❌ 리더보드 로드 실패:', error);
             showLeaderboardError(true);
         } finally {
             showLeaderboardLoading(false);
@@ -2370,7 +2340,6 @@ ${problem.translation}
     // 글로벌 점수 업로드
     async function uploadScoreToGlobal(scoreData) {
         try {
-            console.log('📤 글로벌 점수 업로드 시작:', scoreData);
             
             const response = await fetch(`${CONFIG.API_BASE_URL}/api/scores`, {
                 method: 'POST',
@@ -2385,7 +2354,6 @@ ${problem.translation}
             const result = await response.json();
             
             if (result.success) {
-                console.log('✅ 점수 업로드 성공:', result);
                 
                 // 업로드 성공 시 사용자에게 알림 (옵션)
                 if (isFeatureEnabled('DEBUG_MODE')) {
@@ -2396,7 +2364,6 @@ ${problem.translation}
             }
             
         } catch (error) {
-            console.error('❌ 점수 업로드 실패:', error);
             
             // 실패 시 로컬에 저장하여 나중에 재시도
             saveFailedUpload(scoreData);
@@ -2419,10 +2386,8 @@ ${problem.translation}
             }
             
             localStorage.setItem('wordcrack_failed_uploads', JSON.stringify(failedUploads));
-            console.log('💾 실패한 업로드 로컬 저장 완료');
             
         } catch (error) {
-            console.error('로컬 저장 실패:', error);
         }
     }
     
@@ -2434,7 +2399,6 @@ ${problem.translation}
             const failedUploads = JSON.parse(localStorage.getItem('wordcrack_failed_uploads') || '[]');
             if (failedUploads.length === 0) return;
             
-            console.log(`🔄 실패한 업로드 ${failedUploads.length}개 재시도 중...`);
             
             const successful = [];
             const stillFailed = [];
@@ -2461,7 +2425,6 @@ ${problem.translation}
                     
                     if (response.ok) {
                         successful.push(upload);
-                        console.log('✅ 재시도 성공:', upload.category, upload.score);
                     } else {
                         upload.retryCount++;
                         stillFailed.push(upload);
@@ -2477,11 +2440,9 @@ ${problem.translation}
             localStorage.setItem('wordcrack_failed_uploads', JSON.stringify(stillFailed));
             
             if (successful.length > 0) {
-                console.log(`✅ ${successful.length}개 점수 재업로드 성공`);
             }
             
         } catch (error) {
-            console.error('재시도 중 오류:', error);
         }
     }
     
@@ -2527,7 +2488,6 @@ ${problem.translation}
             updateSavedSentences(updatedSentences);
             // 문장 삭제 완료
         } else {
-            console.error('❌ 문장 삭제 실패:', timestamp);
         }
     };
     

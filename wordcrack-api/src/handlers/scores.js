@@ -64,7 +64,6 @@ async function handleScoreUpload(request, env) {
     });
 
   } catch (error) {
-    console.error('Score upload error:', error);
     return createCorsResponse({ 
       error: 'Score upload failed',
       message: error.message 
@@ -111,7 +110,6 @@ async function handleScoreQuery(request, env) {
     });
 
   } catch (error) {
-    console.error('Score query error:', error);
     return createCorsResponse({ 
       error: 'Score query failed',
       message: error.message 
@@ -172,7 +170,6 @@ async function authenticateRequest(request, env) {
     return payload;
     
   } catch (error) {
-    console.error('Authentication error:', error);
     return null;
   }
 }

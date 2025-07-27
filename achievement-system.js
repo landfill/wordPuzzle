@@ -384,8 +384,6 @@ class AchievementSystem {
     // 배지 알림 표시 (게임에서 호출)
     showBadgeNotification(badge) {
         // 간단한 알림 구현 (나중에 더 예쁘게 만들 수 있음)
-        console.log(`🎉 새 배지 획득: ${badge.icon} ${badge.name}`);
-        console.log(`📝 ${badge.description}`);
         
         // 추후 실제 UI 알림으로 대체 예정
         return {

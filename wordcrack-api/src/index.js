@@ -20,7 +20,6 @@ export default {
 
     try {
       // 로그 활성화 보장 - timestamp 포함
-      console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname}`);
       
       // 라우팅
       if (url.pathname.startsWith('/api/auth')) {
@@ -62,7 +61,6 @@ export default {
       });
       
     } catch (error) {
-      console.error('Worker error:', error);
       return new Response(JSON.stringify({
         error: 'Internal Server Error',
         message: error.message

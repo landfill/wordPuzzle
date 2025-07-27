@@ -32,7 +32,6 @@ class APIIntegration {
                 category: 'quotes'
             };
         } catch (error) {
-            console.error('Quote API error:', error);
             return null;
         }
     }
@@ -52,7 +51,6 @@ class APIIntegration {
                 poster: `https://image.tmdb.org/t/p/w500${data.poster_path}`
             };
         } catch (error) {
-            console.error('TMDB API error:', error);
             return null;
         }
     }
@@ -67,7 +65,6 @@ class APIIntegration {
             
             return data.results.slice(0, 10); // 상위 10개만
         } catch (error) {
-            console.error('TMDB API error:', error);
             return [];
         }
     }

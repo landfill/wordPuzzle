@@ -22,7 +22,6 @@ class AuthManager {
     
     async init() {
         if (!isFeatureEnabled('GOOGLE_AUTH')) {
-            console.log('🔒 Google Auth 기능이 비활성화됨');
             return;
         }
         
@@ -42,11 +41,8 @@ class AuthManager {
             }
             
             this.isInitialized = true;
-            console.log('✅ AuthManager 초기화 완료');
             
         } catch (error) {
-            console.error('❌ AuthManager 초기화 실패:', error);
-            console.log('💡 Google Auth는 비활성화됩니다. 나머지 기능은 정상 작동합니다.');
             this.clearAuth();
             // 초기화 실패해도 계속 진행 (Google Auth 없이도 게임은 가능)
         }
@@ -80,7 +76,6 @@ class AuthManager {
             };
             
             script.onerror = (error) => {
-                console.error('Google API 스크립트 로드 실패:', error);
                 reject(new Error('Google API 로드 실패 - 네트워크 확인 필요'));
             };
             
@@ -105,47 +100,38 @@ class AuthManager {
             callback: this.handleGoogleResponse.bind(this)
         });
         
-        console.log('✅ Google Auth 설정 완료');
     }
     
     async handleGoogleResponse(response) {
         try {
-            console.log('🔑 Google 로그인 응답 받음');
             
             // 백엔드 API로 토큰 검증 및 사용자 정보 요청
             const authResult = await this.authenticateWithBackend(response.credential);
             
             if (authResult.success) {
-                console.log('📨 GSI 백엔드 응답:', authResult);
                 
                 // 아바타 정보 확인 및 보완
                 if (!authResult.user.avatar && !authResult.user.avatar_url) {
-                    console.log('⚠️ 백엔드에서 아바타 정보 누락, Google 토큰에서 추출 시도');
                     try {
                         const payload = JSON.parse(atob(response.credential.split('.')[1]));
                         authResult.user.avatar = payload.picture;
                         authResult.user.avatar_url = payload.picture;
-                        console.log('✅ Google 토큰에서 아바타 복원:', payload.picture);
                     } catch (e) {
-                        console.warn('⚠️ Google 토큰에서 아바타 추출 실패:', e);
                     }
                 }
                 
                 this.setAuth(authResult.token, authResult.user);
                 this.notifyListeners('login', authResult.user);
-                console.log('✅ 로그인 성공:', authResult.user.display_name);
             } else {
                 throw new Error(authResult.error || '인증 실패');
             }
             
         } catch (error) {
-            console.error('❌ Google 로그인 처리 실패:', error);
             this.notifyListeners('error', error);
         }
     }
     
     async authenticateWithBackend(googleToken) {
-        console.log('🌐 백엔드 API 호출:', `${CONFIG.API_BASE_URL}/api/auth/google`);
         
         const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/google`, {
             method: 'POST',
@@ -157,16 +143,13 @@ class AuthManager {
             })
         });
         
-        console.log('📡 백엔드 응답 상태:', response.status, response.statusText);
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('❌ 백엔드 API 오류 응답:', errorText);
             throw new Error(`인증 API 오류: ${response.status} - ${errorText}`);
         }
         
         const result = await response.json();
-        console.log('✅ 백엔드 JSON 응답:', result);
         return result;
     }
     
@@ -194,7 +177,6 @@ class AuthManager {
             return false;
             
         } catch (error) {
-            console.error('토큰 검증 실패:', error);
             this.clearAuth();
             return false;
         }
@@ -217,7 +199,6 @@ class AuthManager {
             try {
                 this.user = JSON.parse(userJson);
             } catch (error) {
-                console.error('저장된 사용자 정보 파싱 실패:', error);
                 this.clearAuth();
             }
         }
@@ -234,7 +215,6 @@ class AuthManager {
     async login() {
         // 초기화가 진행 중이면 대기
         if (!this.isInitialized) {
-            console.log('⏳ AuthManager 초기화 대기 중...');
             // 최대 5초간 초기화 완료 대기
             let waitTime = 0;
             while (!this.isInitialized && waitTime < 5000) {
@@ -254,13 +234,11 @@ class AuthManager {
         try {
             // 웹뷰 환경 감지
             if (this.isWebView()) {
-                console.warn('웹뷰 환경에서는 Google Sign-In이 제한됩니다.');
                 throw new Error('웹뷰 환경에서는 Google 로그인을 지원하지 않습니다. 기본 브라우저를 사용해주세요.');
             }
             
             // 모바일 환경이거나 GSI가 차단될 가능성이 높은 환경에서는 직접 OAuth 사용
             if (this.isMobileOrRestrictedEnvironment()) {
-                console.log('모바일/제한 환경 감지 - OAuth 직접 리다이렉트 사용');
                 await this.tryDirectOAuth();
                 return;
             }
@@ -271,7 +249,6 @@ class AuthManager {
             // GSI One Tap 시도
             window.google.accounts.id.prompt();
         } catch (error) {
-            console.error('Google 로그인 실패:', error);
             throw error;
         }
     }
@@ -279,7 +256,6 @@ class AuthManager {
     // 웹뷰 환경 감지
     isWebView() {
         const userAgent = navigator.userAgent;
-        console.log('User Agent:', userAgent); // 디버깅용
         
         // 먼저 정상 브라우저 확인 (웹뷰가 아님)
         const normalBrowserPatterns = [
@@ -294,7 +270,6 @@ class AuthManager {
         
         // 정상 브라우저라면 웹뷰가 아님
         if (normalBrowserPatterns.some(pattern => pattern.test(userAgent))) {
-            console.log('정상 모바일 브라우저 감지');
             return false;
         }
         
@@ -302,10 +277,8 @@ class AuthManager {
         if (/iPhone|iPad/.test(userAgent) && /Mobile.*Safari/.test(userAgent)) {
             // 진짜 Safari는 Safari/XXX 버전이 있음
             if (/Safari\/[\d.]+/.test(userAgent)) {
-                console.log('iOS Safari 브라우저 감지');
                 return false;
             } else {
-                console.log('iOS 웹뷰 감지 (Safari 버전 없음)');
                 return true;
             }
         }
@@ -324,7 +297,6 @@ class AuthManager {
         ];
         
         const isWebView = webViewPatterns.some(pattern => pattern.test(userAgent));
-        console.log('웹뷰 감지 결과:', isWebView);
         return isWebView;
     }
     
@@ -378,7 +350,6 @@ class AuthManager {
                 nonce: Math.random().toString(36).substring(7)
             });
         
-        console.log('OAuth 직접 리다이렉트 시작:', oauthUrl);
         window.location.href = oauthUrl;
     }
     
@@ -394,18 +365,15 @@ class AuthManager {
         const error = params.get('error');
         
         if (error) {
-            console.error('OAuth 에러:', error);
             window.location.hash = '';
             throw new Error(`OAuth 인증 실패: ${error}`);
         }
         
         if (accessToken && idToken) {
-            console.log('OAuth fragment 콜백 감지, 토큰 처리 중...');
             
             try {
                 // ID 토큰에서 사용자 정보 추출
                 const payload = JSON.parse(atob(idToken.split('.')[1]));
-                console.log('📋 ID 토큰 페이로드:', payload);
                 
                 const user = {
                     id: payload.sub,
@@ -414,12 +382,9 @@ class AuthManager {
                     avatar: payload.picture,
                     verified: payload.email_verified
                 };
-                console.log('👤 추출된 사용자 정보:', user);
                 
                 // 백엔드로 Google ID 토큰 전송하여 우리 시스템의 JWT 받기
-                console.log('🔄 백엔드 인증 시작...');
                 const authResult = await this.authenticateWithBackend(idToken);
-                console.log('📨 백엔드 응답:', authResult);
                 
                 if (authResult.success) {
                     // 백엔드에서 아바타 정보가 없다면 Google에서 받은 정보 사용
@@ -429,16 +394,11 @@ class AuthManager {
                         avatar_url: authResult.user.avatar_url || authResult.user.avatar || user.avatar
                     };
                     
-                    console.log('🔄 최종 사용자 정보:', finalUser);
                     
                     this.setAuth(authResult.token, finalUser);
-                    console.log('💾 인증 정보 저장 완료');
                     
                     this.notifyListeners('login', finalUser);
-                    console.log('📢 로그인 이벤트 발송 완료');
-                    console.log('✅ OAuth 로그인 성공:', finalUser.display_name);
                 } else {
-                    console.error('❌ 백엔드 인증 실패:', authResult);
                     throw new Error(authResult.error || 'OAuth 인증 실패');
                 }
                 
@@ -454,17 +414,14 @@ class AuthManager {
                     returnUrl.startsWith(window.location.origin) &&
                     new URL(returnUrl).pathname !== window.location.pathname) {
                     
-                    console.log('🔄 원래 페이지로 리다이렉트:', returnUrl);
                     // 로그인 상태가 확실히 저장된 후 리다이렉트
                     setTimeout(() => {
                         window.location.href = returnUrl;
                     }, 500);
                 } else {
-                    console.log('✅ 현재 페이지에서 로그인 완료');
                 }
                 
             } catch (error) {
-                console.error('OAuth 토큰 처리 실패:', error);
                 window.location.hash = '';
                 
                 // 사용자에게 알림 후 계속 진행
@@ -499,7 +456,6 @@ class AuthManager {
                 }, 100);
             }
         } catch (error) {
-            console.warn('Google Sign-In 리셋 중 오류:', error);
         }
     }
     
@@ -518,7 +474,6 @@ class AuthManager {
             `scope=openid email profile&` +
             `state=${encodeURIComponent(returnUrl)}`;
         
-        console.log('리다이렉트 방식으로 Google 로그인 시도...');
         window.location.href = googleAuthUrl;
     }
     
@@ -527,7 +482,6 @@ class AuthManager {
             const user = this.user;
             this.clearAuth();
             this.notifyListeners('logout', user);
-            console.log('✅ 로그아웃 완료');
         }
     }
     
@@ -537,7 +491,6 @@ class AuthManager {
     
     getUser() {
         if (this.user) {
-            console.log('📋 현재 저장된 사용자 정보:', this.user);
         }
         return this.user;
     }
@@ -582,7 +535,6 @@ class AuthManager {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error(`이벤트 리스너 오류 (${event}):`, error);
                 }
             });
         }

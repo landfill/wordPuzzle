@@ -68,7 +68,6 @@ class DataManager {
             }
             
             this.saveUserData(defaultData);
-            console.log('User data initialized with version', this.DATA_VERSION);
         }
     }
 
@@ -88,9 +87,7 @@ class DataManager {
             if (oldData.savedSentences) {
                 newData.savedSentences = oldData.savedSentences;
             }
-            console.log('Data migration completed successfully');
         } catch (error) {
-            console.warn('Data migration failed, using fresh data:', error);
         }
     }
 
@@ -100,7 +97,6 @@ class DataManager {
             const data = localStorage.getItem(this.STORAGE_KEY);
             return data ? JSON.parse(data) : null;
         } catch (error) {
-            console.error('Failed to load user data:', error);
             return null;
         }
     }
@@ -112,7 +108,6 @@ class DataManager {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userData));
             return true;
         } catch (error) {
-            console.error('Failed to save user data:', error);
             return false;
         }
     }
@@ -282,7 +277,6 @@ class DataManager {
     resetUserData() {
         localStorage.removeItem(this.STORAGE_KEY);
         this.initializeUserData();
-        console.log('User data has been reset');
     }
 
     // 데이터 내보내기 (백업용)
@@ -296,10 +290,8 @@ class DataManager {
         try {
             const userData = JSON.parse(jsonData);
             this.saveUserData(userData);
-            console.log('User data imported successfully');
             return true;
         } catch (error) {
-            console.error('Failed to import user data:', error);
             return false;
         }
     }

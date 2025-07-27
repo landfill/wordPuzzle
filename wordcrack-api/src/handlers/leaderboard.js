@@ -97,7 +97,6 @@ async function getLeaderboard(request, env, category) {
     });
 
   } catch (error) {
-    console.error('Leaderboard error:', error);
     return createCorsResponse({ 
       error: 'Leaderboard query failed',
       message: error.message 
@@ -149,7 +148,6 @@ async function getLeaderboardStats(supabase, category, timeframe) {
     };
 
   } catch (error) {
-    console.error('Stats calculation error:', error);
     return {
       totalPlayers: 0,
       totalGames: 0,

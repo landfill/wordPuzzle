@@ -29,7 +29,6 @@ class ContentGenerator {
      * @param {string} category - 재생성할 카테고리
      */
     _rebuildProblemPool(category) {
-        console.log(`Rebuilding problem pool for category: ${category}`);
         
         let newPool = [];
         if (category === 'all') {
@@ -75,14 +74,12 @@ class ContentGenerator {
 
         // 만약 풀에 있는 모든 문제를 다 사용했다면 풀을 재생성
         if (pool.length === 0) {
-            console.log(`All problems in '${category}' have been used. Resetting.`);
             this._rebuildProblemPool(category);
             pool = this.pools[category].deck;
         }
 
         // 그래도 풀이 비어있다면 (해당 카테고리에 데이터가 없는 경우)
         if (pool.length === 0) {
-            console.warn(`No problems available for category: ${category}`);
             return null; // 문제가 없음을 알림
         }
 

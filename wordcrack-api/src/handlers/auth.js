@@ -84,7 +84,6 @@ async function handleGoogleAuth(request, env) {
     });
 
   } catch (error) {
-    console.error('Google auth error:', error);
     return createCorsResponse({ 
       error: 'Authentication failed',
       message: error.message 
@@ -117,7 +116,6 @@ async function handleTokenVerify(request, env) {
     });
 
   } catch (error) {
-    console.error('Token verify error:', error);
     return createCorsResponse({ 
       error: 'Token verification failed',
       message: error.message 
@@ -148,7 +146,6 @@ async function verifyGoogleToken(token, clientId) {
     return tokenInfo;
     
   } catch (error) {
-    console.error('Google token verification error:', error);
     return null;
   }
 }
@@ -188,7 +185,6 @@ async function verifyJWT(token, secret) {
     return payload;
     
   } catch (error) {
-    console.error('JWT verification error:', error);
     return null;
   }
 }

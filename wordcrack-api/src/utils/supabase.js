@@ -5,15 +5,6 @@ export function createSupabaseClient(env) {
   const supabaseUrl = env.SUPABASE_URL;
   const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
   
-  console.log('Supabase config check:', { 
-    hasUrl: !!supabaseUrl, 
-    hasKey: !!supabaseKey,
-    urlLength: supabaseUrl?.length,
-    keyLength: supabaseKey?.length,
-    hasServiceKey: !!env.SUPABASE_SERVICE_ROLE_KEY,
-    hasAnonKey: !!env.SUPABASE_ANON_KEY,
-    usingKey: env.SUPABASE_SERVICE_ROLE_KEY ? 'service' : 'anon'
-  });
   
   if (!supabaseUrl || !supabaseKey) {
     throw new Error(`Supabase configuration missing: URL=${!!supabaseUrl}, KEY=${!!supabaseKey}`);
@@ -56,12 +47,6 @@ export function createSupabaseClient(env) {
       
       if (!response.ok) {
         const errorBody = await response.text();
-        console.error(`Supabase insert failed for ${table}:`, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: errorBody
-        });
         throw new Error(`Supabase insert failed: ${response.status} ${response.statusText} - ${errorBody}`);
       }
       
