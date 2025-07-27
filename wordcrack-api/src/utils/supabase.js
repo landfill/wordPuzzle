@@ -40,6 +40,8 @@ export function createSupabaseClient(env) {
     },
 
     async insert(table, data) {
+      console.log(`Attempting to insert into ${table}:`, JSON.stringify(data));
+      
       const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
         method: 'POST',
         headers: {
@@ -51,11 +53,22 @@ export function createSupabaseClient(env) {
         body: JSON.stringify(data)
       });
       
+      console.log(`Insert response status: ${response.status} ${response.statusText}`);
+      
       if (!response.ok) {
-        throw new Error(`Supabase insert failed: ${response.statusText}`);
+        const errorBody = await response.text();
+        console.error(`Supabase insert failed for ${table}:`, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorBody
+        });
+        throw new Error(`Supabase insert failed: ${response.status} ${response.statusText} - ${errorBody}`);
       }
       
-      return response.json();
+      const result = await response.json();
+      console.log(`Insert successful:`, result);
+      return result;
     },
 
     async select(table, query = '') {
