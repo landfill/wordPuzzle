@@ -2490,13 +2490,14 @@ body.dark-mode .delete-sentence-btn:hover {
     }
     
     .user-profile {
-        padding: 4px 8px;
         gap: 6px;
+        padding: 8px 10px;
+        min-height: 40px; /* 모바일에서도 G 로그인 버튼과 동일한 높이 유지 */
     }
     
     .user-avatar {
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
     }
     
     .user-name {
