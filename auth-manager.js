@@ -130,6 +130,8 @@ class AuthManager {
     }
     
     async authenticateWithBackend(googleToken) {
+        console.log('🌐 백엔드 API 호출:', `${CONFIG.API_BASE_URL}/api/auth/google`);
+        
         const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/google`, {
             method: 'POST',
             headers: {
@@ -140,11 +142,17 @@ class AuthManager {
             })
         });
         
+        console.log('📡 백엔드 응답 상태:', response.status, response.statusText);
+        
         if (!response.ok) {
-            throw new Error(`인증 API 오류: ${response.status}`);
+            const errorText = await response.text();
+            console.error('❌ 백엔드 API 오류 응답:', errorText);
+            throw new Error(`인증 API 오류: ${response.status} - ${errorText}`);
         }
         
-        return await response.json();
+        const result = await response.json();
+        console.log('✅ 백엔드 JSON 응답:', result);
+        return result;
     }
     
     async verifyToken() {
@@ -382,6 +390,8 @@ class AuthManager {
             try {
                 // ID 토큰에서 사용자 정보 추출
                 const payload = JSON.parse(atob(idToken.split('.')[1]));
+                console.log('📋 ID 토큰 페이로드:', payload);
+                
                 const user = {
                     id: payload.sub,
                     email: payload.email,
@@ -389,32 +399,44 @@ class AuthManager {
                     avatar: payload.picture,
                     verified: payload.email_verified
                 };
+                console.log('👤 추출된 사용자 정보:', user);
                 
                 // 백엔드로 Google ID 토큰 전송하여 우리 시스템의 JWT 받기
+                console.log('🔄 백엔드 인증 시작...');
                 const authResult = await this.authenticateWithBackend(idToken);
+                console.log('📨 백엔드 응답:', authResult);
                 
                 if (authResult.success) {
                     this.setAuth(authResult.token, authResult.user);
+                    console.log('💾 인증 정보 저장 완료');
+                    
                     this.notifyListeners('login', authResult.user);
+                    console.log('📢 로그인 이벤트 발송 완료');
                     console.log('✅ OAuth 로그인 성공:', authResult.user.display_name);
                 } else {
+                    console.error('❌ 백엔드 인증 실패:', authResult);
                     throw new Error(authResult.error || 'OAuth 인증 실패');
                 }
                 
                 // URL fragment 제거
                 window.location.hash = '';
                 
-                // 원래 페이지로 복귀
+                // 원래 페이지로 복귀 (현재 페이지가 메인이면 리다이렉트 안함)
                 const returnUrl = localStorage.getItem('oauth_return_url');
                 localStorage.removeItem('oauth_return_url');
                 
-                if (returnUrl && returnUrl !== window.location.href) {
-                    // 상태 복원을 위해 약간 지연
+                // 같은 도메인의 다른 페이지인 경우에만 리다이렉트
+                if (returnUrl && returnUrl !== window.location.href && 
+                    returnUrl.startsWith(window.location.origin) &&
+                    new URL(returnUrl).pathname !== window.location.pathname) {
+                    
+                    console.log('🔄 원래 페이지로 리다이렉트:', returnUrl);
+                    // 로그인 상태가 확실히 저장된 후 리다이렉트
                     setTimeout(() => {
-                        if (returnUrl.startsWith(window.location.origin)) {
-                            window.location.href = returnUrl;
-                        }
-                    }, 100);
+                        window.location.href = returnUrl;
+                    }, 500);
+                } else {
+                    console.log('✅ 현재 페이지에서 로그인 완료');
                 }
                 
             } catch (error) {
@@ -428,12 +450,13 @@ class AuthManager {
                 const returnUrl = localStorage.getItem('oauth_return_url');
                 localStorage.removeItem('oauth_return_url');
                 
-                if (returnUrl && returnUrl !== window.location.href) {
+                if (returnUrl && returnUrl !== window.location.href && 
+                    returnUrl.startsWith(window.location.origin) &&
+                    new URL(returnUrl).pathname !== window.location.pathname) {
+                    
                     setTimeout(() => {
-                        if (returnUrl.startsWith(window.location.origin)) {
-                            window.location.href = returnUrl;
-                        }
-                    }, 100);
+                        window.location.href = returnUrl;
+                    }, 1000);
                 }
             }
         }
