@@ -1695,15 +1695,10 @@ ${problem.translation}
         // 배지 유형별로 중복 제거 (가장 높은 희귀도만 표시)
         const badgesByType = {};
         userBadges.forEach(badge => {
-            let badgeKey;
+            // 배지 type을 우선적으로 사용하고, type이 없으면 icon을 사용
+            let badgeKey = badge.type || badge.icon;
             
-            // 연승 배지는 type을 기준으로 하나로 통합
-            if (badge.type === 'streak') {
-                badgeKey = 'streak';
-            } else {
-                badgeKey = badge.icon; // 다른 배지는 아이콘을 기준으로 배지 유형 구분
-            }
-            
+            // 같은 type의 배지 중 가장 높은 희귀도만 보관
             if (!badgesByType[badgeKey] || 
                 getRarityScore(badge.rarity) > getRarityScore(badgesByType[badgeKey].rarity)) {
                 badgesByType[badgeKey] = badge;
@@ -1718,25 +1713,27 @@ ${problem.translation}
             return (rarityOrder[b.rarity] || 1) - (rarityOrder[a.rarity] || 1);
         });
 
+        // 배지 타입별 기본 아이콘 매핑
+        const badgeTypeIcons = {
+            'streak': '🔥',
+            'perfect': '💎',
+            'speedster': '⚡',
+            'scholar': '📚',
+            'completionist': '🏆',
+            'explorer': '🗺️'
+        };
+
         container.innerHTML = sortedBadges.map(badge => {
-            if (badge.type === 'streak') {
-                // 연승 배지는 하나의 아이콘으로 표시하되 레벨별 색깔 적용
-                return `
-                    <div class="badge-item streak-badge ${badge.rarity}" title="${badge.description}">
-                        <div class="badge-icon">🔥</div>
-                        <div class="badge-name">${badge.name}</div>
-                        <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="badge-item" title="${badge.description}">
-                        <div class="badge-icon">${badge.icon}</div>
-                        <div class="badge-name">${badge.name}</div>
-                        <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
-                    </div>
-                `;
-            }
+            // 배지 타입에 맞는 기본 아이콘 사용, 없으면 원래 아이콘 사용
+            const displayIcon = badgeTypeIcons[badge.type] || badge.icon;
+            
+            return `
+                <div class="badge-item ${badge.type}-badge ${badge.rarity}" title="${badge.description}">
+                    <div class="badge-icon">${displayIcon}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
+                </div>
+            `;
         }).join('');
     }
 
