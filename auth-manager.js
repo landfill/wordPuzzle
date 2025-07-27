@@ -27,6 +27,9 @@ class AuthManager {
         }
         
         try {
+            // OAuth 콜백 확인 (URL에 code가 있는 경우)
+            await this.handleOAuthCallback();
+            
             // 저장된 토큰 복원
             this.loadStoredAuth();
             
@@ -232,10 +235,17 @@ class AuthManager {
                 throw new Error('웹뷰 환경에서는 Google 로그인을 지원하지 않습니다. 기본 브라우저를 사용해주세요.');
             }
             
+            // 모바일 환경이거나 GSI가 차단될 가능성이 높은 환경에서는 직접 OAuth 사용
+            if (this.isMobileOrRestrictedEnvironment()) {
+                console.log('모바일/제한 환경 감지 - OAuth 직접 리다이렉트 사용');
+                await this.tryDirectOAuth();
+                return;
+            }
+            
             // 기존 세션 정리 후 재시도
             this.resetGoogleSignIn();
             
-            // 단순하게 Google One Tap 시도
+            // GSI One Tap 시도
             window.google.accounts.id.prompt();
         } catch (error) {
             console.error('Google 로그인 실패:', error);
@@ -293,6 +303,105 @@ class AuthManager {
         const isWebView = webViewPatterns.some(pattern => pattern.test(userAgent));
         console.log('웹뷰 감지 결과:', isWebView);
         return isWebView;
+    }
+    
+    // 모바일 또는 GSI 제한 환경 감지
+    isMobileOrRestrictedEnvironment() {
+        const userAgent = navigator.userAgent;
+        
+        // 모바일 기기 감지
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        
+        // Chrome DevTools 모바일 모드 감지
+        const isDevToolsMobile = window.navigator.webdriver || 
+                               (window.outerHeight === 0 && window.outerWidth === 0);
+        
+        // 모바일 브라우저들 (GSI에서 종종 차단됨)
+        const isMobileBrowser = /Mobile|Android/i.test(userAgent) && 
+                              !/Windows NT|Macintosh/i.test(userAgent);
+        
+        return isMobile || isDevToolsMobile || isMobileBrowser;
+    }
+    
+    // 직접 OAuth 2.0 리다이렉트
+    async tryDirectOAuth() {
+        // 현재 URL을 state로 저장
+        const state = encodeURIComponent(window.location.href);
+        localStorage.setItem('oauth_return_url', window.location.href);
+        
+        const oauthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
+            new URLSearchParams({
+                client_id: CONFIG.GOOGLE_CLIENT_ID,
+                redirect_uri: window.location.origin,
+                response_type: 'token id_token',
+                scope: 'openid email profile',
+                state: state,
+                prompt: 'select_account',
+                nonce: Math.random().toString(36).substring(7)
+            });
+        
+        console.log('OAuth 직접 리다이렉트 시작:', oauthUrl);
+        window.location.href = oauthUrl;
+    }
+    
+    // OAuth 콜백 처리 (Fragment 방식)
+    async handleOAuthCallback() {
+        // URL fragment에서 OAuth 응답 파싱
+        const hash = window.location.hash.substring(1);
+        if (!hash) return;
+        
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const idToken = params.get('id_token');
+        const error = params.get('error');
+        
+        if (error) {
+            console.error('OAuth 에러:', error);
+            window.location.hash = '';
+            throw new Error(`OAuth 인증 실패: ${error}`);
+        }
+        
+        if (accessToken && idToken) {
+            console.log('OAuth fragment 콜백 감지, 토큰 처리 중...');
+            
+            try {
+                // ID 토큰에서 사용자 정보 추출
+                const payload = JSON.parse(atob(idToken.split('.')[1]));
+                const user = {
+                    id: payload.sub,
+                    email: payload.email,
+                    display_name: payload.name,
+                    avatar: payload.picture,
+                    verified: payload.email_verified
+                };
+                
+                // 임시 토큰으로 ID 토큰 사용 (실제로는 백엔드에서 JWT 생성해야 함)
+                this.setAuth(idToken, user);
+                this.notifyListeners('login', user);
+                console.log('✅ OAuth 로그인 성공:', user.display_name);
+                
+                // URL fragment 제거
+                window.location.hash = '';
+                
+                // 원래 페이지로 복귀
+                const returnUrl = localStorage.getItem('oauth_return_url');
+                localStorage.removeItem('oauth_return_url');
+                
+                if (returnUrl && returnUrl !== window.location.href) {
+                    // 상태 복원을 위해 약간 지연
+                    setTimeout(() => {
+                        if (returnUrl.startsWith(window.location.origin)) {
+                            window.location.href = returnUrl;
+                        }
+                    }, 100);
+                }
+                
+            } catch (error) {
+                console.error('OAuth 토큰 처리 실패:', error);
+                window.location.hash = '';
+                throw error;
+            }
+        }
     }
     
     // Google Sign-In 상태 리셋
