@@ -65,16 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const retryLeaderboardBtn = document.getElementById('retry-leaderboard-btn');
 
     // DOM 요소 확인
-    console.log('DOM Elements Check:', {
-        categoryCards: categoryCards.length,
-        homeBtn: !!homeBtn,
-        reviewBtn: !!reviewBtn,
-        nextProblemBtn: !!nextProblemBtn,
-        listenBtn: !!listenBtn,
-        retrySameBtn: !!retrySameBtn,
-        retryNewBtn: !!retryNewBtn,
-        goHomeBtn: !!goHomeBtn
-    });
+    // DOM 요소 초기화 완료
 
     // --- 2. Game State & Configuration ---
     let lives = 5;
@@ -133,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const previousState = currentGameState;
         currentGameState = newState;
         
-        console.log(`Game state changed: ${previousState} -> ${newState}`);
+        // Game state changed
         
         // 상태 변경에 따른 UI 업데이트
         updateUIForState(newState);
@@ -201,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startGame(category) {
-        console.log('Starting game with category:', category);
+        // Starting game
         selectedCategory = category;
         
         // 게임 제목을 카테고리에 맞게 업데이트
@@ -414,17 +405,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         stopAllSounds();
 
-        console.log('Loading problem:', currentProblem);
+        // Loading problem
         loadProblem(currentProblem);
         updateSourceDisplay(currentProblem);
         
-        console.log('Creating keyboard, keyboardArea:', keyboardArea);
+        // Creating keyboard and hint controls
         if (keyboardArea && keyboardArea.childElementCount === 0) {
             createKeyboard();
-            console.log('Keyboard created');
         }
-        
-        console.log('Creating hint controls');
         createHintControls();
         resetHints();
         updateKeyboardState();
@@ -572,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 현재 활성화된 빈칸이 있는지 확인
         if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) {
-            console.log('No active blank for hint');
+            // No active blank for hint
             return;
         }
         
@@ -580,7 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 이미 채워진 빈칸인지 확인
         if (activeBlank.classList.contains('correct')) {
-            console.log('Active blank is already filled');
+            // Active blank is already filled
             return;
         }
         
@@ -689,15 +677,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyPress(key) {
-        console.log('Key pressed:', key, 'activeBlankIndex:', activeBlankIndex);
+        // Key pressed handling
         if (activeBlankIndex === -1 || !problemBlanks[activeBlankIndex]) {
-            console.log('No active blank or invalid index');
             return;
         }
 
         const blank = problemBlanks[activeBlankIndex];
         const char = blank.dataset.correctChar;
-        console.log('Checking key:', key, 'against correct char:', char);
+        // Checking key against correct character
 
         if (key.toLowerCase() === char) {
             blank.textContent = key.toUpperCase();
@@ -1014,16 +1001,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 모든 빈칸이 채워진 경우 현재 위치 유지
-        console.log('All blanks are filled');
+        // All blanks are filled
     }
     
     function setActiveBlank(idx) {
-        console.log('setActiveBlank called with idx:', idx, 'current activeBlankIndex:', activeBlankIndex);
+        // setActiveBlank called
         
         // 이전 활성 빈칸의 active 클래스 제거
         if (activeBlankIndex !== -1 && problemBlanks[activeBlankIndex]) {
             problemBlanks[activeBlankIndex].classList.remove('active');
-            console.log('Removed active class from blank:', activeBlankIndex);
+            // Removed active class
         }
         
         // 새로운 활성 빈칸 설정
@@ -1032,14 +1019,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // 이미 채워진 빈칸에는 active 클래스를 추가하지 않음
             if (!problemBlanks[activeBlankIndex].classList.contains('correct')) {
                 problemBlanks[activeBlankIndex].classList.add('active');
-                console.log('Set active class on blank:', idx);
+                // Set active class on blank
             } else {
-                console.log('Skipped setting active class on already filled blank:', idx);
+                // Skipped setting active class on already filled blank
             }
             document.querySelectorAll('.word-container.has-active-blank').forEach(g => g.classList.remove('has-active-blank'));
             problemBlanks[activeBlankIndex].closest('.word-container')?.classList.add('has-active-blank');
             
-            console.log('Set active class on blank:', idx);
+            // Set active class on blank
             
             // 빈칸 선택 햅틱 피드백
             triggerHapticFeedback('light');
@@ -1177,35 +1164,35 @@ document.addEventListener('DOMContentLoaded', () => {
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
-            console.log('Category selected:', category);
+            // Category selected
             startGame(category);
         });
     });
 
     if (homeBtn) {
         homeBtn.addEventListener('click', () => {
-            console.log('Home button clicked');
+            // Home button clicked
             changeGameState(GameState.CATEGORY_SELECTION);
         });
     }
 
     if (retrySameBtn) {
         retrySameBtn.addEventListener('click', () => {
-            console.log('Retry same button clicked');
+            // Retry same button clicked
             retrySameProblem();
         });
     }
     
     if (retryNewBtn) {
         retryNewBtn.addEventListener('click', () => {
-            console.log('Retry new button clicked');
+            // Retry new button clicked
             retryWithNewProblem();
         });
     }
     
     if (goHomeBtn) {
         goHomeBtn.addEventListener('click', () => {
-            console.log('Go home button clicked');
+            // Go home button clicked
             gameOverModal.style.display = 'none';
             changeGameState(GameState.CATEGORY_SELECTION);
         });
@@ -1213,21 +1200,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (reviewBtn) {
         reviewBtn.addEventListener('click', () => {
-            console.log('Review button clicked');
+            // Review button clicked
             enterReviewMode();
         });
     }
     
     if (nextProblemBtn) {
         nextProblemBtn.addEventListener('click', () => {
-            console.log('Next problem button clicked');
+            // Next problem button clicked
             proceedToNextProblem();
         });
     }
 
     if (listenBtn) {
         listenBtn.addEventListener('click', () => {
-            console.log('Listen button clicked');
+            // Listen button clicked
             speakSentence();
         });
     }
@@ -1330,7 +1317,7 @@ ${problem.translation}
         try {
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                 await navigator.share(shareData);
-                console.log('공유 성공');
+                // 공유 성공
             } else {
                 // 폴백: 클립보드 복사
                 await copyToClipboard();
@@ -1453,7 +1440,7 @@ ${problem.translation}
                         showToast('이미지가 공유되었습니다! 📸');
                         return;
                     } catch (error) {
-                        console.log('이미지 공유 실패, 다운로드로 대체');
+                        // 이미지 공유 실패, 다운로드로 대체
                     }
                 }
                 
@@ -1581,7 +1568,7 @@ ${problem.translation}
             
             // 3초 후 메시지 표시
             setTimeout(() => {
-                console.log('문장이 저장되었습니다!');
+                // 문장이 저장되었습니다
             }, 100);
         } else {
             // 이미 저장된 문장
@@ -1690,25 +1677,33 @@ ${problem.translation}
         
         if (userBadges.length === 0) {
             container.style.display = 'none';
-            // 배지 섹션 전체를 숨김
-            const badgeSection = container.closest('.dashboard-section');
-            if (badgeSection) {
-                badgeSection.style.display = 'none';
+            // 배지 제목을 숨김
+            const badgeTitle = container.previousElementSibling;
+            if (badgeTitle && badgeTitle.classList.contains('section-title')) {
+                badgeTitle.style.display = 'none';
             }
             return;
         } else {
-            container.style.display = 'flex';
-            // 배지 섹션 표시
-            const badgeSection = container.closest('.dashboard-section');
-            if (badgeSection) {
-                badgeSection.style.display = 'block';
+            container.style.display = 'grid';
+            // 배지 제목 표시
+            const badgeTitle = container.previousElementSibling;
+            if (badgeTitle && badgeTitle.classList.contains('section-title')) {
+                badgeTitle.style.display = 'block';
             }
         }
 
         // 배지 유형별로 중복 제거 (가장 높은 희귀도만 표시)
         const badgesByType = {};
         userBadges.forEach(badge => {
-            const badgeKey = badge.icon; // 아이콘을 기준으로 배지 유형 구분
+            let badgeKey;
+            
+            // 연승 배지는 type을 기준으로 하나로 통합
+            if (badge.type === 'streak') {
+                badgeKey = 'streak';
+            } else {
+                badgeKey = badge.icon; // 다른 배지는 아이콘을 기준으로 배지 유형 구분
+            }
+            
             if (!badgesByType[badgeKey] || 
                 getRarityScore(badge.rarity) > getRarityScore(badgesByType[badgeKey].rarity)) {
                 badgesByType[badgeKey] = badge;
@@ -1723,13 +1718,26 @@ ${problem.translation}
             return (rarityOrder[b.rarity] || 1) - (rarityOrder[a.rarity] || 1);
         });
 
-        container.innerHTML = sortedBadges.map(badge => `
-            <div class="badge-item" title="${badge.description}">
-                <div class="badge-icon">${badge.icon}</div>
-                <div class="badge-name">${badge.name}</div>
-                <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
-            </div>
-        `).join('');
+        container.innerHTML = sortedBadges.map(badge => {
+            if (badge.type === 'streak') {
+                // 연승 배지는 하나의 아이콘으로 표시하되 레벨별 색깔 적용
+                return `
+                    <div class="badge-item streak-badge ${badge.rarity}" title="${badge.description}">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name">${badge.name}</div>
+                        <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="badge-item" title="${badge.description}">
+                        <div class="badge-icon">${badge.icon}</div>
+                        <div class="badge-name">${badge.name}</div>
+                        <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
+                    </div>
+                `;
+            }
+        }).join('');
     }
 
     function updateCategoryProgress(categoryProgress) {
@@ -1758,16 +1766,16 @@ ${problem.translation}
         
         if (filteredCategories.length === 0) {
             container.style.display = 'none';
-            const categorySection = container.closest('.dashboard-section');
-            if (categorySection) {
-                categorySection.style.display = 'none';
+            const categoryTitle = container.previousElementSibling;
+            if (categoryTitle && categoryTitle.classList.contains('section-title')) {
+                categoryTitle.style.display = 'none';
             }
             return;
         } else {
             container.style.display = 'grid';
-            const categorySection = container.closest('.dashboard-section');
-            if (categorySection) {
-                categorySection.style.display = 'block';
+            const categoryTitle = container.previousElementSibling;
+            if (categoryTitle && categoryTitle.classList.contains('section-title')) {
+                categoryTitle.style.display = 'block';
             }
         }
 
@@ -1795,6 +1803,18 @@ ${problem.translation}
 
     function updateSavedSentences(savedSentences) {
         const container = document.getElementById('saved-sentences-container');
+        
+        if (!container) {
+            console.error('❌ saved-sentences-container 요소를 찾을 수 없음!');
+            return;
+        }
+        
+        // 저장된 문장 섹션은 항상 표시 (다른 섹션과 달리)
+        container.style.display = 'block';
+        const sentencesTitle = container.previousElementSibling;
+        if (sentencesTitle && sentencesTitle.classList.contains('section-title')) {
+            sentencesTitle.style.display = 'block';
+        }
         
         if (savedSentences.length === 0) {
             container.innerHTML = `
@@ -1825,13 +1845,13 @@ ${problem.translation}
                         <div class="saved-sentence-text">${sentence.sentence}</div>
                         <div class="saved-sentence-translation">${sentence.translation}</div>
                         <div class="saved-sentence-meta">
-                            <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
-                            <span>${date}</span>
+                            <span class="category-info">${categoryIcons[sentence.category]} ${sentence.source}</span>
+                            <span class="date-info">${date}</span>
                         </div>
                     </div>
                     <button class="delete-sentence-btn" onclick="deleteSavedSentence('${sentence.timestamp}')" title="문장 삭제">
                         <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                            <path d="M3 6V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V6H3ZM5 8H19V18H5V8ZM10.5 4L13.5 4V6H10.5V4ZM6 4V6H4V4H6ZM18 4V6H20V4H18ZM8 10V16H10V10H8ZM14 10V16H16V10H14Z"/>
                         </svg>
                     </button>
                 </div>
@@ -2360,7 +2380,7 @@ ${problem.translation}
             // UI 업데이트
             const updatedSentences = dataManager.getSavedSentences();
             updateSavedSentences(updatedSentences);
-            console.log('✅ 문장 삭제 완료:', timestamp);
+            // 문장 삭제 완료
         } else {
             console.error('❌ 문장 삭제 실패:', timestamp);
         }

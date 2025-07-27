@@ -1790,27 +1790,30 @@ body.dark-mode {
 }
 
 .delete-sentence-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: rgba(239, 68, 68, 0.1);
-    border: none;
-    border-radius: 50%;
-    color: #ef4444;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    border-radius: 8px !important; /* 원형이 아닌 둥근 사각형 */
+    color: #ef4444 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .delete-sentence-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
-    transform: scale(1.1);
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    transform: scale(1.05) !important;
 }
 
 .delete-sentence-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.95) !important;
 }
 
 .saved-sentence-text {
@@ -2015,6 +2018,9 @@ body.dark-mode {
     gap: 24px;
     overflow-y: auto;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* flexbox 내에서 스크롤 가능하게 함 */
 }
 
 .dashboard-modal-content .dashboard-content::-webkit-scrollbar {
@@ -2052,20 +2058,198 @@ body.dark-mode {
     transition: all 0.3s ease;
 }
 
-.dashboard-modal-content .dashboard-section {
-    margin-bottom: 32px;
-    background: none;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: none;
-    border: none;
+.section-title,
+.dashboard-modal-content .section-title {
+    font-size: 18px !important;
+    margin: 32px 0 16px 0 !important;
+    color: #333 !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
-.dashboard-modal-content .dashboard-section h2 {
-    font-size: 18px;
-    margin-bottom: 16px;
-    color: #333;
+/* 다크모드 대응 */
+body.dark-mode .section-title,
+body.dark-mode .dashboard-modal-content .section-title {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .dashboard-modal-content .stat-card {
+    background: rgba(45, 55, 72, 0.9);
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark-mode .dashboard-modal-content .stat-card h3::after {
+    color: #a0aec0;
+}
+
+body.dark-mode .dashboard-modal-content .badge-item {
+    background: rgba(45, 55, 72, 0.9);
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark-mode .dashboard-modal-content .badge-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .dashboard-modal-content .category-progress-item {
+    background: rgba(45, 55, 72, 0.9);
+    border-color: #4a5568;
+}
+
+body.dark-mode .dashboard-modal-content .category-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .dashboard-modal-content .category-stats {
+    color: #a0aec0;
+}
+
+body.dark-mode .dashboard-modal-content .progress-bar {
+    background: #4a5568;
+}
+
+/* 저장된 문장 스타일 - 강제 표시 */
+#saved-sentences-container,
+.dashboard-modal-content #saved-sentences-container,
+.dashboard-modal-content .saved-sentences-container {
+    display: block !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-height: none !important; /* 높이 제한 제거 */
+    overflow-y: visible !important; /* 컨테이너 자체 스크롤 제거 */
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 50px !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.saved-sentence-item,
+.dashboard-modal-content .saved-sentence-item {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    border-left: 4px solid #667eea !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 12px !important;
+    min-height: 80px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.saved-sentence-content,
+.dashboard-modal-content .saved-sentence-content {
+    display: block !important;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.saved-sentence-text,
+.dashboard-modal-content .saved-sentence-text {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.saved-sentence-translation,
+.dashboard-modal-content .saved-sentence-translation {
+    font-size: 14px !important;
+    color: #666 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.saved-sentence-meta,
+.dashboard-modal-content .saved-sentence-meta {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #999 !important;
+    font-size: 12px !important;
+    margin-top: 8px !important;
+}
+
+.saved-sentence-meta .category-info {
+    text-align: left !important;
+}
+
+.saved-sentence-meta .date-info {
+    text-align: right !important;
+    color: #666 !important;
+}
+
+/* 다크모드 저장된 문장 */
+body.dark-mode .dashboard-modal-content .saved-sentence-item {
+    background: rgba(45, 55, 72, 0.9);
+    border-color: #4a5568;
+    border-left-color: #667eea;
+}
+
+body.dark-mode .dashboard-modal-content .saved-sentence-text {
+    color: #e2e8f0;
+}
+
+body.dark-mode .dashboard-modal-content .saved-sentence-translation {
+    color: #a0aec0;
+}
+
+body.dark-mode .dashboard-modal-content .saved-sentence-meta {
+    color: #6b7280 !important;
+}
+
+body.dark-mode .saved-sentence-meta .date-info {
+    color: #9ca3af !important;
+}
+
+/* 빈 상태 스타일 */
+.dashboard-modal-content .empty-state {
     text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.dashboard-modal-content .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.dashboard-modal-content .empty-state p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+body.dark-mode .dashboard-modal-content .empty-state {
+    color: #a0aec0;
+}
+
+body.dark-mode .dashboard-modal-content .empty-state p {
+    color: #a0aec0;
+}
+
+.dashboard-modal-content .section-title:first-of-type {
+    margin-top: 16px;
 }
 
 .dashboard-modal-content .category-progress-grid {
@@ -2107,6 +2291,48 @@ body.dark-mode {
 .dashboard-modal-content .badge-rarity {
     font-size: 10px;
     opacity: 0.7;
+}
+
+/* 연승 배지 레벨별 색깔 */
+.dashboard-modal-content .streak-badge.common {
+    background: rgba(34, 197, 94, 0.9);
+    border-color: #16a34a;
+}
+
+.dashboard-modal-content .streak-badge.uncommon {
+    background: rgba(59, 130, 246, 0.9);
+    border-color: #2563eb;
+}
+
+.dashboard-modal-content .streak-badge.rare {
+    background: rgba(168, 85, 247, 0.9);
+    border-color: #7c3aed;
+}
+
+.dashboard-modal-content .streak-badge.legendary {
+    background: rgba(251, 191, 36, 0.9);
+    border-color: #f59e0b;
+}
+
+/* 다크모드에서 연승 배지 색깔 */
+body.dark-mode .dashboard-modal-content .streak-badge.common {
+    background: rgba(34, 197, 94, 0.8);
+    border-color: #22c55e;
+}
+
+body.dark-mode .dashboard-modal-content .streak-badge.uncommon {
+    background: rgba(59, 130, 246, 0.8);
+    border-color: #3b82f6;
+}
+
+body.dark-mode .dashboard-modal-content .streak-badge.rare {
+    background: rgba(168, 85, 247, 0.8);
+    border-color: #a855f7;
+}
+
+body.dark-mode .dashboard-modal-content .streak-badge.legendary {
+    background: rgba(251, 191, 36, 0.8);
+    border-color: #fbbf24;
 }
 
 /* 글로벌 리더보드 버튼 */
@@ -2239,13 +2465,15 @@ body.dark-mode .saved-sentence-meta {
 }
 
 body.dark-mode .delete-sentence-btn {
-    background: rgba(239, 68, 68, 0.2);
-    color: #f87171;
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    color: #f87171 !important;
 }
 
 body.dark-mode .delete-sentence-btn:hover {
-    background: rgba(239, 68, 68, 0.3);
-    color: #ef4444;
+    background: rgba(239, 68, 68, 0.3) !important;
+    border-color: rgba(239, 68, 68, 0.6) !important;
+    color: #ef4444 !important;
 }
 
 /* 모바일 대응 */
@@ -2670,6 +2898,37 @@ body.dark-mode .score {
         display: none;
     }
     
+    /* 모바일에서 스탯카드 텍스트 간소화 */
+    .dashboard-modal-content .stat-card:nth-child(1) h3::after {
+        content: "완료\A문제";
+        white-space: pre;
+    }
+    
+    .dashboard-modal-content .stat-card:nth-child(2) h3::after {
+        content: "합계\A점수";
+        white-space: pre;
+    }
+    
+    .dashboard-modal-content .stat-card:nth-child(3) h3::after {
+        content: "최고\A연승";
+        white-space: pre;
+    }
+    
+    .dashboard-modal-content .stat-card:nth-child(4) h3::after {
+        content: "완벽\A지수";
+        white-space: pre;
+    }
+    
+    .dashboard-modal-content .stat-card h3 {
+        font-size: 0;
+    }
+    
+    .dashboard-modal-content .stat-card h3::after {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+    }
+    
     .dashboard-modal-content .dashboard-content {
         padding: 16px;
         gap: 20px;
@@ -2701,5 +2960,10 @@ body.dark-mode .score {
     
     .dashboard-modal-content .badge-rarity {
         font-size: 8px;
+    }
+    
+    .dashboard-modal-content .section-title {
+        font-size: 16px;
+        margin: 24px 0 12px 0;
     }
 }
