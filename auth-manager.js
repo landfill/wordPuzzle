@@ -116,6 +116,21 @@ class AuthManager {
             const authResult = await this.authenticateWithBackend(response.credential);
             
             if (authResult.success) {
+                console.log('📨 GSI 백엔드 응답:', authResult);
+                
+                // 아바타 정보 확인 및 보완
+                if (!authResult.user.avatar && !authResult.user.avatar_url) {
+                    console.log('⚠️ 백엔드에서 아바타 정보 누락, Google 토큰에서 추출 시도');
+                    try {
+                        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                        authResult.user.avatar = payload.picture;
+                        authResult.user.avatar_url = payload.picture;
+                        console.log('✅ Google 토큰에서 아바타 복원:', payload.picture);
+                    } catch (e) {
+                        console.warn('⚠️ Google 토큰에서 아바타 추출 실패:', e);
+                    }
+                }
+                
                 this.setAuth(authResult.token, authResult.user);
                 this.notifyListeners('login', authResult.user);
                 console.log('✅ 로그인 성공:', authResult.user.display_name);
@@ -407,12 +422,21 @@ class AuthManager {
                 console.log('📨 백엔드 응답:', authResult);
                 
                 if (authResult.success) {
-                    this.setAuth(authResult.token, authResult.user);
+                    // 백엔드에서 아바타 정보가 없다면 Google에서 받은 정보 사용
+                    const finalUser = {
+                        ...authResult.user,
+                        avatar: authResult.user.avatar || authResult.user.avatar_url || user.avatar,
+                        avatar_url: authResult.user.avatar_url || authResult.user.avatar || user.avatar
+                    };
+                    
+                    console.log('🔄 최종 사용자 정보:', finalUser);
+                    
+                    this.setAuth(authResult.token, finalUser);
                     console.log('💾 인증 정보 저장 완료');
                     
-                    this.notifyListeners('login', authResult.user);
+                    this.notifyListeners('login', finalUser);
                     console.log('📢 로그인 이벤트 발송 완료');
-                    console.log('✅ OAuth 로그인 성공:', authResult.user.display_name);
+                    console.log('✅ OAuth 로그인 성공:', finalUser.display_name);
                 } else {
                     console.error('❌ 백엔드 인증 실패:', authResult);
                     throw new Error(authResult.error || 'OAuth 인증 실패');
@@ -512,6 +536,9 @@ class AuthManager {
     }
     
     getUser() {
+        if (this.user) {
+            console.log('📋 현재 저장된 사용자 정보:', this.user);
+        }
         return this.user;
     }
     
