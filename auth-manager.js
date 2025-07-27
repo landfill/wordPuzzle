@@ -304,7 +304,7 @@ class AuthManager {
                 
                 // 약간의 지연 후 재초기화
                 setTimeout(() => {
-                    this.initializeGoogleSignIn();
+                    this.setupGoogleAuth();
                 }, 100);
             }
         } catch (error) {
