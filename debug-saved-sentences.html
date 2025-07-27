@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Saved Sentences</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Saved Sentences Debug</h1>
+    
+    <div class="debug-section">
+        <h2>Local Storage Contents</h2>
+        <pre id="storage-content"></pre>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Test Saved Sentences Display</h2>
+        <div id="saved-sentences-container"></div>
+    </div>
+    
+    <script type="module">
+        import DataManager from './data-manager.js';
+        
+        // Display local storage
+        const storageContent = localStorage.getItem('wordCrackUserData');
+        document.getElementById('storage-content').textContent = 
+            storageContent ? JSON.stringify(JSON.parse(storageContent), null, 2) : 'No data found';
+        
+        // Test data manager
+        const dataManager = new DataManager();
+        const savedSentences = dataManager.getSavedSentences();
+        
+        console.log('Saved sentences from DataManager:', savedSentences);
+        
+        // Test rendering function (copied from script.js)
+        function updateSavedSentences(savedSentences) {
+            const container = document.getElementById('saved-sentences-container');
+            
+            if (!container) {
+                console.error('❌ saved-sentences-container 요소를 찾을 수 없음!');
+                return;
+            }
+            
+            if (savedSentences.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💾</div>
+                        <p>저장된 문장이 없습니다.<br>게임에서 마음에 드는 문장을 저장해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 최근 저장된 순으로 정렬
+            const sortedSentences = savedSentences.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            container.innerHTML = sortedSentences.map(sentence => {
+                const date = new Date(sentence.timestamp).toLocaleDateString('ko-KR');
+                const categoryIcons = {
+                    'movies': '🎬',
+                    'songs': '🎵', 
+                    'books': '📚',
+                    'quotes': '💬',
+                    'daily_travel_phrases': '✈️'
+                };
+                
+                return `
+                    <div class="saved-sentence-item" data-sentence-id="${sentence.timestamp}">
+                        <div class="saved-sentence-content">
+                            <div class="saved-sentence-text">${sentence.sentence}</div>
+                            <div class="saved-sentence-translation">${sentence.translation}</div>
+                            <div class="saved-sentence-meta">
+                                <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
+                                <span>${date}</span>
+                            </div>
+                        </div>
+                        <button class="delete-sentence-btn" onclick="deleteSavedSentence('${sentence.timestamp}')" title="문장 삭제">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        updateSavedSentences(savedSentences);
+    </script>
+</body>
+</html>

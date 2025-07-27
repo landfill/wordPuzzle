@@ -19,7 +19,8 @@ export default {
     }
 
     try {
-      console.log(`${request.method} ${url.pathname}`);
+      // 로그 활성화 보장 - timestamp 포함
+      console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname}`);
       
       // 라우팅
       if (url.pathname.startsWith('/api/auth')) {

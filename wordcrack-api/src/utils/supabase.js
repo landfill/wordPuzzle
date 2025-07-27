@@ -3,13 +3,16 @@
 export function createSupabaseClient(env) {
   // Worker 환경에서는 직접 fetch를 사용
   const supabaseUrl = env.SUPABASE_URL;
-  const supabaseKey = env.SUPABASE_ANON_KEY;
+  const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
   
   console.log('Supabase config check:', { 
     hasUrl: !!supabaseUrl, 
     hasKey: !!supabaseKey,
     urlLength: supabaseUrl?.length,
-    keyLength: supabaseKey?.length
+    keyLength: supabaseKey?.length,
+    hasServiceKey: !!env.SUPABASE_SERVICE_ROLE_KEY,
+    hasAnonKey: !!env.SUPABASE_ANON_KEY,
+    usingKey: env.SUPABASE_SERVICE_ROLE_KEY ? 'service' : 'anon'
   });
   
   if (!supabaseUrl || !supabaseKey) {

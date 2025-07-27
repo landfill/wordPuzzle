@@ -41,11 +41,12 @@ async function getLeaderboard(request, env, category) {
       categoryFilter = `&category=eq.${category}`;
     }
 
-    // 최고 점수만 가져오기 위한 쿼리
-    // 각 사용자의 카테고리별 최고 점수를 가져옴
-    let query = `select=user_id,category,score,hints_used,perfect_score,play_time,created_at,cracker_profiles(display_name,avatar_url)&order=score.desc,created_at.asc${categoryFilter}${timeFilter}&limit=${limit}&offset=${offset}`;
-
+    // 점수와 사용자 정보를 JOIN하여 가져오기
+    let query = `select=*,cracker_profiles!inner(display_name,avatar_url)&order=score.desc,created_at.asc${categoryFilter}${timeFilter}&limit=${limit}&offset=${offset}`;
+    
+    console.log('Leaderboard query:', query);
     const scores = await supabase.select('cracker_scores', query);
+    console.log('Leaderboard scores result:', scores.length, scores[0]);
     
     // 사용자별 최고 점수만 필터링
     const userBestScores = new Map();

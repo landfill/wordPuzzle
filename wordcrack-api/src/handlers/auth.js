@@ -41,12 +41,14 @@ async function handleGoogleAuth(request, env) {
     
     let profile;
     if (profiles.length === 0) {
-      // 새 사용자 생성
+      // 새 사용자 생성 (id는 자동 생성)
       const newProfile = {
         google_id: googleUser.sub,
         display_name: googleUser.name,
         avatar_url: googleUser.picture
       };
+      
+      console.log('New profile data:', JSON.stringify(newProfile));
       
       const created = await supabase.insert('cracker_profiles', newProfile);
       profile = created[0];

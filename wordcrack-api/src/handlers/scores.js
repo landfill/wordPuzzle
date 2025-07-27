@@ -19,8 +19,12 @@ export async function handleScores(request, env) {
 
 async function handleScoreUpload(request, env) {
   try {
+    console.log('Score upload request received');
+    
     // 인증 확인
     const user = await authenticateRequest(request, env);
+    console.log('Authenticated user:', user ? 'valid' : 'invalid');
+    
     if (!user) {
       return createCorsResponse({ error: 'Authentication required' }, 401);
     }
@@ -51,9 +55,10 @@ async function handleScoreUpload(request, env) {
       score: scoreData.score,
       hints_used: scoreData.hintsUsed || 0,
       perfect_score: (scoreData.hintsUsed === 0 && scoreData.score >= 80),
-      play_time: scoreData.playTime || 0,
-      sentence: scoreData.sentence || null
+      play_time: scoreData.playTime || 0
     };
+    
+    console.log('Attempting to save score:', JSON.stringify(newScore));
 
     const result = await supabase.insert('cracker_scores', newScore);
     
@@ -81,7 +86,7 @@ async function handleScoreQuery(request, env) {
 
     const supabase = createSupabaseClient(env);
     
-    let query = `select=*,cracker_profiles(display_name,avatar_url)&order=score.desc,created_at.desc&limit=${limit}`;
+    let query = `select=*,cracker_profiles!inner(display_name,avatar_url)&order=score.desc,created_at.desc&limit=${limit}`;
     
     if (userId) {
       query += `&user_id=eq.${userId}`;
