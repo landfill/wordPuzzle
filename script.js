@@ -2182,15 +2182,15 @@ ${problem.translation}
             <div class="${rankClass}">
                 ${rankEmoji || rank}
             </div>
-            <img class="player-avatar" src="${player.avatar_url || '/default-avatar.png'}" 
-                 alt="${player.display_name}" 
+            <img class="player-avatar" src="${player.user?.avatarUrl || '/default-avatar.png'}" 
+                 alt="${player.user?.displayName}" 
                  onerror="this.src='/default-avatar.png'">
             <div class="player-info">
-                <div class="player-name">${player.display_name || 'Anonymous'}</div>
+                <div class="player-name">${player.user?.displayName || 'Anonymous'}</div>
                 <div class="player-details">
                     ${player.category ? `${player.category.toUpperCase()} • ` : ''}
-                    ${player.hints_used || 0} hints • 
-                    ${player.perfect_score ? 'Perfect!' : `${player.play_time}s`}
+                    ${player.hintsUsed || 0} hints • 
+                    ${player.perfectScore ? 'Perfect!' : `${player.playTime}s`}
                 </div>
             </div>
             <div class="score">${player.score}</div>
