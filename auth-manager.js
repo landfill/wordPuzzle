@@ -329,10 +329,25 @@ class AuthManager {
         const state = encodeURIComponent(window.location.href);
         localStorage.setItem('oauth_return_url', window.location.href);
         
+        // 허용된 도메인 리스트 
+        const allowedDomains = [
+            'https://wordpuzzle.pages.dev',
+            'https://wordcrack-game.pages.dev', 
+            'http://localhost:8000',
+            'http://127.0.0.1:8000'
+        ];
+        
+        let redirectUri = window.location.origin;
+        
+        // 로컬 개발환경이거나 허용되지 않은 도메인인 경우 기본 도메인 사용
+        if (!allowedDomains.includes(redirectUri)) {
+            redirectUri = 'https://wordpuzzle.pages.dev';
+        }
+        
         const oauthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
             new URLSearchParams({
                 client_id: CONFIG.GOOGLE_CLIENT_ID,
-                redirect_uri: window.location.origin,
+                redirect_uri: redirectUri,
                 response_type: 'token id_token',
                 scope: 'openid email profile',
                 state: state,
@@ -375,10 +390,16 @@ class AuthManager {
                     verified: payload.email_verified
                 };
                 
-                // 임시 토큰으로 ID 토큰 사용 (실제로는 백엔드에서 JWT 생성해야 함)
-                this.setAuth(idToken, user);
-                this.notifyListeners('login', user);
-                console.log('✅ OAuth 로그인 성공:', user.display_name);
+                // 백엔드로 Google ID 토큰 전송하여 우리 시스템의 JWT 받기
+                const authResult = await this.authenticateWithBackend(idToken);
+                
+                if (authResult.success) {
+                    this.setAuth(authResult.token, authResult.user);
+                    this.notifyListeners('login', authResult.user);
+                    console.log('✅ OAuth 로그인 성공:', authResult.user.display_name);
+                } else {
+                    throw new Error(authResult.error || 'OAuth 인증 실패');
+                }
                 
                 // URL fragment 제거
                 window.location.hash = '';
@@ -399,7 +420,21 @@ class AuthManager {
             } catch (error) {
                 console.error('OAuth 토큰 처리 실패:', error);
                 window.location.hash = '';
-                throw error;
+                
+                // 사용자에게 알림 후 계속 진행
+                alert('로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+                
+                // 원래 페이지로 복귀 (로그인 실패해도 게임은 계속 가능)
+                const returnUrl = localStorage.getItem('oauth_return_url');
+                localStorage.removeItem('oauth_return_url');
+                
+                if (returnUrl && returnUrl !== window.location.href) {
+                    setTimeout(() => {
+                        if (returnUrl.startsWith(window.location.origin)) {
+                            window.location.href = returnUrl;
+                        }
+                    }, 100);
+                }
             }
         }
     }

@@ -2137,8 +2137,8 @@ ${problem.translation}
             loginBtn.style.display = 'none';
             userProfile.style.display = 'flex';
             
-            if (userAvatar && user.avatar_url) {
-                userAvatar.src = user.avatar_url;
+            if (userAvatar && (user.avatar_url || user.avatar)) {
+                userAvatar.src = user.avatar_url || user.avatar;
                 userAvatar.style.display = 'block';
             }
             
