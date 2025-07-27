@@ -2022,12 +2022,16 @@ ${problem.translation}
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button onclick="copyCurrentUrl()" class="btn secondary">주소 복사</button>
-                    <button onclick="closeModal(this)" class="btn primary">확인</button>
+                    <button class="btn secondary copy-url-btn">주소 복사</button>
+                    <button class="btn primary close-modal-btn">확인</button>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+        
+        // 이벤트 리스너 추가
+        modal.querySelector('.copy-url-btn').addEventListener('click', copyCurrentUrl);
+        modal.querySelector('.close-modal-btn').addEventListener('click', () => modal.remove());
     }
     
     function showPopupBlockedModal() {
@@ -2051,13 +2055,18 @@ ${problem.translation}
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button onclick="tryRedirectLogin()" class="btn secondary">리다이렉트 로그인</button>
-                    <button onclick="window.location.reload()" class="btn secondary">페이지 새로고침</button>
-                    <button onclick="closeModal(this)" class="btn primary">닫기</button>
+                    <button class="btn secondary redirect-login-btn">리다이렉트 로그인</button>
+                    <button class="btn secondary reload-page-btn">페이지 새로고침</button>
+                    <button class="btn primary close-modal-btn">닫기</button>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+        
+        // 이벤트 리스너 추가
+        modal.querySelector('.redirect-login-btn').addEventListener('click', tryRedirectLogin);
+        modal.querySelector('.reload-page-btn').addEventListener('click', () => window.location.reload());
+        modal.querySelector('.close-modal-btn').addEventListener('click', () => modal.remove());
     }
     
     function copyCurrentUrl() {
@@ -2083,12 +2092,6 @@ ${problem.translation}
         }
     }
     
-    function closeModal(button) {
-        const modal = button.closest('.modal-overlay');
-        if (modal) {
-            modal.remove();
-        }
-    }
     
     // 로그아웃 처리
     async function handleLogout() {

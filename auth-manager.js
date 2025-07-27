@@ -235,17 +235,11 @@ class AuthManager {
             // 기존 세션 정리 후 재시도
             this.resetGoogleSignIn();
             
-            // 팝업 방식으로 시도
-            await this.tryPopupLogin();
+            // 단순하게 Google One Tap 시도
+            window.google.accounts.id.prompt();
         } catch (error) {
             console.error('Google 로그인 실패:', error);
-            // 폴백: 리다이렉트 방식으로 시도
-            if (error.message.includes('popup') || error.message.includes('blocked')) {
-                console.log('팝업 실패, 리다이렉트 방식으로 재시도...');
-                await this.tryRedirectLogin();
-            } else {
-                throw error;
-            }
+            throw error;
         }
     }
     
@@ -318,46 +312,6 @@ class AuthManager {
         }
     }
     
-    // 팝업 방식 로그인 시도
-    async tryPopupLogin() {
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-                reject(new Error('팝업 로그인 시간 초과'));
-            }, 30000); // 30초 타임아웃
-            
-            try {
-                // One Tap 대신 명시적 버튼 클릭 방식 사용
-                window.google.accounts.id.renderButton(
-                    document.createElement('div'),
-                    {
-                        type: 'standard',
-                        size: 'large',
-                        width: 250,
-                        click_listener: () => {
-                            clearTimeout(timeout);
-                            resolve();
-                        }
-                    }
-                );
-                
-                // 프로그래밍 방식으로 트리거
-                window.google.accounts.id.prompt((notification) => {
-                    clearTimeout(timeout);
-                    
-                    if (notification.isNotDisplayed()) {
-                        reject(new Error('Google Sign-In 팝업이 차단되었습니다. 팝업 차단을 해제해주세요.'));
-                    } else if (notification.isSkippedMoment()) {
-                        reject(new Error('Google Sign-In이 취소되었습니다.'));
-                    } else {
-                        resolve();
-                    }
-                });
-            } catch (error) {
-                clearTimeout(timeout);
-                reject(error);
-            }
-        });
-    }
     
     // 리다이렉트 방식 로그인 (폴백)
     async tryRedirectLogin() {
