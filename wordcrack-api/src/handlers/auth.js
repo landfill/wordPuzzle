@@ -48,8 +48,6 @@ async function handleGoogleAuth(request, env) {
         avatar_url: googleUser.picture
       };
       
-      console.log('New profile data:', JSON.stringify(newProfile));
-      
       const created = await supabase.insert('cracker_profiles', newProfile);
       profile = created[0];
     } else {

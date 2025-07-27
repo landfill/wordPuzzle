@@ -44,9 +44,7 @@ async function getLeaderboard(request, env, category) {
     // 점수와 사용자 정보를 JOIN하여 가져오기
     let query = `select=*,cracker_profiles!inner(display_name,avatar_url)&order=score.desc,created_at.asc${categoryFilter}${timeFilter}&limit=${limit}&offset=${offset}`;
     
-    console.log('Leaderboard query:', query);
     const scores = await supabase.select('cracker_scores', query);
-    console.log('Leaderboard scores result:', scores.length, scores[0]);
     
     // 사용자별 최고 점수만 필터링
     const userBestScores = new Map();
