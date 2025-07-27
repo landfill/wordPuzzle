@@ -252,20 +252,53 @@ class AuthManager {
     // 웹뷰 환경 감지
     isWebView() {
         const userAgent = navigator.userAgent;
+        console.log('User Agent:', userAgent); // 디버깅용
         
-        // 일반적인 웹뷰 패턴들
+        // 먼저 정상 브라우저 확인 (웹뷰가 아님)
+        const normalBrowserPatterns = [
+            /Chrome\/[\d.]+ Mobile Safari/i,    // 모바일 Chrome (Android)
+            /EdgiOS/i,                          // iOS Edge
+            /CriOS/i,                           // iOS Chrome  
+            /FxiOS/i,                           // iOS Firefox
+            /SamsungBrowser/i,                  // 삼성 브라우저
+            /Firefox\/[\d.]+.*Mobile/i,         // Android Firefox
+            /Edge\/[\d.]+.*Mobile/i,            // Android Edge
+        ];
+        
+        // 정상 브라우저라면 웹뷰가 아님
+        if (normalBrowserPatterns.some(pattern => pattern.test(userAgent))) {
+            console.log('정상 모바일 브라우저 감지');
+            return false;
+        }
+        
+        // iOS Safari 구분: 웹뷰는 Safari/XXX가 없음
+        if (/iPhone|iPad/.test(userAgent) && /Mobile.*Safari/.test(userAgent)) {
+            // 진짜 Safari는 Safari/XXX 버전이 있음
+            if (/Safari\/[\d.]+/.test(userAgent)) {
+                console.log('iOS Safari 브라우저 감지');
+                return false;
+            } else {
+                console.log('iOS 웹뷰 감지 (Safari 버전 없음)');
+                return true;
+            }
+        }
+        
+        // 앱 내 브라우저 패턴들
         const webViewPatterns = [
-            /wv\)/i,           // Android WebView
-            /Version\/[\d.]+.*Mobile.*Safari/i, // iOS WebView
+            /wv\)/i,           // Android WebView  
             /FB_IAB/i,         // Facebook in-app browser
             /FBAN/i,           // Facebook app
             /Instagram/i,      // Instagram app
             /Line/i,           // Line app
             /WhatsApp/i,       // WhatsApp app
             /Kakao/i,          // KakaoTalk app
+            /NAVER/i,          // 네이버 앱
+            /Whale/i,          // 네이버 웨일 (앱 버전)
         ];
         
-        return webViewPatterns.some(pattern => pattern.test(userAgent));
+        const isWebView = webViewPatterns.some(pattern => pattern.test(userAgent));
+        console.log('웹뷰 감지 결과:', isWebView);
+        return isWebView;
     }
     
     // Google Sign-In 상태 리셋
