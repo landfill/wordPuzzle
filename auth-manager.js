@@ -226,11 +226,122 @@ class AuthManager {
         }
         
         try {
-            window.google.accounts.id.prompt();
+            // 웹뷰 환경 감지
+            if (this.isWebView()) {
+                console.warn('웹뷰 환경에서는 Google Sign-In이 제한됩니다.');
+                throw new Error('웹뷰 환경에서는 Google 로그인을 지원하지 않습니다. 기본 브라우저를 사용해주세요.');
+            }
+            
+            // 기존 세션 정리 후 재시도
+            this.resetGoogleSignIn();
+            
+            // 팝업 방식으로 시도
+            await this.tryPopupLogin();
         } catch (error) {
-            console.error('Google 로그인 시작 실패:', error);
-            throw error;
+            console.error('Google 로그인 실패:', error);
+            // 폴백: 리다이렉트 방식으로 시도
+            if (error.message.includes('popup') || error.message.includes('blocked')) {
+                console.log('팝업 실패, 리다이렉트 방식으로 재시도...');
+                await this.tryRedirectLogin();
+            } else {
+                throw error;
+            }
         }
+    }
+    
+    // 웹뷰 환경 감지
+    isWebView() {
+        const userAgent = navigator.userAgent;
+        
+        // 일반적인 웹뷰 패턴들
+        const webViewPatterns = [
+            /wv\)/i,           // Android WebView
+            /Version\/[\d.]+.*Mobile.*Safari/i, // iOS WebView
+            /FB_IAB/i,         // Facebook in-app browser
+            /FBAN/i,           // Facebook app
+            /Instagram/i,      // Instagram app
+            /Line/i,           // Line app
+            /WhatsApp/i,       // WhatsApp app
+            /Kakao/i,          // KakaoTalk app
+        ];
+        
+        return webViewPatterns.some(pattern => pattern.test(userAgent));
+    }
+    
+    // Google Sign-In 상태 리셋
+    resetGoogleSignIn() {
+        try {
+            if (window.google?.accounts?.id) {
+                // 기존 세션 취소
+                window.google.accounts.id.cancel();
+                
+                // 약간의 지연 후 재초기화
+                setTimeout(() => {
+                    this.initializeGoogleSignIn();
+                }, 100);
+            }
+        } catch (error) {
+            console.warn('Google Sign-In 리셋 중 오류:', error);
+        }
+    }
+    
+    // 팝업 방식 로그인 시도
+    async tryPopupLogin() {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('팝업 로그인 시간 초과'));
+            }, 30000); // 30초 타임아웃
+            
+            try {
+                // One Tap 대신 명시적 버튼 클릭 방식 사용
+                window.google.accounts.id.renderButton(
+                    document.createElement('div'),
+                    {
+                        type: 'standard',
+                        size: 'large',
+                        width: 250,
+                        click_listener: () => {
+                            clearTimeout(timeout);
+                            resolve();
+                        }
+                    }
+                );
+                
+                // 프로그래밍 방식으로 트리거
+                window.google.accounts.id.prompt((notification) => {
+                    clearTimeout(timeout);
+                    
+                    if (notification.isNotDisplayed()) {
+                        reject(new Error('Google Sign-In 팝업이 차단되었습니다. 팝업 차단을 해제해주세요.'));
+                    } else if (notification.isSkippedMoment()) {
+                        reject(new Error('Google Sign-In이 취소되었습니다.'));
+                    } else {
+                        resolve();
+                    }
+                });
+            } catch (error) {
+                clearTimeout(timeout);
+                reject(error);
+            }
+        });
+    }
+    
+    // 리다이렉트 방식 로그인 (폴백)
+    async tryRedirectLogin() {
+        // 현재 URL 저장
+        const returnUrl = window.location.href;
+        localStorage.setItem('auth_return_url', returnUrl);
+        
+        // Google OAuth 직접 URL로 리다이렉트
+        const googleAuthUrl = `https://accounts.google.com/oauth/authorize?` +
+            `client_id=${CONFIG.GOOGLE_CLIENT_ID}&` +
+            `redirect_uri=${encodeURIComponent(window.location.origin)}&` +
+            `response_type=code&` +
+            `scope=openid email profile&` +
+            `state=${encodeURIComponent(returnUrl)}`;
+        
+        console.log('리다이렉트 방식으로 Google 로그인 시도...');
+        window.location.href = googleAuthUrl;
     }
     
     async logout() {

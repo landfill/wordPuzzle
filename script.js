@@ -1984,8 +1984,109 @@ ${problem.translation}
         try {
             await authManager.login();
         } catch (error) {
-            console.error('로그인 실패:', error);
-            alert('로그인에 실패했습니다. 다시 시도해주세요.');
+            console.error('로그인 에러:', error);
+            
+            // 웹뷰 환경 에러 처리
+            if (error.message.includes('웹뷰')) {
+                showWebViewErrorModal();
+            } 
+            // 팝업 차단 에러 처리
+            else if (error.message.includes('팝업') || error.message.includes('blocked')) {
+                showPopupBlockedModal();
+            }
+            // 기타 에러
+            else {
+                alert('로그인에 실패했습니다: ' + error.message);
+            }
+        }
+    }
+    
+    function showWebViewErrorModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content error-modal">
+                <h2>⚠️ 로그인 제한 안내</h2>
+                <div class="error-content">
+                    <p>현재 앱 내 브라우저(웹뷰)에서는 Google 로그인이 제한됩니다.</p>
+                    <div class="solution-steps">
+                        <h4>해결 방법:</h4>
+                        <ol>
+                            <li><strong>Safari/Chrome</strong> 등 기본 브라우저를 직접 실행</li>
+                            <li>주소창에 현재 주소 입력</li>
+                            <li>다시 Google 로그인 시도</li>
+                        </ol>
+                    </div>
+                    <div class="help-text">
+                        <small>💡 북마크에 추가하시면 다음에 쉽게 접속할 수 있습니다!</small>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button onclick="copyCurrentUrl()" class="btn secondary">주소 복사</button>
+                    <button onclick="closeModal(this)" class="btn primary">확인</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    function showPopupBlockedModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content error-modal">
+                <h2>🚫 팝업 차단 안내</h2>
+                <div class="error-content">
+                    <p>브라우저에서 팝업이 차단되어 로그인할 수 없습니다.</p>
+                    <div class="solution-steps">
+                        <h4>해결 방법:</h4>
+                        <ol>
+                            <li>브라우저 주소창 옆 <strong>팝업 차단 아이콘</strong> 클릭</li>
+                            <li><strong>"항상 허용"</strong> 선택</li>
+                            <li>페이지 새로고침 후 다시 시도</li>
+                        </ol>
+                    </div>
+                    <div class="alternative">
+                        <p>또는 아래 버튼으로 <strong>리다이렉트 방식</strong>으로 로그인할 수 있습니다:</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button onclick="tryRedirectLogin()" class="btn secondary">리다이렉트 로그인</button>
+                    <button onclick="window.location.reload()" class="btn secondary">페이지 새로고침</button>
+                    <button onclick="closeModal(this)" class="btn primary">닫기</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    function copyCurrentUrl() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('주소가 복사되었습니다! 기본 브라우저에서 붙여넣기 해주세요.');
+        }).catch(() => {
+            // 클립보드 API 실패 시 대체 방법
+            const textArea = document.createElement('textarea');
+            textArea.value = window.location.href;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('주소가 복사되었습니다! 기본 브라우저에서 붙여넣기 해주세요.');
+        });
+    }
+    
+    async function tryRedirectLogin() {
+        try {
+            await authManager.tryRedirectLogin();
+        } catch (error) {
+            alert('리다이렉트 로그인 실패: ' + error.message);
+        }
+    }
+    
+    function closeModal(button) {
+        const modal = button.closest('.modal-overlay');
+        if (modal) {
+            modal.remove();
         }
     }
     

@@ -2967,3 +2967,167 @@ body.dark-mode .score {
         margin: 24px 0 12px 0;
     }
 }
+
+/* 에러 모달 스타일 */
+.error-modal {
+    max-width: 500px;
+    width: 100%;
+}
+
+.error-modal h2 {
+    color: #dc2626;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.error-content {
+    margin-bottom: 25px;
+}
+
+.error-content p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.solution-steps {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.solution-steps h4 {
+    color: #1f2937;
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.solution-steps ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.solution-steps li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.help-text {
+    background: #eff6ff;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid #3b82f6;
+    margin-top: 15px;
+}
+
+.help-text small {
+    color: #1e40af;
+}
+
+.alternative {
+    background: #f0fdf4;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #22c55e;
+    margin-top: 15px;
+}
+
+.alternative p {
+    margin: 0;
+    color: #166534;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.modal-actions .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.modal-actions .btn.primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.modal-actions .btn.primary:hover {
+    background: #2563eb;
+}
+
+.modal-actions .btn.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.modal-actions .btn.secondary:hover {
+    background: #e5e7eb;
+}
+
+/* 다크모드 에러 모달 */
+body.dark-mode .error-modal h2 {
+    color: #f87171;
+}
+
+body.dark-mode .solution-steps {
+    background: #374151;
+    color: #e5e7eb;
+}
+
+body.dark-mode .solution-steps h4 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .help-text {
+    background: #1e3a8a;
+    border-left-color: #60a5fa;
+}
+
+body.dark-mode .help-text small {
+    color: #93c5fd;
+}
+
+body.dark-mode .alternative {
+    background: #166534;
+    border-left-color: #4ade80;
+}
+
+body.dark-mode .alternative p {
+    color: #86efac;
+}
+
+body.dark-mode .modal-actions .btn.secondary {
+    background: #374151;
+    color: #e5e7eb;
+    border-color: #6b7280;
+}
+
+body.dark-mode .modal-actions .btn.secondary:hover {
+    background: #4b5563;
+}
+
+/* 에러 모달 모바일 대응 */
+@media (max-width: 768px) {
+    .error-modal {
+        margin: 10px;
+        max-width: none;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
