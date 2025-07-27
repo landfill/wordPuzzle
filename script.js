@@ -2180,10 +2180,13 @@ ${problem.translation}
                 console.warn('⚠️ 아바타 정보 없음:', { userAvatar: !!userAvatar, avatar: user.avatar_url || user.avatar });
             }
             
-            if (userName) {
-                const displayName = user.display_name || 'User';
-                console.log('👤 사용자명 설정:', displayName);
-                userName.textContent = displayName;
+            if (userName && user.display_name) {
+                console.log('👤 사용자명 설정:', user.display_name);
+                userName.textContent = user.display_name;
+            } else if (userName) {
+                // display_name이 없으면 사용자명 숨김
+                userName.textContent = '';
+                userName.style.display = 'none';
             }
         } else {
             console.log('🚪 로그아웃 상태 UI 적용 중...');

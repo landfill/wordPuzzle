@@ -1958,11 +1958,13 @@ body.dark-mode {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     backdrop-filter: blur(10px);
+    min-height: 40px; /* G 로그인 버튼과 동일한 높이 */
+    box-sizing: border-box;
 }
 
 .user-avatar {
