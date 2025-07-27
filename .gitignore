@@ -1,2 +1,6 @@
 node_modules/
 .env
+
+# TODO 파일들 (개발 문서)
+*TODO.md
+*_TODO.md
