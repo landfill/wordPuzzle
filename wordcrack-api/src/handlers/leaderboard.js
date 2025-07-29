@@ -41,43 +41,69 @@ async function getLeaderboard(request, env, category) {
       categoryFilter = `&category=eq.${category}`;
     }
 
-    // 점수와 사용자 정보를 JOIN하여 가져오기
-    let query = `select=*,cracker_profiles!inner(display_name,avatar_url)&order=score.desc,created_at.asc${categoryFilter}${timeFilter}&limit=${limit}&offset=${offset}`;
+    // 점수와 사용자 정보를 JOIN하여 가져오기 (모든 점수 데이터)
+    let query = `select=*,cracker_profiles!inner(display_name,avatar_url)${categoryFilter}${timeFilter}`;
     
     const scores = await supabase.select('cracker_scores', query);
     
-    // 사용자별 최고 점수만 필터링
-    const userBestScores = new Map();
+    // 사용자별 총합 점수 집계 (GROUP BY user_id)
+    const userTotalScores = new Map();
     
     scores.forEach(score => {
-      const key = `${score.user_id}-${score.category}`;
-      const existing = userBestScores.get(key);
+      const userId = score.user_id;
+      const existing = userTotalScores.get(userId);
       
-      if (!existing || score.score > existing.score) {
-        userBestScores.set(key, score);
+      if (!existing) {
+        userTotalScores.set(userId, {
+          userId: userId,
+          totalScore: score.score,
+          gamesPlayed: 1,
+          totalHints: score.hints_used,
+          perfectScores: score.perfect_score ? 1 : 0,
+          totalPlayTime: score.play_time || 0,
+          lastPlayedAt: score.created_at,
+          user: {
+            displayName: score.cracker_profiles?.display_name || 'Anonymous',
+            avatarUrl: score.cracker_profiles?.avatar_url
+          }
+        });
+      } else {
+        existing.totalScore += score.score;
+        existing.gamesPlayed += 1;
+        existing.totalHints += score.hints_used;
+        existing.perfectScores += score.perfect_score ? 1 : 0;
+        existing.totalPlayTime += score.play_time || 0;
+        // 가장 최근 플레이 시간 업데이트
+        if (new Date(score.created_at) > new Date(existing.lastPlayedAt)) {
+          existing.lastPlayedAt = score.created_at;
+        }
       }
     });
 
-    // 점수순으로 정렬된 리더보드 생성
-    const leaderboard = Array.from(userBestScores.values())
+    // 총점 기준으로 정렬된 리더보드 생성
+    const leaderboard = Array.from(userTotalScores.values())
       .sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return new Date(a.created_at) - new Date(b.created_at); // 같은 점수면 더 빨리 달성한 순
+        // 1차: 총점 내림차순
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        // 2차: 게임 수 내림차순 (많이 플레이한 사용자 우선)
+        if (b.gamesPlayed !== a.gamesPlayed) return b.gamesPlayed - a.gamesPlayed;
+        // 3차: 완벽한 점수 개수 내림차순
+        if (b.perfectScores !== a.perfectScores) return b.perfectScores - a.perfectScores;
+        // 4차: 최근 플레이 시간 내림차순
+        return new Date(b.lastPlayedAt) - new Date(a.lastPlayedAt);
       })
-      .slice(0, limit)
-      .map((score, index) => ({
-        rank: index + 1,
-        userId: score.user_id,
-        category: score.category,
-        score: score.score,
-        hintsUsed: score.hints_used,
-        perfectScore: score.perfect_score,
-        playTime: score.play_time,
-        achievedAt: score.created_at,
-        user: {
-          displayName: score.cracker_profiles?.display_name || 'Anonymous',
-          avatarUrl: score.cracker_profiles?.avatar_url
-        }
+      .slice(offset, offset + limit)
+      .map((userScore, index) => ({
+        rank: offset + index + 1,
+        userId: userScore.userId,
+        totalScore: userScore.totalScore,
+        averageScore: Math.round(userScore.totalScore / userScore.gamesPlayed),
+        gamesPlayed: userScore.gamesPlayed,
+        totalHintsUsed: userScore.totalHints,
+        perfectScores: userScore.perfectScores,
+        totalPlayTime: userScore.totalPlayTime,
+        lastPlayedAt: userScore.lastPlayedAt,
+        user: userScore.user
       }));
 
     // 통계 정보도 함께 제공
@@ -92,7 +118,8 @@ async function getLeaderboard(request, env, category) {
         timeframe,
         limit,
         offset,
-        totalShown: leaderboard.length
+        totalShown: leaderboard.length,
+        totalUsers: userTotalScores.size
       }
     });
 
