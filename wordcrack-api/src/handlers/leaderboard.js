@@ -45,6 +45,8 @@ async function getLeaderboard(request, env, category) {
     
     const scores = await supabase.select('cracker_scores', query);
     
+    console.log(`[DEBUG] Raw scores count: ${scores.length}, Category: ${category}`);
+    
     // 사용자별 총합 점수 집계 (GROUP BY user_id)
     const userTotalScores = new Map();
     
@@ -78,6 +80,9 @@ async function getLeaderboard(request, env, category) {
         }
       }
     });
+
+    console.log(`[DEBUG] Aggregated users count: ${userTotalScores.size}`);
+    console.log(`[DEBUG] Sample aggregated data:`, Array.from(userTotalScores.values())[0]);
 
     // 총점 기준으로 정렬된 리더보드 생성
     const leaderboard = Array.from(userTotalScores.values())
