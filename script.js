@@ -2306,12 +2306,12 @@ ${problem.translation}
             <div class="player-info">
                 <div class="player-name">${player.user?.displayName || 'Anonymous'}</div>
                 <div class="player-details">
-                    ${player.category ? `${player.category.toUpperCase()} • ` : ''}
-                    ${player.hintsUsed || 0} hints • 
-                    ${player.perfectScore ? 'Perfect!' : `${player.playTime}s`}
+                    ${player.gamesPlayed} games • 
+                    ${player.totalHintsUsed || 0} hints • 
+                    ${player.perfectScores} perfect scores
                 </div>
             </div>
-            <div class="score">${player.score}</div>
+            <div class="score">${player.totalScore}</div>
         `;
         
         return item;
