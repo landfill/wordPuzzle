@@ -14,6 +14,8 @@ export async function handleLeaderboard(request, env) {
   // /api/leaderboard/:category 형태 파싱
   const pathParts = path.split('/');
   const category = pathParts[3] || 'all';
+  
+  console.log(`[Leaderboard] Request path: ${path}, Parsed category: ${category}`);
 
   return await getLeaderboard(request, env, category);
 }
@@ -40,11 +42,17 @@ async function getLeaderboard(request, env, category) {
     if (category && category !== 'all') {
       categoryFilter = `&category=eq.${category}`;
     }
+    
+    console.log(`[Leaderboard] Category: ${category}, Filter: ${categoryFilter}, Timeframe: ${timeframe}`);
 
     // 점수와 사용자 정보를 JOIN하여 가져오기 (모든 점수 데이터)
     let query = `select=*,cracker_profiles!inner(display_name,avatar_url)${categoryFilter}${timeFilter}`;
     
+    console.log(`[Leaderboard] Query: ${query}`);
+    
     const scores = await supabase.select('cracker_scores', query);
+    
+    console.log(`[Leaderboard] Found ${scores.length} total scores for aggregation`);
     
     // 사용자별 총합 점수 집계 (GROUP BY user_id)
     const userTotalScores = new Map();
