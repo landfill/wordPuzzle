@@ -1706,8 +1706,13 @@ ${problem.translation}
         // 배지 유형별로 중복 제거 (가장 높은 희귀도만 표시)
         const badgesByType = {};
         userBadges.forEach(badge => {
-            // 배지 type을 우선적으로 사용하고, type이 없으면 icon을 사용
-            let badgeKey = badge.type || badge.icon;
+            // progress 타입은 카테고리별로 구분, 다른 타입은 type만으로 구분
+            let badgeKey;
+            if (badge.type === 'progress' && badge.category) {
+                badgeKey = `${badge.type}_${badge.category}`;
+            } else {
+                badgeKey = badge.type || badge.icon;
+            }
             
             // 같은 type의 배지 중 가장 높은 희귀도만 보관
             if (!badgesByType[badgeKey] || 
@@ -1728,15 +1733,26 @@ ${problem.translation}
         const badgeTypeIcons = {
             'streak': '🔥',
             'perfect': '💎',
-            'speedster': '⚡',
-            'scholar': '📚',
-            'completionist': '🏆',
-            'explorer': '🗺️'
+            'total': '🏅',
+            'special': '📝',
+            'accuracy': '🎯',
+            'progress': {
+                'movies': '🎬',
+                'songs': '🎵',
+                'books': '📚',
+                'quotes': '💬',
+                'daily_travel_phrases': '✈️'
+            }
         };
 
         container.innerHTML = sortedBadges.map(badge => {
-            // 배지 타입에 맞는 기본 아이콘 사용, 없으면 원래 아이콘 사용
-            const displayIcon = badgeTypeIcons[badge.type] || badge.icon;
+            // 배지 타입에 맞는 기본 아이콘 사용
+            let displayIcon;
+            if (badge.type === 'progress' && badge.category && badgeTypeIcons.progress[badge.category]) {
+                displayIcon = badgeTypeIcons.progress[badge.category];
+            } else {
+                displayIcon = badgeTypeIcons[badge.type] || badge.icon;
+            }
             
             return `
                 <div class="badge-item ${badge.type}-badge ${badge.rarity}" title="${badge.description}">
