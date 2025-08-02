@@ -1222,7 +1222,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (successModalCloseBtn) {
         successModalCloseBtn.addEventListener('click', () => {
-            successModal.style.display = 'none';
+            enterReviewMode();
         });
     }
     
@@ -1230,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (successModal) {
         successModal.addEventListener('click', (e) => {
             if (e.target === successModal) {
-                successModal.style.display = 'none';
+                enterReviewMode();
             }
         });
     }
