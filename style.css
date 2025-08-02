@@ -678,6 +678,36 @@ html {
     box-sizing: border-box;
     max-height: 90vh;
     overflow-y: auto;
+    position: relative;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.modal-close-btn:hover {
+    background: #f7fafc;
+    color: #2d3748;
+    transform: scale(1.1);
+}
+
+.modal-close-btn:active {
+    transform: scale(0.95);
 }
 
 @keyframes modalSlideIn {

@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sourceDisplay = document.querySelector('.source-display');
     const successModal = document.getElementById('success-modal');
     const gameOverModal = document.getElementById('game-over-modal');
-    const reviewBtn = document.getElementById('review-btn');
+    const successModalCloseBtn = document.getElementById('success-modal-close');
     const nextProblemBtn = document.getElementById('next-problem-btn');
     const listenBtn = document.getElementById('listen-btn');
     const saveSentenceBtn = document.getElementById('save-sentence-btn'); // Phase 2
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 공유 기능 버튼들
     const shareBtn = document.getElementById('share-btn');
-    const copyBtn = document.getElementById('copy-btn');
     const screenshotBtn = document.getElementById('screenshot-btn');
     
     // 다크모드 토글 버튼들
@@ -394,6 +393,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             currentSentence = currentProblem.sentence;
+            
+            // 랜덤 카테고리 선택 시 실제 문제의 카테고리로 제목 업데이트
+            if (selectedCategory === 'all' && currentProblem.category) {
+                updateGameTitle(currentProblem.category);
+            }
         }
         
         activeBlankIndex = -1;
@@ -727,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const playTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
                     
                     dataManager.recordGameCompletion({
-                        category: selectedCategory,
+                        category: selectedCategory === 'all' && currentProblem.category ? currentProblem.category : selectedCategory,
                         score: 0,
                         hintsUsed: hintsUsed,
                         isSuccess: false,
@@ -766,13 +770,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const score = calculateScore();
         
         dataManager.recordGameCompletion({
-            category: selectedCategory,
+            category: selectedCategory === 'all' && currentProblem.category ? currentProblem.category : selectedCategory,
             score: score,
             hintsUsed: hintsUsed,
             isSuccess: true,
             problemData: currentProblem,
             playTime: playTime
         });
+        
+        // 5연속 성공 체크 및 보너스 점수 부여
+        const userData = dataManager.getUserData();
+        if (userData && userData.stats.currentStreak === 5) {
+            // 보너스 점수 30점 부여
+            dataManager.updateUserData(data => {
+                // 현재 카테고리의 총 점수에 보너스 추가
+                const actualCategory = selectedCategory === 'all' && currentProblem.category ? currentProblem.category : selectedCategory;
+                data.categoryProgress[actualCategory].totalScore += 30;
+                data.stats.totalScore += 30;
+            });
+            
+            // 토스트 알림 표시
+            showToast('🔥 5연속 성공! 보너스 30점 획득! 🎉', 4000);
+        }
         
         // Phase 2-B: 새 배지 확인 및 알림
         const newBadges = achievementSystem.checkNewBadges();
@@ -782,14 +801,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Phase 3: 글로벌 점수 업로드
         if (isFeatureEnabled('SCORE_UPLOAD') && authManager.isLoggedIn()) {
-            uploadScoreToGlobal({
-                category: selectedCategory,
-                score: score,
-                hintsUsed: hintsUsed,
-                perfectScore: hintsUsed === 0 && lives === 5,
-                playTime: playTime,
-                sentence: sentence
-            });
+            // 'all' 카테고리는 집계용이므로 점수 저장 제외
+            if (selectedCategory !== 'all') {
+                uploadScoreToGlobal({
+                    category: selectedCategory,
+                    score: score,
+                    hintsUsed: hintsUsed,
+                    perfectScore: hintsUsed === 0 && lives === 5,
+                    playTime: playTime,
+                    sentence: sentence
+                });
+            }
         }
         
         // Phase 2: 저장 버튼 상태 업데이트
@@ -1198,10 +1220,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (reviewBtn) {
-        reviewBtn.addEventListener('click', () => {
-            // Review button clicked
-            enterReviewMode();
+    if (successModalCloseBtn) {
+        successModalCloseBtn.addEventListener('click', () => {
+            successModal.style.display = 'none';
+        });
+    }
+    
+    // 팝업 외부 클릭시 닫기 처리
+    if (successModal) {
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                successModal.style.display = 'none';
+            }
         });
     }
     
@@ -1317,28 +1347,12 @@ ${problem.translation}
         try {
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                 await navigator.share(shareData);
-                // 공유 성공
+                showToast('공유되었습니다! 🎉');
             } else {
-                // 폴백: 클립보드 복사
-                await copyToClipboard();
+                showToast('공유 기능을 사용할 수 없습니다 😅');
             }
         } catch (error) {
-            // 에러 시 폴백: 클립보드 복사
-            await copyToClipboard();
-        }
-    }
-
-    // 클립보드에 복사
-    async function copyToClipboard() {
-        if (!currentProblem) return;
-        
-        const textToCopy = formatStudyResult(currentProblem, true);
-        
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            showToast('클립보드에 복사되었습니다! 📋');
-        } catch (error) {
-            showToast('복사에 실패했습니다 😅');
+            showToast('공유에 실패했습니다 😅');
         }
     }
 
@@ -1857,9 +1871,6 @@ ${problem.translation}
         shareBtn.addEventListener('click', shareResult);
     }
     
-    if (copyBtn) {
-        copyBtn.addEventListener('click', copyToClipboard);
-    }
     
     if (screenshotBtn) {
         screenshotBtn.addEventListener('click', saveScreenshot);

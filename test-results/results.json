@@ -1,0 +1,665 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\surro\\Downloads\\AI_Projects\\wordPuzzle\\playwright.config.js",
+    "rootDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "C:/Users/surro/Downloads/AI_Projects/wordPuzzle/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.1",
+    "workers": 6,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "word-crack-final.spec.js",
+      "file": "word-crack-final.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Word Crack 최종 E2E 테스트",
+          "file": "word-crack-final.spec.js",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "✅ 1. 페이지 기본 로드 및 타이틀 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4948,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.197Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-ec4453f1ab30ac5d219c",
+              "file": "word-crack-final.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "✅ 2. 카테고리 선택 화면 표시 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5040,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.213Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-4f2d63d65d88ddab5f46",
+              "file": "word-crack-final.spec.js",
+              "line": 26,
+              "column": 3
+            },
+            {
+              "title": "✅ 3. 모든 카테고리 카드 존재 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 6709,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-8e0ddfd4b3dbffad3d6c",
+              "file": "word-crack-final.spec.js",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "✅ 4. 헤더 버튼들 표시 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5844,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.192Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-3df9668c8dadc2f65011",
+              "file": "word-crack-final.spec.js",
+              "line": 57,
+              "column": 3
+            },
+            {
+              "title": "✅ 5. 게임 화면 구조 존재 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 5513,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.246Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-ec74878ec4e7fca04c39",
+              "file": "word-crack-final.spec.js",
+              "line": 69,
+              "column": 3
+            },
+            {
+              "title": "✅ 6. 모달 구조 존재 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 5262,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:21.263Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-b91fd423b8d156565a17",
+              "file": "word-crack-final.spec.js",
+              "line": 85,
+              "column": 3
+            },
+            {
+              "title": "✅ 7. 접근성 기본 속성 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5825,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:26.732Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-6d15e3dc1292230e9eab",
+              "file": "word-crack-final.spec.js",
+              "line": 104,
+              "column": 3
+            },
+            {
+              "title": "✅ 8. 반응형 디자인 기본 테스트",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5761,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:27.057Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-7a1f4c66829739ea6c52",
+              "file": "word-crack-final.spec.js",
+              "line": 117,
+              "column": 3
+            },
+            {
+              "title": "✅ 9. CSS 파일 로드 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 3067,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:27.655Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-555ea007104117e3cc1f",
+              "file": "word-crack-final.spec.js",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "✅ 10. JavaScript 모듈 구조 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 3585,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:27.655Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-07158290d4c4ea89f4a7",
+              "file": "word-crack-final.spec.js",
+              "line": 144,
+              "column": 3
+            },
+            {
+              "title": "🔍 11. 카테고리 카드 클릭 가능성 테스트",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3475,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:27.819Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-85fa21e94fa2167d554f",
+              "file": "word-crack-final.spec.js",
+              "line": 151,
+              "column": 3
+            },
+            {
+              "title": "🔍 12. Feature Flag 요소 존재 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3456,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:28.781Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-b39ef691e50c310adcac",
+              "file": "word-crack-final.spec.js",
+              "line": 163,
+              "column": 3
+            },
+            {
+              "title": "📱 13. 모바일 전용 테스트",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 2617,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:30.743Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-c10a7f56be6ce5bcf162",
+              "file": "word-crack-final.spec.js",
+              "line": 174,
+              "column": 3
+            },
+            {
+              "title": "🎨 14. 다크모드 UI 요소 존재 확인",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 3120,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:31.260Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-06ea80316897a8dca359",
+              "file": "word-crack-final.spec.js",
+              "line": 189,
+              "column": 3
+            },
+            {
+              "title": "🌐 15. 최종 통합 구조 검증",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2827,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ Word Crack E2E 테스트 완료: 모든 기본 구조와 UI 요소가 정상적으로 확인되었습니다.\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-01T12:35:31.316Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2f8b648f46d05efbd517-c365db4a1615210df756",
+              "file": "word-crack-final.spec.js",
+              "line": 199,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-01T12:35:18.979Z",
+    "duration": 15885.216,
+    "expected": 15,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
