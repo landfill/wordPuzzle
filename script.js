@@ -5,6 +5,8 @@ import AchievementSystem from './achievement-system.js';
 // Phase 3: 새로운 모듈들
 import { isFeatureEnabled, CONFIG } from './config.js';
 import { authManager } from './auth-manager.js';
+// Phase 4-A: 게임 상태 관리
+import GameStateManager from './game-state-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -105,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let hintsUsed = 0; // 현재 문제에서 사용한 힌트 수
     let maxHints = 3; // 문제당 최대 힌트 수
     let currentScore = 0; // 현재 문제 점수
+
+    // Phase 4-A: 게임 상태 관리 시스템
+    const gameStateManager = new GameStateManager();
+    let gameStateIndicator = null; // 상태 저장 표시기
     let baseScore = 100; // 기본 점수
     let hintPenalty = 20; // 힌트당 감점
 
@@ -170,15 +176,74 @@ document.addEventListener('DOMContentLoaded', () => {
         ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
     
+    // Phase 4-A: 로딩 오버레이 관리
+    function createLoadingOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">로딩 중...</div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function showLoading(text = '로딩 중...') {
+        let overlay = document.querySelector('.loading-overlay');
+        if (!overlay) {
+            overlay = createLoadingOverlay();
+        }
+        const textElement = overlay.querySelector('.loading-text');
+        if (textElement) {
+            textElement.textContent = text;
+        }
+        overlay.classList.add('show');
+        return overlay;
+    }
+
+    function hideLoading() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.classList.remove('show');
+        }
+    }
+
+    // Phase 4-A: 화면 전환 애니메이션 함수들
     function showCategoryScreen() {
-        gameScreen.style.display = 'none';
-        categorySelectionScreen.style.display = 'flex';
+        animateScreenTransition(gameScreen, categorySelectionScreen);
         stopAllSounds();
     }
     
     function showGameScreen() {
-        categorySelectionScreen.style.display = 'none';
-        gameScreen.style.display = 'flex';
+        animateScreenTransition(categorySelectionScreen, gameScreen);
+    }
+
+    function animateScreenTransition(fromScreen, toScreen) {
+        // 현재 화면 페이드 아웃
+        fromScreen.classList.add('fade-out');
+        
+        setTimeout(() => {
+            fromScreen.style.display = 'none';
+            fromScreen.classList.remove('fade-out');
+            
+            // 새 화면 페이드 인
+            toScreen.style.display = 'flex';
+            toScreen.classList.add('fade-in');
+            
+            setTimeout(() => {
+                toScreen.classList.remove('fade-in');
+            }, 300);
+        }, 150);
+    }
+
+    // Phase 4-A: 키보드 키 애니메이션
+    function animateKeyPress(keyElement) {
+        keyElement.classList.add('pressed');
+        setTimeout(() => {
+            keyElement.classList.remove('pressed');
+        }, 150);
     }
     
     function showDashboardModal() {
@@ -188,6 +253,86 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function hideDashboardModal() {
         dashboardModal.style.display = 'none';
+    }
+
+    // Phase 4-A: 게임 상태 관리 함수들
+    function createGameStateIndicator() {
+        if (!gameStateIndicator) {
+            gameStateIndicator = document.createElement('div');
+            gameStateIndicator.className = 'game-state-indicator';
+            document.body.appendChild(gameStateIndicator);
+        }
+        return gameStateIndicator;
+    }
+
+    function showGameStateIndicator(message, isError = false) {
+        const indicator = createGameStateIndicator();
+        indicator.textContent = message;
+        indicator.className = 'game-state-indicator' + (isError ? ' error' : '');
+        indicator.classList.add('show');
+        
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 2000);
+    }
+
+    function getCurrentGameState() {
+        return {
+            selectedCategory,
+            currentProblem,
+            currentProblemNumber,
+            totalProblemsInSession,
+            hintsUsed,
+            currentScore,
+            isReviewMode,
+            gameStartTime
+        };
+    }
+
+    function saveCurrentGameState() {
+        const gameState = getCurrentGameState();
+        if (gameState.selectedCategory && gameState.currentProblem) {
+            const success = gameStateManager.saveGameState(gameState);
+            if (success) {
+                showGameStateIndicator('💾 게임 저장됨');
+            } else {
+                showGameStateIndicator('❌ 저장 실패', true);
+            }
+        }
+    }
+
+    async function restoreGameState(savedState) {
+        if (!savedState) return false;
+
+        try {
+            // 상태 복원
+            selectedCategory = savedState.selectedCategory;
+            currentProblem = savedState.currentProblem;
+            currentProblemNumber = savedState.currentProblemNumber || 1;
+            totalProblemsInSession = savedState.totalProblemsInSession || 5;
+            hintsUsed = savedState.hintsUsed || 0;
+            currentScore = savedState.currentScore || 0;
+            isReviewMode = savedState.isReviewMode || false;
+            gameStartTime = savedState.gameStartTime;
+
+            // UI 업데이트
+            showGameScreen();
+            updateGameTitle(selectedCategory);
+            loadProblem(currentProblem);
+            updateSourceDisplay(currentProblem);
+            updateProgressIndicator();
+
+            showGameStateIndicator('🔄 게임 복원됨');
+            
+            // 자동 저장 시작
+            gameStateManager.startAutoSave(getCurrentGameState);
+            
+            return true;
+        } catch (error) {
+            console.error('[GameState] 복원 중 오류:', error);
+            showGameStateIndicator('❌ 복원 실패', true);
+            return false;
+        }
     }
 
     function startGame(category) {
@@ -204,6 +349,9 @@ document.addEventListener('DOMContentLoaded', () => {
         changeGameState(GameState.PLAYING);
         initializeProgress();
         initializeGame();
+        
+        // Phase 4-A: 게임 상태 자동 저장 시작
+        gameStateManager.startAutoSave(getCurrentGameState);
     }
     
     function stopAllSounds() {
@@ -1104,10 +1252,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             row.forEach(k => {
                 const kDiv = document.createElement('div');
-                kDiv.className = 'key';
+                kDiv.className = 'key keyboard-key';
                 kDiv.textContent = k.toUpperCase();
                 kDiv.dataset.key = k;
-                kDiv.onclick = () => handleKeyPress(k);
+                kDiv.onclick = () => {
+                    // Phase 4-A: 키 클릭 애니메이션
+                    animateKeyPress(kDiv);
+                    handleKeyPress(k);
+                };
                 rDiv.appendChild(kDiv);
             });
             if (rIdx === keyboardLayout.length - 1) {
@@ -1194,6 +1346,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (homeBtn) {
         homeBtn.addEventListener('click', () => {
             // Home button clicked
+            // Phase 4-A: 게임 상태 정리
+            gameStateManager.stopAutoSave();
+            gameStateManager.clearGameState();
             changeGameState(GameState.CATEGORY_SELECTION);
         });
     }
@@ -2517,5 +2672,28 @@ ${problem.translation}
         } else {
         }
     };
+
+    // Phase 4-A: 페이지 로드 시 게임 상태 복원 확인
+    async function initializeGameStateRestore() {
+        try {
+            const savedState = await gameStateManager.checkAndRestore();
+            if (savedState) {
+                await restoreGameState(savedState);
+            }
+        } catch (error) {
+            console.error('[GameState] 초기화 중 오류:', error);
+        }
+    }
+
+    // 페이지 로드 완료 후 게임 상태 복원 확인
+    setTimeout(initializeGameStateRestore, 100);
+
+    // 페이지 언로드 시 게임 상태 저장
+    window.addEventListener('beforeunload', () => {
+        if (selectedCategory && currentProblem) {
+            saveCurrentGameState();
+        }
+        gameStateManager.stopAutoSave();
+    });
     
 });
