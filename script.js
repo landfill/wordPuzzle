@@ -2755,13 +2755,21 @@ ${problem.translation}
             const failedUploads = JSON.parse(localStorage.getItem('wordcrack_failed_uploads') || '[]');
             if (failedUploads.length === 0) return;
             
+            console.log(`[Score] 실패한 업로드 ${failedUploads.length}개 재시도 중...`);
             
             const successful = [];
             const stillFailed = [];
             
             for (const upload of failedUploads) {
                 if (upload.retryCount >= CONFIG.GAME.SCORE_UPLOAD_RETRY) {
-                    // 최대 재시도 횟수 초과
+                    // 최대 재시도 횟수 초과 - 삭제
+                    console.log('[Score] 최대 재시도 횟수 초과, 삭제:', upload);
+                    continue;
+                }
+                
+                // 데이터 유효성 검사
+                if (!upload.category || !upload.score || upload.score < 0) {
+                    console.log('[Score] 잘못된 데이터 삭제:', upload);
                     continue;
                 }
                 
@@ -2772,22 +2780,26 @@ ${problem.translation}
                         body: JSON.stringify({
                             category: upload.category,
                             score: upload.score,
-                            hintsUsed: upload.hintsUsed,
-                            perfectScore: upload.perfectScore,
-                            playTime: upload.playTime,
-                            sentence: upload.sentence
+                            hintsUsed: upload.hintsUsed || 0,
+                            perfectScore: upload.perfectScore || false,
+                            playTime: upload.playTime || 0,
+                            sentence: upload.sentence || ''
                         })
                     });
                     
                     if (response.ok) {
                         successful.push(upload);
+                        console.log('[Score] 업로드 성공:', upload.category, upload.score);
                     } else {
-                        upload.retryCount++;
+                        const errorText = await response.text();
+                        console.log('[Score] 업로드 실패:', response.status, errorText);
+                        upload.retryCount = (upload.retryCount || 0) + 1;
                         stillFailed.push(upload);
                     }
                     
                 } catch (error) {
-                    upload.retryCount++;
+                    console.log('[Score] 업로드 오류:', error.message);
+                    upload.retryCount = (upload.retryCount || 0) + 1;
                     stillFailed.push(upload);
                 }
             }
@@ -2796,11 +2808,28 @@ ${problem.translation}
             localStorage.setItem('wordcrack_failed_uploads', JSON.stringify(stillFailed));
             
             if (successful.length > 0) {
+                console.log(`[Score] ${successful.length}개 업로드 성공`);
             }
             
         } catch (error) {
+            console.error('[Score] 실패한 업로드 재시도 중 오류:', error);
+            // 손상된 데이터가 있을 경우 초기화
+            localStorage.removeItem('wordcrack_failed_uploads');
         }
     }
+    
+    // 개발자용: 실패한 업로드 데이터 관리
+    window.debugFailedUploads = {
+        clear: function() {
+            localStorage.removeItem('wordcrack_failed_uploads');
+            console.log('[Score] 실패한 업로드 데이터 초기화됨');
+        },
+        view: function() {
+            const data = JSON.parse(localStorage.getItem('wordcrack_failed_uploads') || '[]');
+            console.log('[Score] 실패한 업로드 데이터:', data);
+            return data;
+        }
+    };
     
     // 점수 업로드 성공 알림 (옵션)
     function showScoreUploadNotification(result) {
