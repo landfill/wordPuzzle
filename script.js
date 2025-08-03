@@ -250,9 +250,89 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardModal.style.display = 'flex';
         updateDashboardData();
     }
+
+    function updateDashboardData() {
+        // Phase 2: 대시보드 데이터 업데이트
+        try {
+            const userData = dataManager.getUserData();
+            
+            // 기본 통계 업데이트
+            updateStatsDisplay(userData);
+            
+            // 카테고리별 진행률 업데이트
+            updateCategoryProgress(userData);
+            
+            // 배지 시스템 업데이트
+            updateBadgesDisplay();
+            
+            // 저장된 문장 업데이트
+            const savedSentences = dataManager.getSavedSentences();
+            updateSavedSentences(savedSentences);
+            
+        } catch (error) {
+            console.error('대시보드 데이터 업데이트 실패:', error);
+        }
+    }
     
     function hideDashboardModal() {
         dashboardModal.style.display = 'none';
+    }
+
+    function showGlobalLeaderboard() {
+        // Phase 3: 글로벌 리더보드 표시
+        if (globalLeaderboardModal) {
+            globalLeaderboardModal.style.display = 'flex';
+            // TODO: 실제 리더보드 데이터 로딩 구현 필요
+        }
+    }
+
+    function hideGlobalLeaderboard() {
+        if (globalLeaderboardModal) {
+            globalLeaderboardModal.style.display = 'none';
+        }
+    }
+
+    // Phase 3: 리더보드 필터 변경 핸들러 (임시 구현)
+    function onLeaderboardFilterChange() {
+        console.log('리더보드 필터 변경됨 - 구현 예정');
+        // TODO: 실제 필터링 로직 구현 필요
+    }
+
+    function refreshLeaderboard() {
+        console.log('리더보드 새로고침 - 구현 예정');
+        // TODO: 실제 리더보드 새로고침 로직 구현 필요
+    }
+
+    // Phase 2: 대시보드 통계 업데이트 함수들
+    function updateStatsDisplay(userData) {
+        // 기본 통계 업데이트
+        const statsElements = {
+            totalProblems: document.getElementById('stat-total-problems'),
+            totalScore: document.getElementById('stat-total-score'),
+            bestStreak: document.getElementById('stat-best-streak'),
+            perfectIndex: document.getElementById('stat-perfect-index')
+        };
+
+        Object.entries(statsElements).forEach(([key, element]) => {
+            if (element && userData[key] !== undefined) {
+                element.textContent = userData[key];
+            }
+        });
+    }
+
+    function updateBadgesDisplay() {
+        // 배지 시스템 업데이트
+        try {
+            const badges = achievementSystem.getAllBadges();
+            const badgesContainer = document.getElementById('badges-container');
+            
+            if (badgesContainer && badges) {
+                // 배지 표시 로직
+                console.log('배지 업데이트:', badges.length, '개');
+            }
+        } catch (error) {
+            console.error('배지 업데이트 실패:', error);
+        }
     }
 
     // Phase 4-A: 게임 상태 관리 함수들

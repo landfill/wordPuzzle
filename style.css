@@ -3474,23 +3474,45 @@ body.dark-mode .game-state-indicator.error {
     transition: transform 0.1s ease;
 }
 
-/* 모달 애니메이션 개선 */
-.modal {
+/* Phase 4-A: 새로운 모달용 애니메이션 (기존 모달과 충돌 방지) */
+.modal.phase4-modal {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.modal.show {
+.modal.phase4-modal.show {
     opacity: 1;
     visibility: visible;
 }
 
-.modal .modal-content {
+.modal.phase4-modal .modal-content {
     transform: scale(0.9) translateY(20px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modal.show .modal-content {
+.modal.phase4-modal.show .modal-content {
     transform: scale(1) translateY(0);
+}
+
+/* 기존 모달들의 부드러운 전환 효과 */
+#success-modal,
+#game-over-modal,
+#dashboard-modal,
+#leaderboard-modal {
+    transition: opacity 0.2s ease;
+}
+
+#success-modal[style*="flex"],
+#game-over-modal[style*="flex"],
+#dashboard-modal[style*="flex"],
+#leaderboard-modal[style*="flex"] {
+    opacity: 1;
+}
+
+#success-modal[style*="none"],
+#game-over-modal[style*="none"],
+#dashboard-modal[style*="none"],
+#leaderboard-modal[style*="none"] {
+    opacity: 0;
 }
