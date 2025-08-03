@@ -42,6 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardBtn = document.getElementById('dashboard-btn');
     const closeDashboardBtn = document.getElementById('close-dashboard-btn');
     
+    // Phase 4-A: 게임 헤더의 대시보드/리더보드 버튼들
+    const gameDashboardBtn = document.getElementById('game-dashboard-btn');
+    const gameLeaderboardBtn = document.getElementById('game-leaderboard-btn');
+    
+    // Phase 4-A: 모달에서의 대시보드 접근 버튼들
+    const successDashboardBtn = document.getElementById('success-dashboard-btn');
+    const gameoverDashboardBtn = document.getElementById('gameover-dashboard-btn');
+    
     // Phase 3: 인증 및 글로벌 기능 DOM 요소들
     const authSection = document.getElementById('auth-section');
     const loginBtn = document.getElementById('login-btn');
@@ -218,6 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function showGameScreen() {
         animateScreenTransition(categorySelectionScreen, gameScreen);
+        // 라이프바가 표시되도록 보장
+        if (typeof lives !== 'undefined') {
+            updateLivesDisplay();
+        }
     }
 
     function animateScreenTransition(fromScreen, toScreen) {
@@ -246,7 +258,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
     }
     
+    // 이전 모달 추적을 위한 변수
+    let previousModal = null;
+    
     function showDashboardModal() {
+        // 현재 열린 모달을 추적
+        if (successModal.style.display === 'flex') {
+            previousModal = successModal;
+        } else if (gameOverModal.style.display === 'flex') {
+            previousModal = gameOverModal;
+        } else if (globalLeaderboardModal.style.display === 'flex') {
+            previousModal = globalLeaderboardModal;
+        } else {
+            previousModal = null;
+        }
+        
+        // 다른 모달들을 먼저 숨김 (레이어 순서 문제 해결)
+        successModal.style.display = 'none';
+        gameOverModal.style.display = 'none';
+        globalLeaderboardModal.style.display = 'none';
+        
         dashboardModal.style.display = 'flex';
         updateDashboardData();
     }
@@ -276,6 +307,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function hideDashboardModal() {
         dashboardModal.style.display = 'none';
+        
+        // 이전 모달이 있다면 다시 표시
+        if (previousModal) {
+            previousModal.style.display = 'flex';
+            previousModal = null; // 리셋
+        }
+    }
+    
+    function hideSuccessModal() {
+        successModal.style.display = 'none';
+    }
+    
+    function hideGameOverModal() {
+        gameOverModal.style.display = 'none';
     }
 
     function showGlobalLeaderboard() {
@@ -369,14 +414,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    function saveCurrentGameState() {
+    function saveCurrentGameState(forceUpdate = false) {
         const gameState = getCurrentGameState();
         if (gameState.selectedCategory && gameState.currentProblem) {
-            const success = gameStateManager.saveGameState(gameState);
+            const success = gameStateManager.saveGameState(gameState, forceUpdate);
             if (success) {
                 showGameStateIndicator('💾 게임 저장됨');
             } else {
-                showGameStateIndicator('❌ 저장 실패', true);
+                console.log('[GameState] 저장 조건 미충족 또는 스킵됨');
             }
         }
     }
@@ -450,9 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function speakWithBrowserTTS() {
         console.warn("Fallback: Using browser's default TTS.");
-        if ('speechSynthesis' in window && browserVoices.length > 0) {
+        if ('speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(currentSentence);
             utterance.lang = 'en-US';
+            
+            // 사용 가능한 목소리가 있으면 첫 번째 영어 목소리 선택, 없으면 기본 목소리 사용
+            if (browserVoices.length > 0) {
+                utterance.voice = browserVoices[0];
+            }
             
             // 브라우저 TTS에서도 기본적인 하이라이트 제공
             const words = currentSentence.split(' ');
@@ -480,14 +530,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 listenBtn.classList.remove('disabled');
             };
             
-            utterance.onerror = () => {
+            utterance.onerror = (e) => {
+                console.warn("Browser TTS error:", e);
                 clearInterval(highlightInterval);
-                clearWordHighlights();
-                isReading = false;
-                listenBtn.classList.remove('disabled');
+                // TTS 에러가 발생해도 하이라이트만 제공
+                provideFallbackHighlight();
             };
             
-            speechSynthesis.speak(utterance);
+            try {
+                speechSynthesis.speak(utterance);
+            } catch (error) {
+                console.warn("speechSynthesis.speak failed:", error);
+                provideFallbackHighlight();
+            }
         } else {
             // TTS를 사용할 수 없는 경우에도 하이라이트만 제공
             provideFallbackHighlight();
@@ -1485,6 +1540,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('keydown', (e) => {
+        // ESC 키로 모달 닫기
+        if (e.key === 'Escape') {
+            if (dashboardModal.style.display === 'flex') {
+                hideDashboardModal();
+                return;
+            }
+            if (globalLeaderboardModal.style.display === 'flex') {
+                hideGlobalLeaderboard();
+                return;
+            }
+            if (successModal.style.display === 'flex') {
+                hideSuccessModal();
+                return;
+            }
+            if (gameOverModal.style.display === 'flex') {
+                hideGameOverModal();
+                return;
+            }
+        }
+        
         if (gameScreen.style.display === 'none' || successModal.style.display === 'flex' || gameOverModal.style.display === 'flex') {
             return;
         }
@@ -2157,6 +2232,11 @@ ${problem.translation}
         dashboardBtn.addEventListener('click', showDashboardModal);
     }
     
+    // Phase 4-A: 게임 헤더의 대시보드 버튼 이벤트 리스너
+    if (gameDashboardBtn) {
+        gameDashboardBtn.addEventListener('click', showDashboardModal);
+    }
+    
     if (closeDashboardBtn) {
         closeDashboardBtn.addEventListener('click', hideDashboardModal);
     }
@@ -2172,6 +2252,20 @@ ${problem.translation}
     
     if (globalLeaderboardBtn) {
         globalLeaderboardBtn.addEventListener('click', showGlobalLeaderboard);
+    }
+    
+    // Phase 4-A: 게임 헤더의 리더보드 버튼 이벤트 리스너
+    if (gameLeaderboardBtn) {
+        gameLeaderboardBtn.addEventListener('click', showGlobalLeaderboard);
+    }
+    
+    // Phase 4-A: 모달에서의 대시보드 접근 버튼 이벤트 리스너
+    if (successDashboardBtn) {
+        successDashboardBtn.addEventListener('click', showDashboardModal);
+    }
+    
+    if (gameoverDashboardBtn) {
+        gameoverDashboardBtn.addEventListener('click', showDashboardModal);
     }
     
     // 리더보드 모달 이벤트 리스너들
@@ -2771,7 +2865,7 @@ ${problem.translation}
     // 페이지 언로드 시 게임 상태 저장
     window.addEventListener('beforeunload', () => {
         if (selectedCategory && currentProblem) {
-            saveCurrentGameState();
+            saveCurrentGameState(true); // 강제 저장
         }
         gameStateManager.stopAutoSave();
     });

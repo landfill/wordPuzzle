@@ -6,28 +6,69 @@
 class GameStateManager {
     constructor() {
         this.SESSION_KEY = 'wordcrack_game_state';
-        this.AUTO_SAVE_INTERVAL = 5000; // 5초마다 자동 저장
+        this.AUTO_SAVE_INTERVAL = 30000; // 30초마다 자동 저장 (최적화)
         this.autoSaveTimer = null;
+        this.lastSavedState = null; // 마지막 저장된 상태를 추적
+        this.lastSaveTime = 0; // 마지막 저장 시간
+        this.MIN_SAVE_INTERVAL = 10000; // 최소 저장 간격 10초
     }
 
     /**
-     * 현재 게임 상태를 저장
+     * 현재 게임 상태를 저장 (최적화된 버전)
      */
-    saveGameState(gameState) {
+    saveGameState(gameState, forceUpdate = false) {
         try {
+            const now = Date.now();
+            
+            // 최소 저장 간격 체크 (강제 업데이트가 아닌 경우)
+            if (!forceUpdate && (now - this.lastSaveTime) < this.MIN_SAVE_INTERVAL) {
+                console.log('[GameState] 저장 스킵 - 최소 간격 미달');
+                return false;
+            }
+            
             const stateData = {
                 ...gameState,
-                timestamp: Date.now(),
+                timestamp: now,
                 version: '4.0'
             };
             
+            // 상태 변경 체크 (강제 업데이트가 아닌 경우)
+            if (!forceUpdate && this.lastSavedState) {
+                const stateHash = this.generateStateHash(stateData);
+                const lastStateHash = this.generateStateHash(this.lastSavedState);
+                
+                if (stateHash === lastStateHash) {
+                    console.log('[GameState] 저장 스킵 - 상태 변경 없음');
+                    return false;
+                }
+            }
+            
             sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(stateData));
+            this.lastSavedState = { ...stateData };
+            this.lastSaveTime = now;
+            
             console.log('[GameState] 게임 상태 저장됨:', stateData);
             return true;
         } catch (error) {
             console.error('[GameState] 저장 실패:', error);
             return false;
         }
+    }
+
+    /**
+     * 상태 해시 생성 (변경 감지용)
+     */
+    generateStateHash(state) {
+        // 중요한 상태 정보만 해시 생성에 사용
+        const relevantData = {
+            category: state.selectedCategory,
+            problemId: state.currentProblem?.id,
+            correctLetters: state.correctLetters,
+            wrongLetters: state.wrongLetters,
+            lives: state.lives,
+            currentScore: state.currentScore
+        };
+        return JSON.stringify(relevantData);
     }
 
     /**

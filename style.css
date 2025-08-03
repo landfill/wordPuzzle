@@ -186,6 +186,45 @@ html {
     justify-content: flex-end;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-action-btn {
+    padding: 8px;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+}
+
+.header-action-btn:hover {
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    transform: translateY(-1px);
+}
+
+.header-action-btn:active {
+    transform: translateY(0);
+}
+
+.header-action-btn svg {
+    fill: #6b7280;
+    transition: fill 0.2s ease;
+}
+
+.header-action-btn:hover svg {
+    fill: #4b5563;
+}
+
 .game-title {
     font-size: 1.2em;
     font-weight: 700;
@@ -224,26 +263,25 @@ html {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: transparent;
-    border: 2px solid #e2e8f0;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #4a5568;
-    padding: 0;
+    color: #6b7280;
+    padding: 8px;
     flex-shrink: 0;
 }
 
 #home-btn:hover {
-    background: #f7fafc;
-    border-color: #cbd5e0;
-    color: #2d3748;
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
     transform: translateY(-1px);
 }
 
 #home-btn:active {
     transform: translateY(0);
-    background: #edf2f7;
 }
 
 #home-btn svg {
@@ -255,8 +293,10 @@ html {
 .lives-display {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     height: 36px;
+    min-width: 120px;
+    padding: 0 8px;
 }
 
 .progress-indicator {
@@ -280,13 +320,15 @@ html {
     display: flex;
     align-items: center;
     font-size: 0.8em;
-    font-weight: 600;
-    color: #2d3748;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    border-radius: 20px;
-    padding: 8px 12px;
+    font-weight: 500;
+    color: #6b7280;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 6px;
+    padding: 4px 8px;
     flex-shrink: 0;
-    animation: reviewPulse 2s ease-in-out infinite;
+    min-height: 28px;
+    box-sizing: border-box;
 }
 
 @keyframes reviewPulse {
@@ -295,51 +337,63 @@ html {
 }
 
 .next-problem-btn {
-    background: linear-gradient(135deg, #48bb78, #38a169);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #3b82f6;
     color: white;
-    border: none;
-    border-radius: 20px;
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
     padding: 8px 16px;
     font-size: 0.9em;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+    min-height: 36px;
+    box-sizing: border-box;
 }
 
 .next-problem-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
 }
 
 .show-result-btn {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-    color: white;
-    border: none;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
     padding: 8px 16px;
     font-size: 0.9em;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+    min-height: 36px;
+    box-sizing: border-box;
 }
 
 .show-result-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .life-bar {
-    flex: 1;
-    height: 6px;
-    background-color: #e53e3e;
-    border-radius: 2px;
+    width: 6px; /* 너비를 줄여서 더 세련되게 */
+    height: 20px; /* 높이도 적절하게 조정 */
+    background-color: #ef4444; /* 더 부드러운 빨간색 */
+    border-radius: 3px;
     transition: all 0.3s ease-in-out;
+    opacity: 0.8; /* 약간의 투명도로 부드럽게 */
 }
 
 .life-bar.lost {
-    opacity: 0.2;
+    opacity: 0.3;
     background-color: #cbd5e0;
 }
 /* --- 최종 수정 끝 --- */
@@ -364,7 +418,7 @@ html {
 
 .problem-area {
     background-color: rgba(227, 242, 253, 0.9); 
-    border: 2px solid #bbdefb;
+    border: 1px solid rgba(187, 222, 251, 0.5);
     padding: 15px;
     border-radius: 15px;
     display: flex;
@@ -524,51 +578,51 @@ html {
 }
 
 .hint-btn {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #2d3748;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 6px;
+    padding: 4px 8px;
     font-size: 0.9em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+    font-weight: 500;
+    cursor: default; /* 클릭 불가능한 레이블 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    box-sizing: border-box;
 }
 
-.hint-btn:hover:not(.disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-}
+/* 힌트는 레이블이므로 호버 효과 제거 */
 
 .hint-btn.disabled {
-    background: #a0aec0;
-    color: #718096;
+    background: rgba(107, 114, 128, 0.05);
+    color: #9ca3af;
+    border-color: rgba(107, 114, 128, 0.1);
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    opacity: 0.6;
 }
 
 .hint-counter {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: #4a5568;
-    background: #edf2f7;
-    border-radius: 20px;
-    padding: 8px 12px;
-    min-width: 40px;
-    text-align: center;
-    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #6b7280;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 6px;
+    padding: 4px 8px;
+    min-width: 32px;
+    height: 28px;
     box-sizing: border-box;
 }
 
 .word-blank.hint-filled {
-    background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
-    border-color: #f6ad55 !important;
-    color: #2d3748 !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    color: #3b82f6 !important;
 }
 
 .keyboard-area {
@@ -685,6 +739,16 @@ html {
     backdrop-filter: blur(5px);
     padding: 20px;
     box-sizing: border-box;
+}
+
+/* 대시보드 모달은 더 높은 z-index */
+#dashboard-modal {
+    z-index: 1100;
+}
+
+/* 리더보드 모달도 더 높은 z-index */
+#global-leaderboard-modal {
+    z-index: 1100;
 }
 
 .modal-content {
@@ -845,47 +909,58 @@ html {
 }
 
 .modal-btn {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 20px;
-    font-size: 1em;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: 1px solid;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     min-width: 100px;
+    min-height: 36px;
+    box-sizing: border-box;
 }
 
 .modal-btn.primary {
-    background: linear-gradient(135deg, #48bb78, #38a169);
+    background: #3b82f6;
     color: white;
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    border-color: #3b82f6;
 }
 
 .modal-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
 }
 
 .modal-btn.secondary {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-    color: white;
-    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border-color: rgba(107, 114, 128, 0.2);
 }
 
 .modal-btn.secondary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .modal-btn.tertiary {
-    background: linear-gradient(135deg, #a0aec0, #718096);
-    color: white;
-    box-shadow: 0 4px 12px rgba(160, 174, 192, 0.3);
+    background: transparent;
+    color: #6b7280;
+    border-color: rgba(107, 114, 128, 0.2);
 }
 
 .modal-btn.tertiary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(160, 174, 192, 0.4);
+    background: rgba(107, 114, 128, 0.05);
+    border-color: rgba(107, 114, 128, 0.25);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .modal-btn:active {
@@ -907,20 +982,23 @@ html {
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    background: rgba(74, 144, 226, 0.1);
-    border: 1px solid rgba(74, 144, 226, 0.3);
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
     border-radius: 8px;
-    color: #4a90e2;
+    color: #6b7280;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+    min-height: 36px;
+    box-sizing: border-box;
 }
 
 .share-btn:hover {
-    background: rgba(74, 144, 226, 0.2);
-    border-color: rgba(74, 144, 226, 0.5);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
     transform: translateY(-1px);
 }
 
@@ -958,17 +1036,20 @@ html {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    color: #333;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    padding: 8px;
 }
 
 .dark-mode-toggle:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 #dark-mode-toggle {
@@ -977,17 +1058,20 @@ html {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    color: #333;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    padding: 8px;
 }
 
 #dark-mode-toggle:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 #dark-mode-toggle svg {
@@ -1036,7 +1120,12 @@ body.dark-mode {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-.dark-mode .problem-area,
+.dark-mode .problem-area {
+    background: rgba(74, 85, 104, 0.3);
+    border: 1px solid rgba(113, 128, 150, 0.3);
+    color: #e2e8f0;
+}
+
 .dark-mode .source-display {
     background: rgba(74, 85, 104, 0.3);
     color: #e2e8f0;
@@ -1139,61 +1228,178 @@ body.dark-mode {
 }
 
 .dark-mode .modal-btn.primary {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.dark-mode .modal-btn.primary:hover {
+    background: #60a5fa;
+    border-color: #60a5fa;
 }
 
 .dark-mode .modal-btn.secondary {
-    background: rgba(74, 85, 104, 0.8);
-    color: #e2e8f0;
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .modal-btn.secondary:hover {
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
 }
 
 .dark-mode .modal-btn.tertiary {
-    background: rgba(113, 128, 150, 0.6);
-    color: #e2e8f0;
+    background: transparent;
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .modal-btn.tertiary:hover {
+    background: rgba(156, 163, 175, 0.1);
+    border-color: rgba(156, 163, 175, 0.3);
+    color: #d1d5db;
 }
 
 .dark-mode .share-btn {
-    background: rgba(66, 153, 225, 0.2);
-    border-color: rgba(66, 153, 225, 0.4);
-    color: #63b3ed;
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.25);
+    color: #9ca3af;
 }
 
 .dark-mode .share-btn:hover {
-    background: rgba(66, 153, 225, 0.3);
-    border-color: rgba(66, 153, 225, 0.6);
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
 }
 
-.dark-mode .dark-mode-toggle,
+.dark-mode #home-btn {
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.25);
+    color: #9ca3af;
+}
+
+.dark-mode #home-btn:hover {
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
+}
+
+/* .dark-mode .lives-display 스타일 제거 */
+
 .dark-mode #dark-mode-toggle {
-    background: rgba(113, 128, 150, 0.2);
-    border-color: rgba(113, 128, 150, 0.3);
-    color: #a0aec0;
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.25);
+    color: #9ca3af;
 }
 
-.dark-mode .dark-mode-toggle:hover,
 .dark-mode #dark-mode-toggle:hover {
-    background: rgba(113, 128, 150, 0.3);
-    color: #e2e8f0;
-    transform: translateY(-2px);
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
+    transform: translateY(-1px);
 }
 
 /* Dark mode button border updates */
 .dark-mode .global-leaderboard-btn,
 .dark-mode .dashboard-btn,
 .dark-mode .login-btn {
-    background: rgba(113, 128, 150, 0.2);
-    border: 2px solid rgba(113, 128, 150, 0.4);
-    color: #a0aec0;
+    background: rgba(156, 163, 175, 0.15);
+    border: 1px solid rgba(156, 163, 175, 0.25);
+    color: #9ca3af;
+}
+
+/* 다크모드에서 아이콘 색깔 수정 */
+.dark-mode .global-leaderboard-btn svg,
+.dark-mode .dashboard-btn svg {
+    fill: #9ca3af;
+}
+
+.dark-mode .global-leaderboard-btn:hover svg,
+.dark-mode .dashboard-btn:hover svg {
+    fill: #d1d5db;
+}
+
+/* 다크모드 토글 버튼 스타일 */
+.dark-mode .dark-mode-toggle {
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.25);
+    color: #9ca3af;
+}
+
+.dark-mode .dark-mode-toggle:hover {
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
+}
+
+/* 다크모드 토글 버튼의 아이콘 색깔 */
+.dark-mode #dark-mode-toggle svg,
+.dark-mode .dark-mode-toggle svg {
+    fill: #9ca3af;
+}
+
+.dark-mode #dark-mode-toggle:hover svg,
+.dark-mode .dark-mode-toggle:hover svg {
+    fill: #d1d5db;
+}
+
+/* 다크모드 힌트 및 버튼 스타일 */
+.dark-mode .hint-btn {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .hint-btn.disabled {
+    background: rgba(156, 163, 175, 0.05);
+    color: #6b7280;
+    border-color: rgba(156, 163, 175, 0.1);
+}
+
+.dark-mode .hint-counter {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .word-blank.hint-filled {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    color: #60a5fa !important;
+}
+
+.dark-mode .review-mode-indicator {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .next-problem-btn {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.dark-mode .next-problem-btn:hover {
+    background: #60a5fa;
+    border-color: #60a5fa;
+}
+
+.dark-mode .show-result-btn {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .show-result-btn:hover {
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
 }
 
 
 
-.dark-mode .dark-mode-toggle,
-.dark-mode #dark-mode-toggle {
-    background: rgba(113, 128, 150, 0.2);
-    border: 2px solid rgba(113, 128, 150, 0.4);
-    color: #a0aec0;
-}
 
 .dark-mode .game-title {
     color: #e2e8f0;
@@ -1208,6 +1414,38 @@ body.dark-mode {
 .dark-mode .game-header {
     background: rgba(45, 55, 72, 0.8);
     border-bottom-color: rgba(113, 128, 150, 0.3);
+}
+
+.dark-mode .header-action-btn {
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.25);
+}
+
+.dark-mode .header-action-btn:hover {
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+}
+
+.dark-mode .header-action-btn svg {
+    fill: #9ca3af;
+}
+
+.dark-mode .header-action-btn:hover svg {
+    fill: #d1d5db;
+}
+
+.dark-mode .leaderboard-svg-spinner {
+    fill: #9ca3af;
+}
+
+.dark-mode .life-bar {
+    background-color: #f87171; /* 다크모드에서는 조금 더 밝은 빨간색 */
+    opacity: 0.9; /* 다크모드에서는 조금 더 진하게 */
+}
+
+.dark-mode .life-bar.lost {
+    background-color: #4b5563;
+    opacity: 0.4;
 }
 
 .dark-mode .game-footer {
@@ -1294,6 +1532,38 @@ body.dark-mode {
     .header-left,
     .header-right {
         gap: 8px;
+    }
+    
+    .header-actions {
+        gap: 6px;
+    }
+    
+    .header-action-btn {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+    
+    #home-btn,
+    #dark-mode-toggle {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+    
+    .lives-display {
+        height: 32px;
+        min-width: 100px;
+        padding: 0 6px;
+    }
+    
+    .life-bar {
+        height: 18px; /* 모바일: 조금 더 작게 */
+    }
+    
+    .header-action-btn svg {
+        width: 16px;
+        height: 16px;
     }
     
     .game-content {
@@ -1636,17 +1906,19 @@ body.dark-mode {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    color: #333;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .dashboard-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .dashboard-btn:active {
@@ -1980,12 +2252,12 @@ body.dark-mode {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    color: #333;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .google-icon {
@@ -1995,13 +2267,14 @@ body.dark-mode {
 }
 
 .login-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .login-btn:active {
     transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
 }
 
 /* 인증 섹션 */
@@ -2402,17 +2675,19 @@ body.dark-mode .dashboard-modal-content .streak-badge.legendary {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    color: #333;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 8px;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .global-leaderboard-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    background: rgba(107, 114, 128, 0.15);
+    border-color: rgba(107, 114, 128, 0.3);
+    color: #4b5563;
+    transform: translateY(-1px);
 }
 
 .global-leaderboard-btn:active {
@@ -2425,9 +2700,10 @@ body.dark-mode .dashboard-modal-content .streak-badge.legendary {
 .dark-mode .global-leaderboard-btn:hover,
 .dark-mode .dashboard-btn:hover,
 .dark-mode .login-btn:hover {
-    background: rgba(113, 128, 150, 0.3);
-    color: #e2e8f0;
-    transform: translateY(-2px);
+    background: rgba(156, 163, 175, 0.25);
+    border-color: rgba(156, 163, 175, 0.35);
+    color: #d1d5db;
+    transform: translateY(-1px);
 }
 
 body.dark-mode .user-profile {
@@ -2776,20 +3052,21 @@ body.dark-mode .delete-sentence-btn:hover {
     justify-content: center;
     padding: 40px;
     gap: 16px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
 }
 
-.spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #e5e7eb;
-    border-top: 3px solid #6366f1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.leaderboard-svg-spinner {
+    width: 64px;
+    height: 64px;
+    display: block;
+    margin: 0 auto;
+    flex-shrink: 0;
+    position: relative;
+    left: 0;
+    fill: #6b7280;
+    transition: fill 0.2s ease;
 }
 
 .error-message {
@@ -3400,14 +3677,6 @@ body.dark-mode .game-state-indicator.error {
     visibility: visible;
 }
 
-.loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
 
 .loading-content {
     display: flex;
