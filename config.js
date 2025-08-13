@@ -8,6 +8,10 @@ export const FEATURES = {
     SCORE_UPLOAD: true,         // 점수 자동 업로드
     LEADERBOARD_UI: true,       // 리더보드 화면/모달
     
+    // Phase 4-D 동적 콘텐츠 기능
+    DYNAMIC_CONTENT: false,     // 동적 콘텐츠 시스템 (개발 중)
+    USER_GENERATED_CONTENT: false, // 사용자 생성 콘텐츠
+    
     // 개발/디버그 기능
     DEBUG_MODE: false,          // 디버그 로그 출력
     API_LOGGING: false          // API 호출 로그

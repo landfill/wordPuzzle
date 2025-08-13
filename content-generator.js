@@ -1,9 +1,20 @@
-// 콘텐츠 생성 및 관리 시스템
+// 콘텐츠 생성 및 관리 시스템 (Phase 4-D: 동적 콘텐츠 지원)
 class ContentGenerator {
-    constructor() {
+    constructor(dynamicContentSystem = null) {
         this.categories = {}; // 초기에는 비어있음
         // 카테고리별 문제 풀과 사용된 문제를 관리
         this.pools = {};
+        
+        // Phase 4-D: 동적 콘텐츠 시스템 연동
+        this.dynamicSystem = dynamicContentSystem;
+        this.isDynamic = !!dynamicContentSystem;
+        
+        // 동적 콘텐츠 업데이트 이벤트 리스너
+        if (this.isDynamic) {
+            document.addEventListener('contentUpdated', () => {
+                this.refreshFromDynamicSystem();
+            });
+        }
     }
 
     /**
@@ -25,10 +36,37 @@ class ContentGenerator {
     }
 
     /**
+     * 동적 콘텐츠 시스템에서 데이터 새로고침
+     */
+    refreshFromDynamicSystem() {
+        if (!this.isDynamic) return;
+        
+        console.log('[ContentGenerator] Refreshing from dynamic system');
+        
+        // 기존 데이터 클리어
+        this.categories = {};
+        this.pools = {};
+        
+        // 동적 시스템에서 새 데이터 로드
+        const allContent = this.dynamicSystem.getContent('all');
+        Object.entries(allContent).forEach(([category, sources]) => {
+            Object.entries(sources).forEach(([source, problems]) => {
+                this.addContent(category, source, problems);
+            });
+        });
+        
+        console.log('[ContentGenerator] Dynamic content refreshed');
+    }
+
+    /**
      * 특정 카테고리의 문제 풀(카드 덱)을 생성하거나 재생성합니다.
      * @param {string} category - 재생성할 카테고리
      */
     _rebuildProblemPool(category) {
+        // Phase 4-D: 동적 콘텐츠 시스템에서 실시간 데이터 가져오기
+        if (this.isDynamic) {
+            this._loadFromDynamicSystem(category);
+        }
         
         let newPool = [];
         if (category === 'all') {
@@ -176,6 +214,64 @@ class ContentGenerator {
         } else {
             return 'hard';
         }
+    }
+
+    /**
+     * 동적 콘텐츠 시스템에서 특정 카테고리 데이터 로드
+     * @param {string} category - 로드할 카테고리
+     */
+    _loadFromDynamicSystem(category) {
+        if (!this.isDynamic) return;
+        
+        const content = this.dynamicSystem.getContent(category);
+        
+        // 해당 카테고리의 새로운 콘텐츠가 있으면 업데이트
+        Object.entries(content).forEach(([source, problems]) => {
+            if (!this.categories[category]) {
+                this.categories[category] = {};
+            }
+            if (!this.categories[category][source] || 
+                this.categories[category][source].length !== problems.length) {
+                this.addContent(category, source, problems);
+            }
+        });
+    }
+
+    /**
+     * 사용자 생성 콘텐츠 추가 (Phase 4-D)
+     * @param {string} category - 카테고리
+     * @param {string} source - 출처  
+     * @param {Array} problems - 문제 배열
+     */
+    async addUserContent(category, source, problems) {
+        if (this.isDynamic) {
+            // 동적 시스템을 통해 서버에 추가
+            await this.dynamicSystem.addContent(category, source, problems);
+        } else {
+            // 로컬에만 추가
+            this.addContent(category, source, problems);
+        }
+    }
+
+    /**
+     * 시스템 상태 정보 반환
+     */
+    getSystemInfo() {
+        const totalCategories = Object.keys(this.categories).length;
+        const totalSources = Object.values(this.categories).reduce((sum, sources) => sum + Object.keys(sources).length, 0);
+        const totalProblems = Object.values(this.categories).reduce((sum, sources) => {
+            return sum + Object.values(sources).reduce((srcSum, problems) => srcSum + problems.length, 0);
+        }, 0);
+
+        return {
+            isDynamic: this.isDynamic,
+            version: this.isDynamic ? this.dynamicSystem.version : 'static',
+            lastUpdate: this.isDynamic ? this.dynamicSystem.lastUpdate : null,
+            totalCategories,
+            totalSources,
+            totalProblems,
+            offlineMode: this.isDynamic ? this.dynamicSystem.offlineMode : false
+        };
     }
 }
 

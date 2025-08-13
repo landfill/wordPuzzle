@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Content System Test - Phase 4-D</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        
+        .data-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .logs {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Phase 4-D: Dynamic Content System Test</h1>
+    
+    <div class="test-container">
+        <h2>시스템 상태</h2>
+        <div id="system-status" class="status info">초기화 중...</div>
+        
+        <h3>기능 테스트</h3>
+        <button onclick="testDynamicSystem()">동적 시스템 테스트</button>
+        <button onclick="testStaticFallback()">정적 폴백 테스트</button>
+        <button onclick="testContentGeneration()">콘텐츠 생성 테스트</button>
+        <button onclick="testCaching()">캐싱 테스트</button>
+        <button onclick="testServerConnection()">서버 연결 테스트</button>
+        <button onclick="clearCache()">캐시 클리어</button>
+        
+        <h3>콘텐츠 시스템 정보</h3>
+        <div id="content-info" class="data-display">로딩 중...</div>
+    </div>
+
+    <div class="test-container">
+        <h2>실시간 로그</h2>
+        <div id="logs" class="logs"></div>
+        <button onclick="clearLogs()">로그 클리어</button>
+    </div>
+
+    <script type="module">
+        import DynamicContentSystem from './dynamic-content-system.js';
+        import ContentGenerator from './content-generator.js';
+        import { isFeatureEnabled, FEATURES } from './config.js';
+
+        let dynamicSystem = null;
+        let contentGenerator = null;
+        
+        // 로그 시스템
+        const originalConsole = { ...console };
+        const logContainer = document.getElementById('logs');
+        
+        function addLog(level, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            logContainer.innerHTML += `[${timestamp}] [${level.toUpperCase()}] ${message}\n`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // 원본 콘솔도 호출
+            originalConsole[level](...args);
+        }
+        
+        // 콘솔 오버라이드
+        console.log = (...args) => addLog('log', ...args);
+        console.warn = (...args) => addLog('warn', ...args);
+        console.error = (...args) => addLog('error', ...args);
+        
+        // 전역 함수들
+        window.testDynamicSystem = async function() {
+            try {
+                updateStatus('동적 시스템 테스트 시작...', 'info');
+                
+                if (!dynamicSystem) {
+                    dynamicSystem = new DynamicContentSystem();
+                    await dynamicSystem.initialize();
+                }
+                
+                await dynamicSystem.checkForUpdates();
+                updateStatus('동적 시스템 테스트 완료!', 'success');
+                updateContentInfo();
+                
+            } catch (error) {
+                updateStatus(`동적 시스템 오류: ${error.message}`, 'error');
+            }
+        };
+        
+        window.testStaticFallback = function() {
+            updateStatus('정적 폴백 테스트...', 'info');
+            
+            if (dynamicSystem) {
+                dynamicSystem.enableOfflineMode();
+                updateStatus('오프라인 모드 활성화됨', 'success');
+            } else {
+                import('./content-database.js').then(module => {
+                    console.log('Static database loaded:', Object.keys(module.default).length, 'categories');
+                    updateStatus('정적 데이터베이스 로드 완료', 'success');
+                });
+            }
+            updateContentInfo();
+        };
+        
+        window.testContentGeneration = function() {
+            updateStatus('콘텐츠 생성 테스트...', 'info');
+            
+            if (!contentGenerator) {
+                contentGenerator = new ContentGenerator(dynamicSystem);
+                
+                // 테스트 데이터 추가
+                import('./content-database.js').then(module => {
+                    Object.keys(module.default).forEach(cat => {
+                        Object.keys(module.default[cat]).forEach(src => {
+                            contentGenerator.addContent(cat, src, module.default[cat][src]);
+                        });
+                    });
+                    
+                    // 테스트 문제 생성
+                    const testProblem = contentGenerator.generateRandomProblem('movies');
+                    console.log('Generated test problem:', testProblem);
+                    
+                    updateStatus('콘텐츠 생성 테스트 완료!', 'success');
+                    updateContentInfo();
+                });
+            }
+        };
+        
+        window.testCaching = function() {
+            updateStatus('캐싱 테스트...', 'info');
+            
+            const testData = {
+                version: 'test-1.0',
+                content: {
+                    test: {
+                        'Test Source': [
+                            { sentence: 'This is a test sentence.', translation: '이것은 테스트 문장입니다.', difficulty: 'easy' }
+                        ]
+                    }
+                }
+            };
+            
+            localStorage.setItem('dynamic-content-cache', JSON.stringify(testData));
+            updateStatus('테스트 캐시 저장 완료!', 'success');
+        };
+        
+        window.clearCache = function() {
+            localStorage.removeItem('dynamic-content-cache');
+            localStorage.removeItem('wordcrack_failed_uploads');
+            updateStatus('캐시 클리어 완료!', 'info');
+            updateContentInfo();
+        };
+        
+        window.testServerConnection = async function() {
+            updateStatus('서버 연결 테스트 중...', 'info');
+            
+            try {
+                // API URL 확인
+                const apiUrl = dynamicSystem ? dynamicSystem.getApiBaseUrl() : 
+                    'https://wordcrack-api.letthelightsurroundyou.workers.dev';
+                
+                console.log('Testing API URL:', apiUrl);
+                
+                // 서버 상태 확인
+                const response = await fetch(`${apiUrl}/`);
+                const data = await response.json();
+                
+                console.log('Server response:', data);
+                
+                // 콘텐츠 버전 확인
+                const versionResponse = await fetch(`${apiUrl}/api/content/version`);
+                const versionData = await versionResponse.json();
+                
+                console.log('Content version:', versionData);
+                
+                updateStatus(`서버 연결 성공! 버전: ${versionData.version}`, 'success');
+                
+            } catch (error) {
+                console.error('Server connection failed:', error);
+                updateStatus(`서버 연결 실패: ${error.message}`, 'error');
+            }
+        };
+        
+        window.clearLogs = function() {
+            logContainer.innerHTML = '';
+        };
+        
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('system-status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        function updateContentInfo() {
+            const infoEl = document.getElementById('content-info');
+            
+            const info = {
+                dynamicSystemStatus: dynamicSystem ? 'Initialized' : 'Not initialized',
+                contentGeneratorStatus: contentGenerator ? 'Initialized' : 'Not initialized',
+                dynamicContentEnabled: isFeatureEnabled('DYNAMIC_CONTENT'),
+                cacheSize: localStorage.getItem('dynamic-content-cache') ? 'Present' : 'Empty',
+                systemInfo: contentGenerator ? contentGenerator.getSystemInfo() : null
+            };
+            
+            infoEl.textContent = JSON.stringify(info, null, 2);
+        }
+        
+        // 초기화
+        updateStatus('Phase 4-D 동적 콘텐츠 시스템 테스트 페이지 로드됨', 'success');
+        updateContentInfo();
+        
+        // 기능 플래그 표시
+        console.log('Feature flags:', FEATURES);
+        console.log('Dynamic content enabled:', isFeatureEnabled('DYNAMIC_CONTENT'));
+        
+    </script>
+</body>
+</html>

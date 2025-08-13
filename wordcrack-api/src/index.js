@@ -4,6 +4,7 @@
 import { handleAuth } from './handlers/auth.js';
 import { handleScores } from './handlers/scores.js';
 import { handleLeaderboard } from './handlers/leaderboard.js';
+import { handleContent } from './handlers/content.js';
 import { corsHeaders } from './utils/cors.js';
 
 export default {
@@ -33,6 +34,10 @@ export default {
       if (url.pathname.startsWith('/api/leaderboard')) {
         return await handleLeaderboard(request, env);
       }
+      
+      if (url.pathname.startsWith('/api/content')) {
+        return await handleContent(request, env);
+      }
 
       // 기본 응답
       if (url.pathname === '/') {
@@ -45,7 +50,11 @@ export default {
             'POST /api/scores - 점수 업로드',
             'GET /api/scores - 개인 점수 조회',
             'GET /api/leaderboard - 전체 리더보드',
-            'GET /api/leaderboard/:category - 카테고리별 리더보드'
+            'GET /api/leaderboard/:category - 카테고리별 리더보드',
+            'GET /api/content/version - 콘텐츠 버전 확인',
+            'GET /api/content/all - 모든 콘텐츠 다운로드',
+            'POST /api/content/add - 사용자 생성 콘텐츠 추가',
+            'GET /api/content/category/:category - 카테고리별 콘텐츠'
           ]
         }), {
           headers: { 

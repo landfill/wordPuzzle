@@ -7,6 +7,8 @@ import { isFeatureEnabled, CONFIG } from './config.js';
 import { authManager } from './auth-manager.js';
 // Phase 4-A: 게임 상태 관리
 import GameStateManager from './game-state-manager.js';
+// Phase 4-D: 동적 콘텐츠 시스템
+import DynamicContentSystem from './dynamic-content-system.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -166,12 +168,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const contentGenerator = new ContentGenerator();
-    Object.keys(CONTENT_DATABASE).forEach(cat => {
-        Object.keys(CONTENT_DATABASE[cat]).forEach(src => {
-            contentGenerator.addContent(cat, src, CONTENT_DATABASE[cat][src]);
+    // Phase 4-D: 동적 콘텐츠 시스템 초기화
+    let dynamicContentSystem = null;
+    let contentGenerator = null;
+    
+    // 동적 콘텐츠 기능 활성화 확인
+    const enableDynamicContent = isFeatureEnabled('DYNAMIC_CONTENT');
+    
+    async function initializeContentSystem() {
+        if (enableDynamicContent) {
+            console.log('[Phase 4-D] Initializing dynamic content system...');
+            
+            try {
+                dynamicContentSystem = new DynamicContentSystem();
+                await dynamicContentSystem.initialize();
+                
+                contentGenerator = new ContentGenerator(dynamicContentSystem);
+                
+                // 동적 시스템에서 데이터 로드
+                contentGenerator.refreshFromDynamicSystem();
+                
+                console.log('[Phase 4-D] Dynamic content system initialized successfully');
+            } catch (error) {
+                console.warn('[Phase 4-D] Dynamic system failed, falling back to static:', error);
+                // 폴백: 정적 데이터베이스 사용
+                initializeStaticContent();
+            }
+        } else {
+            // 정적 콘텐츠 초기화
+            initializeStaticContent();
+        }
+    }
+    
+    function initializeStaticContent() {
+        console.log('[Phase 4-D] Using static content database');
+        contentGenerator = new ContentGenerator();
+        Object.keys(CONTENT_DATABASE).forEach(cat => {
+            Object.keys(CONTENT_DATABASE[cat]).forEach(src => {
+                contentGenerator.addContent(cat, src, CONTENT_DATABASE[cat][src]);
+            });
         });
-    });
+    }
 
     // Phase 2: 데이터 매니저 초기화
     const dataManager = new DataManager();
@@ -2876,7 +2913,25 @@ ${problem.translation}
         }
     };
 
-    // Phase 4-A: 페이지 로드 시 게임 상태 복원 확인
+    // Phase 4-D: 애플리케이션 초기화
+    async function initializeApplication() {
+        try {
+            // 1. 콘텐츠 시스템 초기화
+            await initializeContentSystem();
+            
+            // 2. 게임 상태 복원
+            const savedState = await gameStateManager.checkAndRestore();
+            if (savedState) {
+                await restoreGameState(savedState);
+            }
+            
+            console.log('[App] Application initialized successfully');
+        } catch (error) {
+            console.error('[App] 초기화 중 오류:', error);
+        }
+    }
+
+    // Phase 4-A: 페이지 로드 시 게임 상태 복원 확인 (레거시)
     async function initializeGameStateRestore() {
         try {
             const savedState = await gameStateManager.checkAndRestore();
@@ -2888,8 +2943,8 @@ ${problem.translation}
         }
     }
 
-    // 페이지 로드 완료 후 게임 상태 복원 확인
-    setTimeout(initializeGameStateRestore, 100);
+    // Phase 4-D: 애플리케이션 전체 초기화
+    setTimeout(initializeApplication, 100);
 
     // 페이지 언로드 시 게임 상태 저장
     window.addEventListener('beforeunload', () => {
