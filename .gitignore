@@ -1,5 +1,6 @@
 node_modules/
 .env
+.dev.vars
 
 # TODO 파일들 (개발 문서)
 *TODO.md
