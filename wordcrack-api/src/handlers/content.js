@@ -1,8 +1,7 @@
-// Content Management Handler - Phase 4-D
+// Content Management Handler - Phase 4-D (로컬 테스트용 간단 버전)
 // 동적 콘텐츠 시스템을 위한 API 엔드포인트
 
 import { corsHeaders } from '../utils/cors.js';
-import { createClient } from '../utils/supabase.js';
 
 // 콘텐츠 버전 관리
 const CONTENT_VERSION = '1.0.0';
@@ -29,19 +28,31 @@ export async function handleContent(request, env) {
 
         // GET /api/content/all - 모든 콘텐츠 다운로드
         if (path === '/api/content/all' && request.method === 'GET') {
-            return await handleContentDownload(env);
+            return await getStaticContentFallback();
         }
 
         // POST /api/content/add - 사용자 생성 콘텐츠 추가
         if (path === '/api/content/add' && request.method === 'POST') {
-            return await handleContentAdd(request, env);
+            const body = await request.json();
+            console.log('[Content] Add content request:', body);
+            
+            return new Response(JSON.stringify({
+                message: 'Content received (mock response)',
+                count: body.problems ? body.problems.length : 0,
+                status: 'simulated_pending_approval'
+            }), { headers });
         }
 
         // GET /api/content/category/:category - 특정 카테고리 콘텐츠
         const categoryMatch = path.match(/^\/api\/content\/category\/(.+)$/);
         if (categoryMatch && request.method === 'GET') {
             const category = categoryMatch[1];
-            return await handleCategoryContent(category, env);
+            return new Response(JSON.stringify({
+                category,
+                version: CONTENT_VERSION,
+                content: { [category]: { 'Test Source': [] } },
+                totalItems: 0
+            }), { headers });
         }
 
         return new Response('Not Found', { status: 404, headers: corsHeaders });
@@ -59,179 +70,6 @@ export async function handleContent(request, env) {
 }
 
 /**
- * 모든 콘텐츠 다운로드
- */
-async function handleContentDownload(env) {
-    const headers = {
-        'Content-Type': 'application/json',
-        ...corsHeaders
-    };
-
-    try {
-        const supabase = createClient(env);
-        
-        // 데이터베이스에서 콘텐츠 조회
-        const { data: contentData, error } = await supabase
-            .from('dynamic_content')
-            .select('*')
-            .eq('active', true)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('[Content] Database error:', error);
-            // 정적 폴백 데이터 반환
-            return await getStaticContentFallback();
-        }
-
-        // 콘텐츠를 카테고리별로 그룹화
-        const groupedContent = {};
-        contentData.forEach(item => {
-            if (!groupedContent[item.category]) {
-                groupedContent[item.category] = {};
-            }
-            if (!groupedContent[item.category][item.source]) {
-                groupedContent[item.category][item.source] = [];
-            }
-            
-            groupedContent[item.category][item.source].push({
-                sentence: item.sentence,
-                translation: item.translation,
-                difficulty: item.difficulty
-            });
-        });
-
-        return new Response(JSON.stringify({
-            version: CONTENT_VERSION,
-            lastUpdate: Date.now(),
-            content: groupedContent,
-            totalItems: contentData.length
-        }), { headers });
-
-    } catch (error) {
-        console.error('[Content] Download error:', error);
-        return await getStaticContentFallback();
-    }
-}
-
-/**
- * 사용자 생성 콘텐츠 추가
- */
-async function handleContentAdd(request, env) {
-    const headers = {
-        'Content-Type': 'application/json',
-        ...corsHeaders
-    };
-
-    try {
-        const body = await request.json();
-        const { category, source, problems } = body;
-
-        // 데이터 검증
-        if (!category || !source || !Array.isArray(problems)) {
-            return new Response(JSON.stringify({
-                error: 'Invalid data format'
-            }), { status: 400, headers });
-        }
-
-        const supabase = createClient(env);
-        
-        // 사용자 인증 확인 (선택적)
-        const authHeader = request.headers.get('Authorization');
-        let userId = 'anonymous';
-        
-        if (authHeader) {
-            // JWT 토큰 검증 로직 (기존 auth.js 활용 가능)
-            // 여기서는 단순화
-        }
-
-        // 각 문제를 개별적으로 저장
-        const insertPromises = problems.map(problem => {
-            return supabase
-                .from('dynamic_content')
-                .insert({
-                    category,
-                    source,
-                    sentence: problem.sentence,
-                    translation: problem.translation || '',
-                    difficulty: problem.difficulty || 'medium',
-                    created_by: userId,
-                    active: false, // 승인 대기 상태
-                    created_at: new Date().toISOString()
-                });
-        });
-
-        await Promise.all(insertPromises);
-
-        return new Response(JSON.stringify({
-            message: 'Content added successfully',
-            count: problems.length,
-            status: 'pending_approval'
-        }), { headers });
-
-    } catch (error) {
-        console.error('[Content] Add error:', error);
-        return new Response(JSON.stringify({
-            error: 'Failed to add content'
-        }), { status: 500, headers });
-    }
-}
-
-/**
- * 특정 카테고리 콘텐츠 조회
- */
-async function handleCategoryContent(category, env) {
-    const headers = {
-        'Content-Type': 'application/json',
-        ...corsHeaders
-    };
-
-    try {
-        const supabase = createClient(env);
-        
-        const { data: contentData, error } = await supabase
-            .from('dynamic_content')
-            .select('*')
-            .eq('category', category)
-            .eq('active', true)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('[Content] Category query error:', error);
-            return new Response(JSON.stringify({
-                error: 'Database error'
-            }), { status: 500, headers });
-        }
-
-        // 소스별로 그룹화
-        const groupedContent = {};
-        contentData.forEach(item => {
-            if (!groupedContent[item.source]) {
-                groupedContent[item.source] = [];
-            }
-            
-            groupedContent[item.source].push({
-                sentence: item.sentence,
-                translation: item.translation,
-                difficulty: item.difficulty
-            });
-        });
-
-        return new Response(JSON.stringify({
-            category,
-            version: CONTENT_VERSION,
-            content: groupedContent,
-            totalItems: contentData.length
-        }), { headers });
-
-    } catch (error) {
-        console.error('[Content] Category error:', error);
-        return new Response(JSON.stringify({
-            error: 'Internal server error'
-        }), { status: 500, headers });
-    }
-}
-
-/**
  * 정적 폴백 데이터 반환
  */
 async function getStaticContentFallback() {
@@ -240,11 +78,25 @@ async function getStaticContentFallback() {
         ...corsHeaders
     };
 
-    // 기본 샘플 콘텐츠 (실제로는 content-database.js 내용 사용)
+    // 기본 샘플 콘텐츠
     const fallbackContent = {
         movies: {
-            'Fallback Movies': [
-                { sentence: "Hello, world!", translation: "안녕, 세상!", difficulty: 'easy' }
+            'Toy Story': [
+                { sentence: "To infinity and beyond!", translation: "무한한 우주 그 너머로!", difficulty: 'easy' },
+                { sentence: "You've got a friend in me.", translation: "당신에게는 나라는 친구가 있어요.", difficulty: 'medium' }
+            ],
+            'Finding Nemo': [
+                { sentence: "Just keep swimming!", translation: "계속 헤엄치기만 하면 돼!", difficulty: 'easy' }
+            ]
+        },
+        quotes: {
+            'Life Quotes': [
+                { sentence: "Life is what happens when you're busy making other plans.", translation: "인생은 당신이 다른 계획을 세우느라 바쁠 때 일어나는 것입니다.", difficulty: 'hard' }
+            ]
+        },
+        songs: {
+            'Classic Songs': [
+                { sentence: "Imagine all the people living life in peace.", translation: "모든 사람들이 평화롭게 사는 것을 상상해보세요.", difficulty: 'medium' }
             ]
         }
     };
@@ -253,6 +105,9 @@ async function getStaticContentFallback() {
         version: CONTENT_VERSION + '-fallback',
         lastUpdate: Date.now(),
         content: fallbackContent,
-        fallback: true
+        fallback: true,
+        totalItems: Object.values(fallbackContent).reduce((total, category) => 
+            total + Object.values(category).reduce((subtotal, problems) => subtotal + problems.length, 0), 0
+        )
     }), { headers });
 }

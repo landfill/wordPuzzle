@@ -7,8 +7,7 @@ import { isFeatureEnabled, CONFIG } from './config.js';
 import { authManager } from './auth-manager.js';
 // Phase 4-A: 게임 상태 관리
 import GameStateManager from './game-state-manager.js';
-// Phase 4-D: 동적 콘텐츠 시스템
-import DynamicContentSystem from './dynamic-content-system.js';
+// Phase 4-D: 동적 콘텐츠 시스템 (조건부 import로 변경)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Elements ---
@@ -180,9 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('[Phase 4-D] Initializing dynamic content system...');
             
             try {
+                // 동적 import로 안전하게 모듈 로드
+                const { default: DynamicContentSystem } = await import('./dynamic-content-system.js');
                 dynamicContentSystem = new DynamicContentSystem();
                 await dynamicContentSystem.initialize();
                 
+                // ContentGenerator 동적 시스템과 함께 초기화
                 contentGenerator = new ContentGenerator(dynamicContentSystem);
                 
                 // 동적 시스템에서 데이터 로드
