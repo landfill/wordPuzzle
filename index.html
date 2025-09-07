@@ -8,6 +8,7 @@
     />
     <title>Word Crack World</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
   <body>
     <!-- Category Selection Screen -->
@@ -61,7 +62,7 @@
             <span class="card-text">Movies</span>
           </div>
           <div class="category-card" data-category="songs">
-            <span class="card-icon">🎵</span>
+            <span class="card-icon"><i data-lucide="music"></i></span>
             <span class="card-text">Songs</span>
           </div>
           <div class="category-card" data-category="books">
@@ -73,11 +74,11 @@
             <span class="card-text">Quotes</span>
           </div>
           <div class="category-card" data-category="daily_travel_phrases">
-            <span class="card-icon">✈️</span>
+            <span class="card-icon"><i data-lucide="plane"></i></span>
             <span class="card-text">Travel</span>
           </div>
           <div class="category-card" data-category="all">
-            <span class="card-icon">✨</span>
+            <span class="card-icon"><i data-lucide="sparkles"></i></span>
             <span class="card-text">Random</span>
           </div>
         </div>
@@ -168,7 +169,7 @@
           <!-- 통계 카드들 -->
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-icon">🎯</div>
+              <div class="stat-icon"><i data-lucide="target"></i></div>
               <div class="stat-info">
                 <h3>완료한 문제</h3>
                 <div class="stat-value" id="total-completed">0</div>
@@ -176,7 +177,7 @@
             </div>
             
             <div class="stat-card">
-              <div class="stat-icon">⭐</div>
+              <div class="stat-icon"><i data-lucide="star"></i></div>
               <div class="stat-info">
                 <h3>총 점수</h3>
                 <div class="stat-value" id="total-score">0</div>
@@ -184,7 +185,7 @@
             </div>
             
             <div class="stat-card">
-              <div class="stat-icon">🔥</div>
+              <div class="stat-icon"><i data-lucide="flame"></i></div>
               <div class="stat-info">
                 <h3>최고 연승</h3>
                 <div class="stat-value" id="longest-streak">0</div>
@@ -192,7 +193,7 @@
             </div>
             
             <div class="stat-card">
-              <div class="stat-icon">💎</div>
+              <div class="stat-icon"><i data-lucide="gem"></i></div>
               <div class="stat-info">
                 <h3>완벽한 점수</h3>
                 <div class="stat-value" id="perfect-scores">0</div>
@@ -201,7 +202,7 @@
           </div>
 
           <!-- 획득한 배지 -->
-          <h3 class="section-title">🏆 획득한 배지</h3>
+          <h3 class="section-title"><i data-lucide="trophy"></i> 획득한 배지</h3>
           <div class="badges-container" id="badges-container">
             <!-- 배지들이 동적으로 추가됩니다 -->
           </div>
@@ -229,7 +230,7 @@
             <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
           </svg>
         </button>
-        <h2>성공! 🎉</h2>
+        <h2>성공! <i data-lucide="party-popper"></i></h2>
         <div class="sentence-display">
           <div class="original-sentence"></div>
           <div class="source"></div>
@@ -264,7 +265,7 @@
 
     <div id="game-over-modal" class="modal">
       <div class="modal-content">
-        <h2>Game Over 💔</h2>
+        <h2>Game Over <i data-lucide="heart-crack"></i></h2>
         <p>하트를 모두 사용했습니다. 포기하지 마세요!</p>
         <div class="modal-buttons">
           <button id="retry-same-btn" class="modal-btn primary">
@@ -285,7 +286,7 @@
     <div id="global-leaderboard-modal" class="modal" style="display: none;">
       <div class="modal-content leaderboard-modal-content">
         <div class="modal-header">
-          <h2>🏆 Global Leaderboard</h2>
+          <h2><i data-lucide="trophy"></i> Global Leaderboard</h2>
           <button id="close-leaderboard-btn" class="close-btn" title="닫기">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>

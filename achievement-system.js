@@ -23,7 +23,7 @@ class AchievementSystem {
                 id: 'movies_expert',
                 name: '영화 전문가',
                 description: '영화 카테고리 문제 20개 완료',
-                icon: '🎭',
+                icon: 'clapperboard',
                 category: 'movies',
                 type: 'progress',
                 condition: (userData) => userData.categoryProgress.movies.completed >= 20,
@@ -33,7 +33,7 @@ class AchievementSystem {
                 id: 'songs_beginner',
                 name: '음악 애호가',
                 description: '음악 카테고리 문제 5개 완료',
-                icon: '🎵',
+                icon: 'music',
                 category: 'songs',
                 type: 'progress',
                 condition: (userData) => userData.categoryProgress.songs.completed >= 5,
@@ -93,7 +93,7 @@ class AchievementSystem {
                 id: 'travel_beginner',
                 name: '여행 준비생',
                 description: '여행 영어 문제 5개 완료',
-                icon: '✈️',
+                icon: 'plane',
                 category: 'daily_travel_phrases',
                 type: 'progress',
                 condition: (userData) => userData.categoryProgress.daily_travel_phrases.completed >= 5,
@@ -115,7 +115,7 @@ class AchievementSystem {
                 id: 'streak_3',
                 name: '연승 시작',
                 description: '3회 연속 성공',
-                icon: '🔥',
+                icon: 'flame',
                 type: 'streak',
                 condition: (userData) => userData.stats.longestStreak >= 3,
                 rarity: 'common'
@@ -124,7 +124,7 @@ class AchievementSystem {
                 id: 'streak_5',
                 name: '연승 중',
                 description: '5회 연속 성공',
-                icon: '🔥🔥',
+                icon: 'zap',
                 type: 'streak',
                 condition: (userData) => userData.stats.longestStreak >= 5,
                 rarity: 'uncommon'
@@ -133,7 +133,7 @@ class AchievementSystem {
                 id: 'streak_10',
                 name: '연승 왕',
                 description: '10회 연속 성공',
-                icon: '🔥🔥🔥',
+                icon: 'sparkles',
                 type: 'streak',
                 condition: (userData) => userData.stats.longestStreak >= 10,
                 rarity: 'rare'
@@ -142,7 +142,7 @@ class AchievementSystem {
                 id: 'streak_20',
                 name: '전설의 연승',
                 description: '20회 연속 성공',
-                icon: '🏆',
+                icon: 'trophy',
                 type: 'streak',
                 condition: (userData) => userData.stats.longestStreak >= 20,
                 rarity: 'legendary'
@@ -153,7 +153,7 @@ class AchievementSystem {
                 id: 'perfect_5',
                 name: '완벽주의자',
                 description: '힌트 없이 5개 문제 완료',
-                icon: '⭐',
+                icon: 'star',
                 type: 'perfect',
                 condition: (userData) => userData.stats.perfectScores >= 5,
                 rarity: 'common'
@@ -162,7 +162,7 @@ class AchievementSystem {
                 id: 'perfect_10',
                 name: '완벽 마스터',
                 description: '힌트 없이 10개 문제 완료',
-                icon: '⭐⭐',
+                icon: 'stars',
                 type: 'perfect',
                 condition: (userData) => userData.stats.perfectScores >= 10,
                 rarity: 'uncommon'
@@ -171,7 +171,7 @@ class AchievementSystem {
                 id: 'perfect_25',
                 name: '완벽 전문가',
                 description: '힌트 없이 25개 문제 완료',
-                icon: '⭐⭐⭐',
+                icon: 'sparkle',
                 type: 'perfect',
                 condition: (userData) => userData.stats.perfectScores >= 25,
                 rarity: 'rare'
@@ -182,7 +182,7 @@ class AchievementSystem {
                 id: 'total_10',
                 name: '워드 크랙 신입',
                 description: '총 10개 문제 완료',
-                icon: '🏅',
+                icon: 'medal',
                 type: 'total',
                 condition: (userData) => userData.stats.totalProblemsCompleted >= 10,
                 rarity: 'common'
@@ -249,7 +249,7 @@ class AchievementSystem {
                 id: 'accuracy_80',
                 name: '정확한 실력자',
                 description: '80% 이상 정답률 (최소 20문제)',
-                icon: '🎯',
+                icon: 'target',
                 type: 'accuracy',
                 condition: (userData) => {
                     if (userData.stats.totalProblemsAttempted < 20) return false;
@@ -262,7 +262,7 @@ class AchievementSystem {
                 id: 'accuracy_90',
                 name: '정밀 저격수',
                 description: '90% 이상 정답률 (최소 30문제)',
-                icon: '🎯🎯',
+                icon: 'crosshair',
                 type: 'accuracy',
                 condition: (userData) => {
                     if (userData.stats.totalProblemsAttempted < 30) return false;

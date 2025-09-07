@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+항상 한글로 응답하고 반말로 말할것
+ 명시적으로 요청하지 않는 한 이모지를 사용하지 말것.
+
 ## Project Overview
 
 Word Crack Game is an interactive web-based English learning game where users fill in blanks in famous movie quotes, song lyrics, book excerpts, and sayings. The project uses a hybrid architecture with vanilla JavaScript frontend and Cloudflare Workers backend.

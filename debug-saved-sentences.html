@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Debug Saved Sentences</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
@@ -60,11 +61,11 @@
             container.innerHTML = sortedSentences.map(sentence => {
                 const date = new Date(sentence.timestamp).toLocaleDateString('ko-KR');
                 const categoryIcons = {
-                    'movies': '🎬',
-                    'songs': '🎵', 
-                    'books': '📚',
-                    'quotes': '💬',
-                    'daily_travel_phrases': '✈️'
+                    'movies': 'clapperboard',
+                    'songs': 'music', 
+                    'books': 'book-open',
+                    'quotes': 'message-circle',
+                    'daily_travel_phrases': 'plane'
                 };
                 
                 return `
@@ -73,7 +74,7 @@
                             <div class="saved-sentence-text">${sentence.sentence}</div>
                             <div class="saved-sentence-translation">${sentence.translation}</div>
                             <div class="saved-sentence-meta">
-                                <span>${categoryIcons[sentence.category]} ${sentence.source}</span>
+                                <span><i data-lucide="${categoryIcons[sentence.category]}"></i> ${sentence.source}</span>
                                 <span>${date}</span>
                             </div>
                         </div>
@@ -88,6 +89,9 @@
         }
         
         updateSavedSentences(savedSentences);
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
     </script>
 </body>
 </html>

@@ -1936,7 +1936,7 @@ ${problem.translation}
         notification.className = 'badge-notification';
         notification.innerHTML = `
             <div class="badge-notification-content">
-                <div class="badge-icon">${badge.icon}</div>
+                <div class="badge-icon"><i data-lucide="${badge.icon}"></i></div>
                 <div class="badge-info">
                     <h3>새 배지 획득!</h3>
                     <h4>${badge.name}</h4>
@@ -1948,6 +1948,9 @@ ${problem.translation}
 
         // body에 추가
         document.body.appendChild(notification);
+
+        // Initialize Lucide icons for the notification
+        lucide.createIcons();
 
         // 애니메이션 및 자동 제거
         setTimeout(() => notification.classList.add('show'), 100);
@@ -2041,17 +2044,17 @@ ${problem.translation}
 
         // 배지 타입별 기본 아이콘 매핑
         const badgeTypeIcons = {
-            'streak': '🔥',
-            'perfect': '💎',
-            'total': '🏅',
-            'special': '📝',
-            'accuracy': '🎯',
+            'streak': 'flame',
+            'perfect': 'gem',
+            'total': 'medal',
+            'special': 'file-text',
+            'accuracy': 'target',
             'progress': {
-                'movies': '🎬',
-                'songs': '🎵',
-                'books': '📚',
-                'quotes': '💬',
-                'daily_travel_phrases': '✈️'
+                'movies': 'clapperboard',
+                'songs': 'music',
+                'books': 'book-open',
+                'quotes': 'message-circle',
+                'daily_travel_phrases': 'plane'
             }
         };
 
@@ -2066,24 +2069,29 @@ ${problem.translation}
             
             return `
                 <div class="badge-item ${badge.type}-badge ${badge.rarity}" title="${badge.description}">
-                    <div class="badge-icon">${displayIcon}</div>
+                    <div class="badge-icon"><i data-lucide="${displayIcon}"></i></div>
                     <div class="badge-name">${badge.name}</div>
                     <span class="badge-rarity ${badge.rarity}">${achievementSystem.getBadgeRarityName(badge.rarity)}</span>
                 </div>
             `;
         }).join('');
+        
+        // Initialize Lucide icons for badges
+        setTimeout(() => {
+            lucide.createIcons();
+        }, 0);
     }
 
     function updateCategoryProgress(categoryProgress) {
         const container = document.getElementById('category-progress-grid');
         
         const categoryIcons = {
-            'movies': '🎬',
-            'songs': '🎵', 
-            'books': '📚',
-            'quotes': '💬',
-            'daily_travel_phrases': '✈️',
-            'all': '✨'
+            'movies': 'clapperboard',
+            'songs': 'music', 
+            'books': 'book-open',
+            'quotes': 'message-circle',
+            'daily_travel_phrases': 'plane',
+            'all': 'sparkles'
         };
 
         const categoryNames = {
@@ -2165,11 +2173,11 @@ ${problem.translation}
         container.innerHTML = sortedSentences.map(sentence => {
             const date = new Date(sentence.timestamp).toLocaleDateString('ko-KR');
             const categoryIcons = {
-                'movies': '🎬',
-                'songs': '🎵', 
-                'books': '📚',
-                'quotes': '💬',
-                'daily_travel_phrases': '✈️'
+                'movies': 'clapperboard',
+                'songs': 'music', 
+                'books': 'book-open',
+                'quotes': 'message-circle',
+                'daily_travel_phrases': 'plane'
             };
             
             return `
@@ -2366,7 +2374,7 @@ ${problem.translation}
         modal.className = 'modal-overlay';
         modal.innerHTML = `
             <div class="modal-content error-modal">
-                <h2>⚠️ 로그인 제한 안내</h2>
+                <h2><i data-lucide="alert-triangle"></i> 로그인 제한 안내</h2>
                 <div class="error-content">
                     <p>현재 앱 내 브라우저(웹뷰)에서는 Google 로그인이 제한됩니다.</p>
                     <div class="solution-steps">
@@ -2629,13 +2637,18 @@ ${problem.translation}
                 emptyMessage.className = 'empty-message';
                 emptyMessage.innerHTML = `
                     <p style="text-align: center; color: #6b7280; padding: 40px;">
-                        🏆 아직 등록된 점수가 없습니다.<br>
+                        <i data-lucide="trophy"></i> 아직 등록된 점수가 없습니다.<br>
                         첫 번째 도전자가 되어보세요!
                     </p>
                 `;
                 leaderboardList.appendChild(emptyMessage);
             }
         }
+        
+        // Initialize Lucide icons for leaderboard
+        setTimeout(() => {
+            lucide.createIcons();
+        }, 0);
     }
     
     // 리더보드 아이템 생성
@@ -2650,11 +2663,11 @@ ${problem.translation}
         }
         
         const rankClass = rank <= 3 ? 'rank top-3' : 'rank';
-        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+        const rankIcon = rank === 1 ? '<i data-lucide="crown"></i>' : rank === 2 ? '<i data-lucide="medal"></i>' : rank === 3 ? '<i data-lucide="award"></i>' : '';
         
         item.innerHTML = `
             <div class="${rankClass}">
-                ${rankEmoji || rank}
+                ${rankIcon || rank}
             </div>
             <img class="player-avatar" src="${player.user?.avatarUrl || '/default-avatar.png'}" 
                  alt="${player.user?.displayName}" 
@@ -2898,5 +2911,8 @@ ${problem.translation}
         }
         gameStateManager.stopAutoSave();
     });
+    
+    // Initialize Lucide icons
+    lucide.createIcons();
     
 });
